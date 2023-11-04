@@ -6,4 +6,4 @@ set_property(TARGET main PROPERTY CXX_STANDARD 17)
 
 target_include_directories(main PRIVATE ${PIPI_SOURCE_DIR})
 
-target_link_libraries(main PRIVATE pipi)
+target_link_libraries(main PRIVATE pipi::pipi)
