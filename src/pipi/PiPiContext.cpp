@@ -1,5 +1,6 @@
 #include "PiPiContext.h"
 
-PiPiContext::PiPiContext() {
-
+namespace PiPi {
+	PiPiContext::PiPiContext() {
+	}
 }

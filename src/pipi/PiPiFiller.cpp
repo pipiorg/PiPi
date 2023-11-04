@@ -1,7 +1,6 @@
 #include "PiPiFiller.h"
 
-using namespace std;
-
-PiPiFiller::PiPiFiller(PiPiContext* context) {
-
+namespace PiPi {
+	PiPiFiller::PiPiFiller(PiPiContext* context) {
+	}
 }

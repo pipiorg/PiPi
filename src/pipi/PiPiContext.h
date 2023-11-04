@@ -1,5 +1,7 @@
-class PiPiContext {
-	public:
-		// 建構子
-		PiPiContext();
-};
+namespace PiPi {
+	class PiPiContext {
+		public:
+			// 建構子
+			PiPiContext();
+		};
+}

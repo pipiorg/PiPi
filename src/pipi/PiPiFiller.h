@@ -1,6 +1,8 @@
 #include "PiPiContext.h"
 
-class PiPiFiller {
-	public:
-		PiPiFiller(PiPiContext* context);
-};
+namespace PiPi {
+	class PiPiFiller {
+		public:
+			PiPiFiller(PiPiContext* context);
+	};
+}
