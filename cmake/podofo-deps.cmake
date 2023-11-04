@@ -9,6 +9,8 @@ FetchContent_Declare(
 	SOURCE_DIR		${PODOFO_DEPS_SOURCE_DIR}
 )
 
+FetchContent_MakeAvailable(podofo-deps)
+
 file(GLOB PODOFO_DEPS_OPENSSL_FILES  "${PODOFO_DEPS_SOURCE_DIR}/3rdparty/openssl/lib/Win64/*")
 file(COPY ${PODOFO_DEPS_OPENSSL_FILES} DESTINATION ${PODOFO_DEPS_SOURCE_DIR}/3rdparty/openssl)
 

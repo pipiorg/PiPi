@@ -7,18 +7,15 @@ endif()
 
 project ("PiPi")
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-include(podofo-deps)
-include(podofo)
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 
-add_executable (main "main.cpp" "main.h")
 
-target_include_directories(main PRIVATE ${PODOFO_SOURCE_DIR}/src)
-target_include_directories(main PRIVATE ${PODOFO_BINARY_DIR}/src/podofo)
-target_link_libraries(main PRIVATE podofo::podofo)
+set(PIPI_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/pipi)
+add_subdirectory(${PIPI_SOURCE_DIR})
 
-set_property(TARGET main PROPERTY CXX_STANDARD 17)
+set(MAIN_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/main)
+add_subdirectory(${MAIN_SOURCE_DIR})
