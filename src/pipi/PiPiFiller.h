@@ -9,7 +9,7 @@ namespace PiPi {
 			PiPiFiller(PdfMemDocument* document);
 
 			PiPiFiller* fillValue(std::string fieldName, std::string value);
-			PiPiFiller* fillImage(std::string fieldName, char* imageBytes);
+			PiPiFiller* fillImage(std::string fieldName, char* imageBytes, size_t imageSize);
 
 		private:
 			PdfMemDocument* document;

@@ -50,13 +50,74 @@ namespace PiPi {
 		return this;
 	}
 
-	PiPiFiller* PiPiFiller::fillImage(std::string fieldName, char* imageBytes) {
+	PiPiFiller* PiPiFiller::fillImage(std::string fieldName, char* imageBytes, size_t imageSize) {
 		PdfMemDocument* document = this->document;
-		PdfAcroForm* acroForm = document->GetAcroForm();
+		PdfMemDocument& documentRef = *document;
+		PdfAcroForm* acroform = document->GetAcroForm();
 
-		PdfField& field = acroForm->CreateField(fieldName, PdfFieldType::PushButton);
+		PdfPageCollection& pages = document->GetPages();
+		unsigned int pageCount = pages.GetCount();
+		for (unsigned int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
+			PdfPage& page = pages.GetPageAt(pageIndex);
 
-		acroForm->SetNeedAppearances(true);
+			PdfAnnotationCollection& annotations = page.GetAnnotations();
+			unsigned int annotCount = annotations.GetCount();
+			for (unsigned int annotIndex = 0; annotIndex < annotCount; annotIndex++) {
+				PdfAnnotation& annotation = annotations.GetAnnotAt(annotIndex);
+
+				PdfAnnotationType annotType = annotation.GetType();
+				nullable<const PdfString&> annotTitle = annotation.GetTitle();
+
+				if (annotType != PdfAnnotationType::Widget) {
+					continue;
+				}
+
+				if (!annotTitle.has_value()) {
+					continue;
+				}
+
+				std::string annotTitleString = annotTitle->GetString();
+				if (annotTitleString == fieldName) {
+					Rect annotRect = annotation.GetRect();
+
+					double annotBottom = annotRect.GetBottom();
+					double annotTop = annotRect.GetTop();
+					double annotLeft = annotRect.GetLeft();
+					double annotRight = annotRect.GetRight();
+
+					double annotWidth = annotRight - annotLeft;
+					double annotHeight = annotTop - annotBottom;
+
+					std::unique_ptr<PdfImage> imageUniquePtr = document->CreateImage();
+					PdfImage* image = imageUniquePtr.get();
+					image->LoadFromBuffer(bufferview(imageBytes, imageSize));
+					PdfImage& imageRef = *image;
+
+					Rect imageRect = image->GetRect();
+					
+					double imageBottom = imageRect.GetBottom();
+					double imageTop = imageRect.GetTop();
+					double imageLeft = imageRect.GetLeft();
+					double imageRight = imageRect.GetRight();
+					
+					double imageWidth = imageRight - imageLeft;
+					double imageHeight = imageTop - imageBottom;
+
+					double scale = std::min(annotWidth / imageWidth, annotHeight / imageHeight);
+
+					double scaledImageWidth = imageWidth * scale;
+					double scaledImageHeight = imageHeight * scale;
+
+					double left = annotLeft + (annotWidth / 2 - scaledImageWidth / 2);
+					double bottom = annotBottom + annotHeight / 2 - scaledImageHeight / 2;
+
+					PdfPainter* painter = new PdfPainter();
+					painter->SetCanvas(page);
+					painter->DrawImage(imageRef, left, bottom, scale, scale);
+					painter->FinishDrawing();
+				}
+			}
+		}
 
 		return this;
 	}
