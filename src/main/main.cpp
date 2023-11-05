@@ -47,9 +47,9 @@ int main()
 	char* imageBytes;
 	size_t imageSize;
 
-	// Replace with your pdf file path
-	readFile("D:\\Empty.pdf", &fileBytes, &fileSize);
-	readFile("D:\\OT.jpg", &imageBytes, &imageSize);
+	// Replace with your pdf and image file path
+	readFile("", &fileBytes, &fileSize);
+	readFile("", &imageBytes, &imageSize);
 
 	PiPi::PiPiOperator* op = new PiPi::PiPiOperator(fileBytes, fileSize);
 	PiPi::PiPiFiller* filler = op->getFiller();
@@ -57,10 +57,6 @@ int main()
 	PiPi::PiPiPager* pager = op->getPager();
 
 	// Do PDF modification
-	filler->fillImage("TextField", imageBytes, imageSize);
-	// filler->fillValue("TextField", "HAHA");
-	// editor->flatten("CheckBoxField");
-	// editor->flatten("TextField");
 
 	op->finalize(&newFileBytes, &newFileSize);
 	delete op;
