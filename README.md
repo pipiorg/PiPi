@@ -17,6 +17,11 @@ cmake ..
 # Binary generated under out/build/[platform]/bin
 ```
 
+## Known Bugs
+
+- Appearance not generate immediate after form field be filled
+- cmake build command issue
+
 ## License
 
 PiPi Based on MIT license, licensed under [LICENSE](LICENSE)
