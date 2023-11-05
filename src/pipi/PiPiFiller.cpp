@@ -108,7 +108,7 @@ namespace PiPi {
 					double scaledImageWidth = imageWidth * scale;
 					double scaledImageHeight = imageHeight * scale;
 
-					double left = annotLeft + (annotWidth / 2 - scaledImageWidth / 2);
+					double left = annotLeft + annotWidth / 2 - scaledImageWidth / 2;
 					double bottom = annotBottom + annotHeight / 2 - scaledImageHeight / 2;
 
 					PdfPainter* painter = new PdfPainter();
@@ -118,6 +118,9 @@ namespace PiPi {
 				}
 			}
 		}
+
+		PiPiUtil::RemoveFieldFromAcroForm(document, fieldName);
+		PiPiUtil::RemoveFieldFromPage(document, fieldName);
 
 		return this;
 	}

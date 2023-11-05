@@ -1,5 +1,8 @@
+#pragma once
+
 #include <iostream>
 #include "podofo/podofo.h"
+#include "PiPiUtil.h"
 
 using namespace PoDoFo;
 
