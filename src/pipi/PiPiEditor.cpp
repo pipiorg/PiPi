@@ -101,6 +101,57 @@ namespace PiPi {
 	}
 
 	PiPiEditor* PiPiEditor::renameFormField(std::string oldFieldName, std::string newFieldName) {
+		PdfMemDocument* document = this->document;
+		
+		// Solve For Acroform
+		PdfAcroForm* acroform = document->GetAcroForm();
+		acroform->GetFieldCount();
+		for (auto iterator = acroform->begin(); iterator.operator!=(acroform->end()); iterator.operator++()) {
+			PdfField* field = iterator.operator*();
+
+			nullable<const PdfString&> name = field->GetName();
+			if (!name.has_value()) {
+				continue;
+			}
+
+			std::string nameString = name.value().GetString();
+			if (nameString == oldFieldName) {
+				PdfString* newName = new PdfString(newFieldName);
+				const PdfString& newNameRef = *newName;
+				field->SetName(nullable<const PdfString&>(newNameRef));
+			}
+		}
+
+		// Solve For Page
+		PdfPageCollection& pages = document->GetPages();
+		unsigned int pageCount = pages.GetCount();
+		for (unsigned int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
+			PdfPage& page = pages.GetPageAt(pageIndex);
+
+			PdfAnnotationCollection& annots = page.GetAnnotations();
+			unsigned int annotCount = annots.GetCount();
+			for (unsigned int annotIndex = 0; annotIndex < annotCount; annotIndex++) {
+				PdfAnnotation& annot = annots.GetAnnotAt(annotIndex);
+
+				PdfAnnotationType annotType = annot.GetType();
+				if (annotType != PdfAnnotationType::Widget) {
+					continue;
+				}
+
+				nullable<const PdfString&> title = annot.GetTitle();
+				if (!title.has_value()) {
+					continue;
+				}
+
+				std::string titleString = title.value().GetString();
+				if (titleString == oldFieldName) {
+					PdfString* newTitle = new PdfString(newFieldName);
+					const PdfString& newTitleRef = *newTitle;
+					annot.SetTitle(nullable<const PdfString&>(newTitleRef));
+				}
+			}
+		}
+
 		return this;
 	}
 
