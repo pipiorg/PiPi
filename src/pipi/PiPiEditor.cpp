@@ -37,28 +37,35 @@ namespace PiPi {
 
 				std::string annotTitleString = annotTitle->GetString();
 				if (annotTitleString == fieldName) {
-
 					PdfDictionary& dictionary = annotation.GetDictionary();
 
-					PdfObject* apperanceObject = dictionary.FindKey(PdfName("AP"));
-					PdfDictionary& apperance = apperanceObject->GetDictionary();
+					std::vector<PdfAppearanceIdentity> apperanceStreams;
+					annotation.GetAppearanceStreams(apperanceStreams);
 
-					PdfObject* nObject = apperance.FindKey(PdfName("N"));
-					PdfObject& nRef = *nObject;
-					PdfDictionary& n = nObject->GetDictionary();
+					PdfObject* apperanceStream = nullptr;
 
-					PdfObject* realNObject = nObject;
-					PdfObject& realNRef = nRef;
-
-					PdfObject* nTypeObject = n.FindKey(PdfName::KeyType);
-					if (nTypeObject == nullptr) {
+					unsigned int apperanceStreamCount = apperanceStreams.size();
+					if (apperanceStreamCount == 1) {
+						apperanceStream = const_cast<PdfObject*>(apperanceStreams[0].Object);
+					}
+					else {
 						PdfName as = dictionary.FindKeyAs<PdfName>(PdfName("AS"));
-						realNObject = n.FindKey(as);
-						realNRef = *realNObject;
+						for (auto iterator = apperanceStreams.begin(); iterator.operator!=(apperanceStreams.end()); iterator.operator++()) {
+							PdfAppearanceIdentity& apperanceIdentity = iterator.operator*();
+							if (apperanceIdentity.Type == PdfAppearanceType::Normal && apperanceIdentity.State == as) {
+								apperanceStream = const_cast<PdfObject*>(apperanceIdentity.Object);
+							}
+						}
 					}
 
+					if (apperanceStream == nullptr) {
+						continue;
+					}
+
+					PdfObject& apperanceStreanRef = *apperanceStream;
+					
 					std::unique_ptr<PdfXObjectForm> xObjectUniquePtr;
-					bool xObjectCreated = PdfXObjectForm::TryCreateFromObject(realNRef, xObjectUniquePtr);
+					bool xObjectCreated = PdfXObjectForm::TryCreateFromObject(apperanceStreanRef, xObjectUniquePtr);
 					if (!xObjectCreated) {
 						continue;
 					}
