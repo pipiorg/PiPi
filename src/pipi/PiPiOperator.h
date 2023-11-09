@@ -18,11 +18,13 @@ namespace PiPi {
 			PiPiEditor* getEditor();
 			PiPiPager* getPager();
 
-
+			bool getOperable();
 			void finalize(char** newPdfBytes, size_t* newPdfSize);
 
 		private:
 			PoDoFo::PdfMemDocument* document;
+
+			bool operable;
 
 			PiPiFiller* filler;
 			PiPiEditor* editor;

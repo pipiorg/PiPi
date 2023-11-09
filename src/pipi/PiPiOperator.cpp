@@ -14,6 +14,7 @@ namespace PiPi {
 		this->editor = new PiPiEditor(document);
 		this->filler = new PiPiFiller(document);
 		this->document = document;
+		this->operable = true;
 	}
 
 	PiPiFiller* PiPiOperator::getFiller() {
@@ -28,6 +29,9 @@ namespace PiPi {
 		return this->editor;
 	}
 
+	bool PiPiOperator::getOperable() {
+		return this->operable;
+	}
 
 	void PiPiOperator::finalize(char** newPdfBytes, size_t* newPdfSize) {
 		vector<char> outputVector;
@@ -39,5 +43,12 @@ namespace PiPi {
 		for (size_t i = 0; i < *newPdfSize; i++) {
 			*(*newPdfBytes + i) = outputVector[i];
 		}
+
+		delete this->pager;
+		delete this->editor;
+		delete this->filler;
+		delete this->document;
+
+		this->operable = false;
 	}
 }
