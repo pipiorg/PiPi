@@ -10,17 +10,15 @@ A PDF tool to support acroform field fill with textbox/checkbox/image and fatten
 ## Build
 
 ```bash
+# Generate project
 mkdir build
 cd build
 cmake ..
-
-# Binary generated under out/build/[platform]/bin
 ```
 
 ## Known Bugs
 
 - Appearance not generate immediate after form field be filled
-- cmake build command issue
 
 ## License
 
