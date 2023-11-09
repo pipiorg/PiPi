@@ -5,12 +5,12 @@ namespace PiPi {
 		this->init(document);
 	}
 
-	PiPiExtractor::init(PdfMemDocument* document) {
+	void PiPiExtractor::init(PdfMemDocument* document) {
 		this->document = document;
 	}
 
-	std::vector<const PdfPage*>* PiPiExtractor::extractPage() {
-		std::vector<const PdfPage*>* pages = new std::vector<const PdfPage*>();
+	std::vector<const PiPiPage*>* PiPiExtractor::extractPage() {
+		std::vector<const PiPiPage*>* pages = new std::vector<const PiPiPage*>();
 
 		PdfMemDocument* document = this->document;
 		PdfPageCollection& pdfPages = document->GetPages();
