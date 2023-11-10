@@ -1,7 +1,7 @@
 include(podofo-deps)
 include(podofo)
 
-aux_source_directory(${PIPI_SOURCE_DIR} PIPI_SOURCES)
+aux_source_directory(${PROJECT_SOURCE_DIR}/src/pipi PIPI_SOURCES)
 
 add_library (pipi SHARED ${PIPI_SOURCES})
 add_library(pipi::pipi ALIAS pipi)
