@@ -1,4 +1,3 @@
-include(podofo-deps)
 include(podofo)
 
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/pipi PIPI_SOURCES)
