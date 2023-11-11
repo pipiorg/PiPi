@@ -8,11 +8,8 @@
             "binaryDir": "${sourceDir}/out/build/${presetName}",
             "installDir": "${sourceDir}/out/install/${presetName}",
             "cacheVariables": {
-                // Configure For CMake
                 "CMAKE_C_COMPILER": "cl.exe",
                 "CMAKE_CXX_COMPILER": "cl.exe",
-
-                // Configure For PoDoFo Depenednecy
                 "PODOFO_BUILD_STATIC": "TRUE",
                 "ZLIB_LIBRARY": "",
                 "ZLIB_INCLUDE_DIR": "",
