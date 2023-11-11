@@ -9,7 +9,7 @@ A PDF tool to support acroform field fill with textbox/checkbox/image and fatten
 
 ## Configure
 
-Configure the podofo dependency under CMakePresets.json/configurePresets/cacheVariables
+Configure the podofo dependency under CMakePresets.json - configurePresets/cacheVariables. You can find the needed dependency binary file from [PoDoPo-Deps](https://github.com/podofo/podofo-deps).
 
 ## Build
 
