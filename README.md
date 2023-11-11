@@ -1,11 +1,15 @@
 # PiPi
 
-A PDF tool to support acroform field fill with textbox/checkbox/image and fatten field for specific field name. The library depend on [podofo](https://github.com/podofo/podofo)
+A PDF tool to support acroform field fill with textbox/checkbox/image and fatten field for specific field name. The library depend on [PoDoFo](https://github.com/podofo/podofo).
 
 ## Requirement
 
 - c++ 17+
 - cmake 3.11+
+
+## Configure
+
+Configure the podofo dependency under CMakePresets.json/configurePresets/cacheVariables
 
 ## Build
 

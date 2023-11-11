@@ -8,8 +8,29 @@
             "binaryDir": "${sourceDir}/out/build/${presetName}",
             "installDir": "${sourceDir}/out/install/${presetName}",
             "cacheVariables": {
+                // Configure For CMake
                 "CMAKE_C_COMPILER": "cl.exe",
-                "CMAKE_CXX_COMPILER": "cl.exe"
+                "CMAKE_CXX_COMPILER": "cl.exe",
+
+                // Configure For PoDoFo Depenednecy
+                "PODOFO_BUILD_STATIC": "TRUE",
+                "ZLIB_LIBRARY": "",
+                "ZLIB_INCLUDE_DIR": "",
+                "OPENSSL_ROOT_DIR": "",
+                "JPEG_LIBRARY": "",
+                "JPEG_INCLUDE_DIR": "",
+                "TIFF_LIBRARY": "",
+                "TIFF_INCLUDE_DIR": "",
+                "PNG_LIBRARY": "",
+                "PNG_PNG_INCLUDE_DIR": "",
+                "LIBIDN_INCLUDE_DIR": "",
+                "LIBIDN_LIBRARY": "",
+                "FREETYPE_LIBRARY": "",
+                "FREETYPE_INCLUDE_DIRS": "",
+                "Fontconfig_LIBRARY": "",
+                "Fontconfig_INCLUDE_DIR": "",
+                "LIBXML2_LIBRARY": "",
+                "LIBXML2_INCLUDE_DIR": ""
             },
             "condition": {
                 "type": "equals",
