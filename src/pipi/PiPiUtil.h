@@ -9,10 +9,16 @@ namespace PiPi {
 		public:
 			static std::map<const std::string, std::vector<const PdfField*>*>* SearchAllField(PdfMemDocument* document);
 			static std::map<const std::string, std::vector<const PdfField*>*>* SearchAllField(PdfAcroForm* acroform);
+
+			static std::map<const std::string, std::vector<const PdfAnnotation*>*>* SerachAllAnnotation(PdfMemDocument* document);
+			static std::map<const std::string, std::vector<const PdfAnnotation*>*>* SerachAllAnnotation(PdfPageCollection* pages);
+
 			static std::vector<const PdfField*>* SearchField(PdfMemDocument* document, std::string fieldName);
 			static std::vector<const PdfField*>* SearchField(PdfAcroForm* acroform, std::string fieldName);
+
 			static std::vector<const PdfAnnotation*>* SearchAnnotation(PdfMemDocument* document, std::string fieldName);
 			static std::vector<const PdfAnnotation*>* SearchAnnotation(PdfPageCollection* pages, std::string fieldName);
+
 			static void RemoveField(PdfMemDocument* document, std::string fieldName);
 		private:
 			static void SearchAllChildrenField(PdfField* field, std::map<const std::string, std::vector<const PdfField*>*>* fieldMap);

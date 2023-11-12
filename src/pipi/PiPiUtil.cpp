@@ -18,6 +18,55 @@ namespace PiPi {
         return fieldMap;
     }
 
+    std::map<const std::string, std::vector<const PdfAnnotation*>*>* PiPiUtil::SerachAllAnnotation(PdfMemDocument* document) {
+        PdfPageCollection& pagesRef = document->GetPages();
+        PdfPageCollection* pages = &pagesRef;
+        return SerachAllAnnotation(pages);
+    }
+
+    std::map<const std::string, std::vector<const PdfAnnotation*>*>* PiPiUtil::SerachAllAnnotation(PdfPageCollection* pages) {
+        std::map<const std::string, std::vector<const PdfAnnotation*>*>* annotMap = new std::map<const std::string, std::vector<const PdfAnnotation*>*>();
+
+        unsigned int pageCount = pages->GetCount();
+        for (unsigned int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
+            PdfPage& pageRef = pages->GetPageAt(pageIndex);
+            PdfPage* page = &pageRef;
+
+            PdfAnnotationCollection& annotsRef = page->GetAnnotations();
+            PdfAnnotationCollection* annots = &annotsRef;
+
+            unsigned int annotCount = annots->GetCount();
+            for (unsigned int annotIndex = 0; annotIndex < annotCount; annotIndex++) {
+                PdfAnnotation& annotRef = annots->GetAnnotAt(annotIndex);
+                PdfAnnotation* annot = &annotRef;
+
+                const PdfObject& constObject = annot->GetObject();
+                PdfObject& object = const_cast<PdfObject&>(constObject);
+
+                std::unique_ptr<PdfField> fieldPtr;
+                bool created = PdfField::TryCreateFromObject(object, fieldPtr);
+                if (!created) {
+                    continue;
+                }
+
+                PdfField* field = fieldPtr.get();
+
+                std::string name = field->GetFullName();
+
+                if ((*annotMap)[name] == nullptr) {
+                    (*annotMap)[name] = new std::vector<const PdfAnnotation*>();
+                }
+
+                std::vector<const PdfAnnotation*>* resAnnots = (*annotMap)[name];
+                resAnnots->push_back(annot);
+
+                fieldPtr.release();
+            }
+        }
+
+        return annotMap;
+    }
+
     std::vector<const PdfField*>* PiPiUtil::SearchField(PdfMemDocument* document, std::string fieldName) {
         PdfAcroForm* acroform = document->GetAcroForm();
         return SearchField(acroform, fieldName);
