@@ -40,6 +40,8 @@ namespace PiPi {
 			}
 		}
 
+		delete fields;
+
 		return this;
 	}
 
@@ -94,6 +96,8 @@ namespace PiPi {
 			
 			delete painter;
 		}
+
+		delete annotations;
 
 		PiPiUtil::RemoveField(document, fieldName);
 

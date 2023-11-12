@@ -13,6 +13,7 @@ namespace PiPi {
 		PdfMemDocument* document = this->document;
 
 		std::vector<const PdfAnnotation*>* annotations = PiPiUtil::SearchAnnotation(document, fieldName);
+		
 		for (auto iterator = annotations->begin(); iterator != annotations->end(); ++iterator) {
 			const PdfAnnotation* constAnnotation = *iterator;
 			PdfAnnotation* annotation = const_cast<PdfAnnotation*>(constAnnotation);
@@ -67,6 +68,8 @@ namespace PiPi {
 
 			delete painter;
 		}
+
+		delete annotations;
 
 		PiPiUtil::RemoveField(document, fieldName);
 
