@@ -9,6 +9,10 @@ namespace PiPi {
 		this->document = document;
 	}
 
+	bool PiPiFiller::isOperable() {
+		return this->document != nullptr;
+	}
+
 	PiPiFiller* PiPiFiller::fillValue(std::string name, std::string value) {
 		PdfMemDocument* document = this->document;
 

@@ -12,6 +12,8 @@ namespace PiPi {
 
 			std::vector<const PiPiPage*>* extractPage();
 
+			bool isOperable();
+
 		private:
 			PdfMemDocument* document;
 

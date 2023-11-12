@@ -15,6 +15,8 @@ namespace PiPi {
 			PiPiEditor* removeFormField(std::string fieldName);
 			PiPiEditor* renameFormField(std::string oldFieldName, std::string newFieldName);
 
+			bool isOperable();
+
 		private:
 			void init(PdfMemDocument* document);
 

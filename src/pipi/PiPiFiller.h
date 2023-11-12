@@ -14,6 +14,8 @@ namespace PiPi {
 			PiPiFiller* fillValue(std::string fieldName, std::string value);
 			PiPiFiller* fillImage(std::string fieldName, char* imageBytes, size_t imageSize);
 
+			bool isOperable();
+
 		private:
 			PdfMemDocument* document;
 

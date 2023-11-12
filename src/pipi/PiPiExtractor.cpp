@@ -9,6 +9,10 @@ namespace PiPi {
 		this->document = document;
 	}
 
+	bool PiPiExtractor::isOperable() {
+		return this->document != nullptr;
+	}
+
 	std::vector<const PiPiPage*>* PiPiExtractor::extractPage() {
 		std::vector<const PiPiPage*>* pages = new std::vector<const PiPiPage*>();
 

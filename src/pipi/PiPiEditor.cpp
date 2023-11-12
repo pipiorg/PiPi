@@ -9,6 +9,10 @@ namespace PiPi {
 		this->document = document;
 	}
 
+	bool PiPiEditor::isOperable() {
+		return this->document != nullptr;
+	}
+
 	PiPiEditor* PiPiEditor::flatten(std::string fieldName) {
 		PdfMemDocument* document = this->document;
 

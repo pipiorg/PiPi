@@ -29,8 +29,8 @@ namespace PiPi {
 		return this->editor;
 	}
 
-	bool PiPiOperator::getOperable() {
-		return this->operable;
+	bool PiPiOperator::isOperable() {
+		return this->document != nullptr;
 	}
 
 	void PiPiOperator::finalize(char** newPdfBytes, size_t* newPdfSize) {
@@ -44,11 +44,7 @@ namespace PiPi {
 			*(*newPdfBytes + i) = outputVector[i];
 		}
 
-		delete this->pager;
-		delete this->editor;
-		delete this->filler;
 		delete this->document;
-
-		this->operable = false;
+		this->document = nullptr;
 	}
 }
