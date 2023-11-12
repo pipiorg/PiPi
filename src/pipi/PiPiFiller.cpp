@@ -9,118 +9,93 @@ namespace PiPi {
 		this->document = document;
 	}
 
-	PiPiFiller* PiPiFiller::fillValue(std::string targetName, std::string value) {
+	PiPiFiller* PiPiFiller::fillValue(std::string name, std::string value) {
 		PdfMemDocument* document = this->document;
+
 		PdfAcroForm* acroForm = document->GetAcroForm();
-
 		acroForm->SetNeedAppearances(true);
-		acroForm->GetFieldCount();
-		for (auto iterator = acroForm->begin(); iterator.operator!=(acroForm->end()); iterator.operator++()) {
-			PdfField* field = iterator.operator*();
 
-			nullable<const PdfString&> nameObject = field->GetName();
-			if (!nameObject.has_value()) {
-				continue;
-			}
+		std::vector<const PdfField*>* fields = PiPiUtil::SearchField(document, name);
 
-			std::string name = nameObject->GetString();
-
-			if (name == targetName) {
-				PdfFieldType fieldType = field->GetType();
-				
-				if (fieldType == PdfFieldType::TextBox) {
-					PdfTextBox* textBoxField = (PdfTextBox*)field;
-					PdfString valueString(value);
-					textBoxField->SetText(valueString);
-				}
-				else if (fieldType == PdfFieldType::CheckBox) {
-					PdfCheckBox* checkBoxField = (PdfCheckBox*)field;
-
-					bool isCheckBox = checkBoxField->IsCheckBox();
-					if (isCheckBox) {
-						bool checked = value == "Yes" || value == "On";
-						checkBoxField->SetChecked(checked);
-					}
-				}
-			}
+		if (fields == nullptr) {
+			return this;
 		}
 
-		document->CollectGarbage();
+		for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
+			const PdfField* field = iterator.operator*();
+
+			PdfFieldType type = field->GetType();
+			if (type == PdfFieldType::TextBox) {
+				PdfTextBox* textBoxField = (PdfTextBox*)field;
+				PdfString valueString(value);
+				textBoxField->SetText(valueString);
+			} else if (type == PdfFieldType::CheckBox) {
+				PdfCheckBox* checkBoxField = (PdfCheckBox*)field;
+
+				bool isCheckBox = checkBoxField->IsCheckBox();
+				if (!isCheckBox) continue;
+
+				bool checked = value == "Yes" || value == "On";
+				checkBoxField->SetChecked(checked);
+			}
+		}
 
 		return this;
 	}
 
 	PiPiFiller* PiPiFiller::fillImage(std::string fieldName, char* imageBytes, size_t imageSize) {
 		PdfMemDocument* document = this->document;
-		PdfMemDocument& documentRef = *document;
-		PdfAcroForm* acroform = document->GetAcroForm();
+		
+		std::vector<const PdfAnnotation*>* annotations = PiPiUtil::SearchAnnotation(document, fieldName);
+		for (auto iterator = annotations->begin(); iterator != annotations->end(); ++iterator) {
+			const PdfAnnotation* annotation = *iterator;
 
-		PdfPageCollection& pages = document->GetPages();
-		unsigned int pageCount = pages.GetCount();
-		for (unsigned int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
-			PdfPage& page = pages.GetPageAt(pageIndex);
+			const PdfPage* constPage = annotation->GetPage();
+			PdfPage* page = const_cast<PdfPage*>(constPage);
+			PdfPage& pageRef = *page;
 
-			PdfAnnotationCollection& annotations = page.GetAnnotations();
-			unsigned int annotCount = annotations.GetCount();
-			for (unsigned int annotIndex = 0; annotIndex < annotCount; annotIndex++) {
-				PdfAnnotation& annotation = annotations.GetAnnotAt(annotIndex);
+			Rect annotRect = annotation->GetRect();
 
-				PdfAnnotationType annotType = annotation.GetType();
-				nullable<const PdfString&> annotTitle = annotation.GetTitle();
+			double annotBottom = annotRect.GetBottom();
+			double annotTop = annotRect.GetTop();
+			double annotLeft = annotRect.GetLeft();
+			double annotRight = annotRect.GetRight();
 
-				if (annotType != PdfAnnotationType::Widget) {
-					continue;
-				}
+			double annotWidth = annotRight - annotLeft;
+			double annotHeight = annotTop - annotBottom;
 
-				if (!annotTitle.has_value()) {
-					continue;
-				}
+			std::unique_ptr<PdfImage> imageUniquePtr = document->CreateImage();
+			PdfImage* image = imageUniquePtr.get();
+			image->LoadFromBuffer(bufferview(imageBytes, imageSize));
+			PdfImage& imageRef = *image;
 
-				std::string annotTitleString = annotTitle->GetString();
-				if (annotTitleString == fieldName) {
-					Rect annotRect = annotation.GetRect();
+			Rect imageRect = image->GetRect();
 
-					double annotBottom = annotRect.GetBottom();
-					double annotTop = annotRect.GetTop();
-					double annotLeft = annotRect.GetLeft();
-					double annotRight = annotRect.GetRight();
+			double imageBottom = imageRect.GetBottom();
+			double imageTop = imageRect.GetTop();
+			double imageLeft = imageRect.GetLeft();
+			double imageRight = imageRect.GetRight();
 
-					double annotWidth = annotRight - annotLeft;
-					double annotHeight = annotTop - annotBottom;
+			double imageWidth = imageRight - imageLeft;
+			double imageHeight = imageTop - imageBottom;
 
-					std::unique_ptr<PdfImage> imageUniquePtr = document->CreateImage();
-					PdfImage* image = imageUniquePtr.get();
-					image->LoadFromBuffer(bufferview(imageBytes, imageSize));
-					PdfImage& imageRef = *image;
+			double scale = std::min(annotWidth / imageWidth, annotHeight / imageHeight);
 
-					Rect imageRect = image->GetRect();
-					
-					double imageBottom = imageRect.GetBottom();
-					double imageTop = imageRect.GetTop();
-					double imageLeft = imageRect.GetLeft();
-					double imageRight = imageRect.GetRight();
-					
-					double imageWidth = imageRight - imageLeft;
-					double imageHeight = imageTop - imageBottom;
+			double scaledImageWidth = imageWidth * scale;
+			double scaledImageHeight = imageHeight * scale;
 
-					double scale = std::min(annotWidth / imageWidth, annotHeight / imageHeight);
+			double left = annotLeft + annotWidth / 2 - scaledImageWidth / 2;
+			double bottom = annotBottom + annotHeight / 2 - scaledImageHeight / 2;
 
-					double scaledImageWidth = imageWidth * scale;
-					double scaledImageHeight = imageHeight * scale;
-
-					double left = annotLeft + annotWidth / 2 - scaledImageWidth / 2;
-					double bottom = annotBottom + annotHeight / 2 - scaledImageHeight / 2;
-
-					PdfPainter* painter = new PdfPainter();
-					painter->SetCanvas(page);
-					painter->DrawImage(imageRef, left, bottom, scale, scale);
-					painter->FinishDrawing();
-				}
-			}
+			PdfPainter* painter = new PdfPainter();
+			painter->SetCanvas(pageRef);
+			painter->DrawImage(imageRef, left, bottom, scale, scale);
+			painter->FinishDrawing();
+			
+			delete painter;
 		}
 
-		PiPiUtil::RemoveFieldFromAcroForm(document, fieldName);
-		PiPiUtil::RemoveFieldFromPage(document, fieldName);
+		PiPiUtil::RemoveField(document, fieldName);
 
 		return this;
 	}

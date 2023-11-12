@@ -7,69 +7,20 @@ using namespace PoDoFo;
 namespace PiPi {
 	class PiPiUtil {
 		public:
-			static void RemoveFieldFromPage(PdfMemDocument* document, std::string fieldName) {
-				PdfAcroForm* acroform = document->GetAcroForm();
-				unsigned int fieldCount = acroform->GetFieldCount();
-				unsigned int fieldIndex = 0;
-				std::vector<unsigned int>* removeFieldIndexs = new std::vector<unsigned int>();
-				for (auto iterator = acroform->begin(); iterator.operator!=(acroform->end()); iterator.operator++()) {
-					PdfField* field = iterator.operator*();
-					nullable<const PdfString&> name = field->GetName();
-					if (name.has_value()) {
-						std::string nameString = name.value().GetString();
-						if (nameString == fieldName) {
-							removeFieldIndexs->push_back(fieldIndex);
-						}
-					}
-					fieldIndex++;
-				}
+			static std::map<const std::string, std::vector<const PdfField*>*>* SearchAllField(PdfMemDocument* document);
+			static std::map<const std::string, std::vector<const PdfField*>*>* SearchAllField(PdfAcroForm* acroform);
+			static std::vector<const PdfField*>* SearchField(PdfMemDocument* document, std::string fieldName);
+			static std::vector<const PdfField*>* SearchField(PdfAcroForm* acroform, std::string fieldName);
+			static std::vector<const PdfAnnotation*>* SearchAnnotation(PdfMemDocument* document, std::string fieldName);
+			static std::vector<const PdfAnnotation*>* SearchAnnotation(PdfPageCollection* pages, std::string fieldName);
+			static void RemoveField(PdfMemDocument* document, std::string fieldName);
+		private:
+			static void SearchAllChildrenField(PdfField* field, std::map<const std::string, std::vector<const PdfField*>*>* fieldMap);
+			static void SearchChildrenField(PdfField* field, std::string fieldName, std::vector<const PdfField*>* fields);
 
-				std::sort(removeFieldIndexs->begin(), removeFieldIndexs->end(), std::greater<unsigned int>());
-				for (auto iterator = removeFieldIndexs->begin(); iterator.operator!=(removeFieldIndexs->end()); iterator.operator++()) {
-					unsigned int removeFieldIndex = iterator.operator*();
-					acroform->RemoveFieldAt(removeFieldIndex);
-				}
+			static void RemoveAcroformField(PdfAcroForm* acroform, std::string fieldName);
+			static void RemoveAcroformChildrenField(PdfField* field, std::string fieldName);
 
-				document->CollectGarbage();
-			};
-
-			static void RemoveFieldFromAcroForm(PdfMemDocument* document, std::string fieldName) {
-				PdfPageCollection& pages = document->GetPages();
-				unsigned int pageCount = pages.GetCount();
-				for (unsigned int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
-					PdfPage& page = pages.GetPageAt(pageIndex);
-
-					std::vector<unsigned int>* removeAnnotIndexs = new std::vector<unsigned int>();
-					PdfAnnotationCollection& annotations = page.GetAnnotations();
-					unsigned int annotCount = annotations.GetCount();
-					for (unsigned int annotIndex = 0; annotIndex < annotCount; annotIndex++) {
-						PdfAnnotation& annotation = annotations.GetAnnotAt(annotIndex);
-
-						PdfAnnotationType annotType = annotation.GetType();
-						nullable<const PdfString&> annotTitle = annotation.GetTitle();
-
-						if (annotType != PdfAnnotationType::Widget) {
-							continue;
-						}
-
-						if (!annotTitle.has_value()) {
-							continue;
-						}
-
-						std::string annotTitleString = annotTitle->GetString();
-						if (annotTitleString == fieldName) {
-							removeAnnotIndexs->push_back(annotIndex);
-						}
-					}
-
-					std::sort(removeAnnotIndexs->begin(), removeAnnotIndexs->end(), std::greater<unsigned int>());
-					for (auto iterator = removeAnnotIndexs->begin(); iterator.operator!=(removeAnnotIndexs->end()); iterator.operator++()) {
-						unsigned int removeAnnotIndex = iterator.operator*();
-						annotations.RemoveAnnotAt(removeAnnotIndex);
-					}
-				}
-
-				document->CollectGarbage();
-			};
+			static void RemovePageField(PdfPageCollection* pages, std::string fieldName);
 	};
 }
