@@ -14,7 +14,6 @@ namespace PiPi {
 		this->editor = new PiPiEditor(document);
 		this->filler = new PiPiFiller(document);
 		this->document = document;
-		this->operable = true;
 	}
 
 	PiPiFiller* PiPiOperator::getFiller() {
