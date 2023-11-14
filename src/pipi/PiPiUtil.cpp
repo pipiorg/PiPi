@@ -60,7 +60,7 @@ namespace PiPi {
                 std::vector<const PdfAnnotation*>* resAnnots = (*annotMap)[name];
                 resAnnots->push_back(annot);
 
-                fieldPtr.release();
+                fieldPtr.reset();
             }
         }
 
@@ -122,7 +122,7 @@ namespace PiPi {
                     resAnnots->push_back(annot);
                 }
 
-                fieldPtr.release();
+                fieldPtr.reset();
             }
         }
 
