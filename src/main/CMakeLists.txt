@@ -1,4 +1,4 @@
-aux_source_directory(${CMAKE_SOURCE_DIR}/src/main MAIN_SOURCES)
+aux_source_directory(${PROJECT_SOURCE_DIR}/src/main MAIN_SOURCES)
 
 add_executable (main ${MAIN_SOURCES})
 
