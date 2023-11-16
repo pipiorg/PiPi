@@ -1,10 +1,8 @@
 #pragma once
 
 #include "podofo/podofo.h"
-#include <iostream>
 #include <vector>
-#include <sstream>
-#include <string>
+#include <cstring>
 #include "PiPiFieldType.h"
 
 using namespace PoDoFo;
@@ -54,6 +52,6 @@ namespace PiPi {
 
 			static void RemovePageField(PdfPageCollection* pages, std::string fieldName);
 
-			static std::vector<std::string>* split(const std::string& str, const char& del);
+			static std::vector<std::string>* split(const std::string& str, const std::string& pattern);
 	};
 }
