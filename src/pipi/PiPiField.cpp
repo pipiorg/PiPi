@@ -1,7 +1,7 @@
 #include "PiPiField.h"
 
 namespace PiPi {
-	PiPiField::PiPiField(std::string name, PiPiFieldType type, int page, double x, double y, double width, double height, std::string font, float fontSize) {
+	PiPiField::PiPiField(std::string name, PiPiFieldType type, unsigned int page, double x, double y, double width, double height, std::string font, float fontSize) {
 		this->name = name;
 		this->type = type;
 		this->x = x;
@@ -10,5 +10,6 @@ namespace PiPi {
 		this->height = height;
 		this->font = font;
 		this->fontSize = fontSize;
+		this->page = page;
 	}
 }

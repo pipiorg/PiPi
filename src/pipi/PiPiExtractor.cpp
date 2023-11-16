@@ -49,7 +49,7 @@ namespace PiPi {
 
 				const PdfPage* constPage = annot->GetPage();
 				PdfPage* page = const_cast<PdfPage*>(constPage);
-				int pageIndex = PiPiUtil::SearchPageIndex(document, page);
+				unsigned int pageIndex = PiPiUtil::SearchPageIndex(document, page);
 
 				double x = PiPiUtil::ExtractAnnotationX(annot);
 				double y = PiPiUtil::ExtractAnnotationY(annot);
