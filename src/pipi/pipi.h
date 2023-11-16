@@ -4,3 +4,4 @@
 #include "PiPiEditor.h"
 #include "PiPiPager.h"
 #include "PiPiFiller.h"
+#include "PiPiExtractor.h"

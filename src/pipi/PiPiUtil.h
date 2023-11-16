@@ -1,6 +1,11 @@
 #pragma once
 
 #include "podofo/podofo.h"
+#include <iostream>
+#include <vector>
+#include <sstream>
+#include <string>
+#include "PiPiFieldType.h"
 
 using namespace PoDoFo;
 
@@ -19,6 +24,26 @@ namespace PiPi {
 			static std::vector<const PdfAnnotation*>* SearchAnnotation(PdfMemDocument* document, std::string fieldName);
 			static std::vector<const PdfAnnotation*>* SearchAnnotation(PdfPageCollection* pages, std::string fieldName);
 
+			static int SearchPageIndex(PdfMemDocument* document, PdfPage* page);
+			static int SearchPageIndex(PdfPageCollection* pages, PdfPage* page);
+
+			static double ExtractPageWidth(PdfPage* page);
+			static double ExtractPageHeight(PdfPage* page);
+
+			static double ExtractPageX(PdfPage* page);
+			static double ExtractPageY(PdfPage* page);
+
+			static std::string ExtractAnnotationFont(PdfAnnotation* annotation);
+			static float ExtractAnnotationFontSize(PdfAnnotation* annotation);
+			
+			static double ExtractAnnotationWidth(PdfAnnotation* annotation);
+			static double ExtractAnnotationHeight(PdfAnnotation* annotation);
+
+			static double ExtractAnnotationX(PdfAnnotation* annotation);
+			static double ExtractAnnotationY(PdfAnnotation* annotation);
+
+			static PiPiFieldType ExtractAnnotationType(PdfAnnotation* annotation);
+
 			static void RemoveField(PdfMemDocument* document, std::string fieldName);
 		private:
 			static void SearchAllChildrenField(PdfField* field, std::map<const std::string, std::vector<const PdfField*>*>* fieldMap);
@@ -28,5 +53,7 @@ namespace PiPi {
 			static void RemoveAcroformChildrenField(PdfField* field, std::string fieldName);
 
 			static void RemovePageField(PdfPageCollection* pages, std::string fieldName);
+
+			static std::vector<std::string>* split(const std::string& str, const char& del);
 	};
 }

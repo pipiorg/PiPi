@@ -129,6 +129,185 @@ namespace PiPi {
         return resAnnots;
     }
 
+    int PiPiUtil::SearchPageIndex(PdfMemDocument* document, PdfPage* page) {
+        PdfPageCollection& pagesRef = document->GetPages();
+        PdfPageCollection* pages = &pagesRef;
+        return SearchPageIndex(pages, page);
+    }
+
+    int PiPiUtil::SearchPageIndex(PdfPageCollection* pages, PdfPage* page) {
+        unsigned int pageCount = pages->GetCount();
+        for (unsigned int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
+            if (&(pages->GetPageAt(pageIndex)) == page) {
+                return pageIndex;
+            }
+        }
+        return -1;
+    }
+
+    double PiPiUtil::ExtractPageWidth(PdfPage* page) {
+        Rect rect = page->GetRect();
+
+        double left = rect.GetLeft();
+        double right = rect.GetRight();
+
+        double width = right - left;
+
+        return width;
+    }
+
+    double PiPiUtil::ExtractPageHeight(PdfPage* page) {
+        Rect rect = page->GetRect();
+
+        double top = rect.GetTop();
+        double bottom = rect.GetBottom();
+
+        double height = top - bottom;
+
+        return height;
+    }
+
+    double PiPiUtil::ExtractPageX(PdfPage* page) {
+        Rect rect = page->GetRect();
+
+        double x = rect.GetLeft();
+
+        return x;
+    }
+
+    double PiPiUtil::ExtractPageY(PdfPage* page) {
+        Rect rect = page->GetRect();
+
+        double y = rect.GetTop();
+
+        return y;
+    }
+
+    std::string PiPiUtil::ExtractAnnotationFont(PdfAnnotation* annotation) {
+        PdfDictionary& dictRef = annotation->GetDictionary();
+        PdfDictionary* dict = &dictRef;
+
+        PdfObject* daObj = dict->FindKey("DA");
+        
+        if (daObj == nullptr) {
+            return "";
+        }
+
+        if (!daObj->IsString()) {
+            return "";
+        }
+
+        PdfString da = daObj->GetString();
+        std::string daValue = da.GetString();
+
+        std::vector<std::string>* splitted = split(daValue, ' ');
+        size_t splitSize = splitted->size();
+
+        if (splitSize >= 1) {
+            std::string font = (*splitted)[0];
+            delete splitted;
+            return font;
+        }
+        
+        delete splitted;
+        return "";
+    }
+
+    float PiPiUtil::ExtractAnnotationFontSize(PdfAnnotation* annotation) {
+        PdfDictionary& dictRef = annotation->GetDictionary();
+        PdfDictionary* dict = &dictRef;
+
+        PdfObject* daObj = dict->FindKey("DA");
+
+        if (daObj == nullptr) {
+            return 0;
+        }
+
+        if (!daObj->IsString()) {
+            return 0;
+        }
+
+        PdfString da = daObj->GetString();
+        std::string daValue = da.GetString();
+
+        std::vector<std::string>* splitted = split(daValue, ' ');
+        size_t splitSize = splitted->size();
+
+        if (splitSize >= 2) {
+            std::string fontSizeValue = (*splitted)[1];
+            float fontSize = std::stof(fontSizeValue);
+            delete splitted;
+            return fontSize;
+        }
+
+        delete splitted;
+        return 0;
+    }
+
+    double PiPiUtil::ExtractAnnotationWidth(PdfAnnotation* annotation) {
+        Rect rect = annotation->GetRect();
+
+        double left = rect.GetLeft();
+        double right = rect.GetRight();
+
+        double width = right - left;
+
+        return width;
+    }
+
+    double PiPiUtil::ExtractAnnotationHeight(PdfAnnotation* annotation) {
+        Rect rect = annotation->GetRect();
+
+        double top = rect.GetTop();
+        double bottom = rect.GetBottom();
+
+        double height = top - bottom;
+
+        return height;
+    }
+
+    double PiPiUtil::ExtractAnnotationX(PdfAnnotation* annotation) {
+        Rect rect = annotation->GetRect();
+
+        double y = rect.GetTop();
+
+        return y;
+    }
+    double PiPiUtil::ExtractAnnotationY(PdfAnnotation* annotation) {
+        Rect rect = annotation->GetRect();
+
+        double x = rect.GetLeft();
+
+        return x;
+    }
+
+    PiPiFieldType PiPiUtil::ExtractAnnotationType(PdfAnnotation* annotation) {
+        const PdfObject& constObject = annotation->GetObject();
+        PdfObject& object = const_cast<PdfObject&>(constObject);
+        
+        std::unique_ptr<PdfField> fieldPtr;
+        bool created = PdfField::TryCreateFromObject(object, fieldPtr);
+        if (!created) {
+            return PiPiFieldType::Unknown;
+        }
+
+        PdfField* field = fieldPtr.get();
+
+        PdfFieldType type = field->GetType();
+       
+        switch (type) {
+            case PdfFieldType::TextBox:
+                fieldPtr.reset();
+                return PiPiFieldType::TextBox;
+            case PdfFieldType::CheckBox:
+                fieldPtr.reset();
+                return PiPiFieldType::CheckBox;
+            default:
+                fieldPtr.reset();
+                return PiPiFieldType::Unknown;
+        }
+    }
+
     void PiPiUtil::RemoveField(PdfMemDocument* document, std::string fieldName) {
         PdfAcroForm* acroform = document->GetAcroForm();
 
@@ -296,5 +475,17 @@ namespace PiPi {
         }
 
         delete removeFieldIndexs;
+    }
+
+    std::vector<std::string>* PiPiUtil::split(const std::string& str, const char& del) {
+        std::vector<std::string>* result = new std::vector<std::string>();
+        std::stringstream ss;
+        std::string tok;
+
+        while (std::getline(ss, tok, del)) {
+            result->push_back(tok);
+        }
+
+        return result;
     }
 }

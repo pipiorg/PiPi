@@ -13,6 +13,7 @@ namespace PiPi {
 		this->pager = new PiPiPager(document);
 		this->editor = new PiPiEditor(document);
 		this->filler = new PiPiFiller(document);
+		this->extractor = new PiPiExtractor(document);
 		this->document = document;
 	}
 
@@ -26,6 +27,10 @@ namespace PiPi {
 
 	PiPiEditor* PiPiOperator::getEditor() {
 		return this->editor;
+	}
+
+	PiPiExtractor* PiPiOperator::getExtractor() {
+		return this->extractor;
 	}
 
 	bool PiPiOperator::isOperable() {
