@@ -35,7 +35,7 @@ namespace PiPi {
 			}
 			else {
 				PdfName as = dictionary.FindKeyAs<PdfName>(PdfName("AS"));
-				for (auto iterator = apperanceStreams.begin(); iterator.operator!=(apperanceStreams.end()); iterator.operator++()) {
+				for (auto iterator = apperanceStreams.begin(); iterator != apperanceStreams.end(); iterator.operator++()) {
 					PdfAppearanceIdentity& apperanceIdentity = iterator.operator*();
 					if (apperanceIdentity.Type == PdfAppearanceType::Normal && apperanceIdentity.State == as) {
 						apperanceStream = const_cast<PdfObject*>(apperanceIdentity.Object);
