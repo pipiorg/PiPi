@@ -345,8 +345,8 @@ namespace PiPi {
             apperanceStream = const_cast<PdfObject*>(apperanceStreams[0].Object);
         }
         else {
-            PdfName as = dictionary.FindKeyAs<PdfName>(PdfName("AS"));
-            PdfName v = dictionary.FindKeyAs<PdfName>(PdfName("V"));
+            PdfName as = dictionary.HasKey(PdfName("AS")) ? dictionary.FindKeyAsSafe<PdfName>(PdfName("AS")) : PdfName("No");
+            PdfName v = dictionary.HasKey(PdfName("V")) ? dictionary.FindKeyAsSafe<PdfName>(PdfName("V")) : PdfName("No");
             
             unsigned int normalCount = 0;
             for (auto iterator = apperanceStreams.begin(); iterator != apperanceStreams.end(); iterator.operator++()) {
