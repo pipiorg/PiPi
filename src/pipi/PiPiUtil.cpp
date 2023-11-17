@@ -346,10 +346,25 @@ namespace PiPi {
         }
         else {
             PdfName as = dictionary.FindKeyAs<PdfName>(PdfName("AS"));
+            
+            unsigned int normalCount = 0;
             for (auto iterator = apperanceStreams.begin(); iterator != apperanceStreams.end(); iterator.operator++()) {
                 PdfAppearanceIdentity& apperanceIdentity = iterator.operator*();
-                if (apperanceIdentity.Type == PdfAppearanceType::Normal && apperanceIdentity.State == as) {
+                if (apperanceIdentity.Type == PdfAppearanceType::Normal) {
+                    normalCount++;
+                }
+            }
+            
+            for (auto iterator = apperanceStreams.begin(); iterator != apperanceStreams.end(); iterator.operator++()) {
+                PdfAppearanceIdentity& apperanceIdentity = iterator.operator*();
+                if (normalCount == 1 && apperanceIdentity.Type == PdfAppearanceType::Normal) {
                     apperanceStream = const_cast<PdfObject*>(apperanceIdentity.Object);
+                    break;
+                }
+                
+                if (apperanceIdentity.Type == PdfAppearanceType::Normal && as == apperanceIdentity.State) {
+                    apperanceStream = const_cast<PdfObject*>(apperanceIdentity.Object);
+                    break;
                 }
             }
         }
