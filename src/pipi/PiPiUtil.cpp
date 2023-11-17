@@ -346,6 +346,7 @@ namespace PiPi {
         }
         else {
             PdfName as = dictionary.FindKeyAs<PdfName>(PdfName("AS"));
+            PdfName v = dictionary.FindKeyAs<PdfName>(PdfName("V"));
             
             unsigned int normalCount = 0;
             for (auto iterator = apperanceStreams.begin(); iterator != apperanceStreams.end(); iterator.operator++()) {
@@ -357,14 +358,11 @@ namespace PiPi {
             
             for (auto iterator = apperanceStreams.begin(); iterator != apperanceStreams.end(); iterator.operator++()) {
                 PdfAppearanceIdentity& apperanceIdentity = iterator.operator*();
-                if (normalCount == 1 && apperanceIdentity.Type == PdfAppearanceType::Normal) {
-                    apperanceStream = const_cast<PdfObject*>(apperanceIdentity.Object);
-                    break;
-                }
                 
-                if (apperanceIdentity.Type == PdfAppearanceType::Normal && as == apperanceIdentity.State) {
+                bool found = (apperanceIdentity.Type == PdfAppearanceType::Normal && normalCount == 1 && as == v) || (apperanceIdentity.Type == PdfAppearanceType::Normal && apperanceIdentity.State == as);
+                
+                if (found) {
                     apperanceStream = const_cast<PdfObject*>(apperanceIdentity.Object);
-                    break;
                 }
             }
         }
