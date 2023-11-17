@@ -41,15 +41,20 @@ namespace PiPi {
 			static double ExtractAnnotationY(PdfAnnotation* annotation);
 
 			static PiPiFieldType ExtractAnnotationType(PdfAnnotation* annotation);
+        
+            static void FlattenAnnotation(PdfAnnotation* annotation);
 
+            static void RemoveAllField(PdfMemDocument* document);
 			static void RemoveField(PdfMemDocument* document, std::string fieldName);
 		private:
 			static void SearchAllChildrenField(PdfField* field, std::map<const std::string, std::vector<const PdfField*>*>* fieldMap);
 			static void SearchChildrenField(PdfField* field, std::string fieldName, std::vector<const PdfField*>* fields);
 
+            static void RemoveAllAcroformField(PdfAcroForm* acroform);
 			static void RemoveAcroformField(PdfAcroForm* acroform, std::string fieldName);
 			static void RemoveAcroformChildrenField(PdfField* field, std::string fieldName);
 
+            static void RemoveAllPageField(PdfPageCollection* pages);
 			static void RemovePageField(PdfPageCollection* pages, std::string fieldName);
 
 			static std::vector<std::string>* split(const std::string& str, const std::string& pattern);

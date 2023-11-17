@@ -13,6 +13,26 @@ namespace PiPi {
 		return this->document != nullptr;
 	}
 
+    PiPiEditor* PiPiEditor::flatten() {
+        PdfMemDocument* docuemnt = this->document;
+        
+        std::map<const std::string, std::vector<const PdfAnnotation*>*>* annotMap = PiPiUtil::SerachAllAnnotation(document);
+        
+        for (auto mapIterator = annotMap->begin(); mapIterator != annotMap->end(); mapIterator.operator++()) {
+            std::pair<const std::string, std::vector<const PdfAnnotation*>*> pair = *mapIterator;
+            
+            std::vector<const PdfAnnotation*>* annots = pair.second;
+            for (auto annotIterator = annots->begin(); annotIterator != annots->end(); annotIterator.operator++()) {
+                const PdfAnnotation* constAnnotation = *annotIterator;
+                PdfAnnotation* annotation = const_cast<PdfAnnotation*>(constAnnotation);
+
+                PiPiUtil::FlattenAnnotation(annotation);
+            }
+        }
+        
+        PiPiUtil::RemoveAllField(document);
+    }
+
 	PiPiEditor* PiPiEditor::flatten(std::string fieldName) {
 		PdfMemDocument* document = this->document;
 
@@ -22,55 +42,7 @@ namespace PiPi {
 			const PdfAnnotation* constAnnotation = *iterator;
 			PdfAnnotation* annotation = const_cast<PdfAnnotation*>(constAnnotation);
 
-			PdfDictionary& dictionary = annotation->GetDictionary();
-
-			std::vector<PdfAppearanceIdentity> apperanceStreams;
-			annotation->GetAppearanceStreams(apperanceStreams);
-
-			PdfObject* apperanceStream = nullptr;
-
-			size_t apperanceStreamCount = apperanceStreams.size();
-			if (apperanceStreamCount == 1) {
-				apperanceStream = const_cast<PdfObject*>(apperanceStreams[0].Object);
-			}
-			else {
-				PdfName as = dictionary.FindKeyAs<PdfName>(PdfName("AS"));
-				for (auto iterator = apperanceStreams.begin(); iterator != apperanceStreams.end(); iterator.operator++()) {
-					PdfAppearanceIdentity& apperanceIdentity = iterator.operator*();
-					if (apperanceIdentity.Type == PdfAppearanceType::Normal && apperanceIdentity.State == as) {
-						apperanceStream = const_cast<PdfObject*>(apperanceIdentity.Object);
-					}
-				}
-			}
-
-			if (apperanceStream == nullptr) {
-				continue;
-			}
-
-			PdfObject& apperanceStreanRef = *apperanceStream;
-
-			std::unique_ptr<PdfXObjectForm> xObjectUniquePtr;
-			bool xObjectCreated = PdfXObjectForm::TryCreateFromObject(apperanceStreanRef, xObjectUniquePtr);
-			if (!xObjectCreated) {
-				continue;
-			}
-
-			PdfXObjectForm* xObject = xObjectUniquePtr.get();
-			PdfXObjectForm& xObjectRef = *xObject;
-
-			Rect rect = annotation->GetRect();
-			double left = rect.GetLeft();
-			double bottom = rect.GetBottom();
-
-			PdfPage* page = annotation->GetPage();
-			PdfPage& pageRef = *page;
-
-			PdfPainter* painter = new PdfPainter();
-			painter->SetCanvas(pageRef);
-			painter->DrawXObject(xObjectRef, left, bottom);
-			painter->FinishDrawing();
-
-			delete painter;
+            PiPiUtil::FlattenAnnotation(annotation);
 		}
 
 		delete annotations;

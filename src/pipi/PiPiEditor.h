@@ -11,6 +11,7 @@ namespace PiPi {
 		public:
 			PiPiEditor(PdfMemDocument* document);
 
+            PiPiEditor* flatten();
 			PiPiEditor* flatten(std::string fieldName);
 			PiPiEditor* removeFormField(std::string fieldName);
 			PiPiEditor* renameFormField(std::string oldFieldName, std::string newFieldName);

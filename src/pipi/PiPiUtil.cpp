@@ -308,6 +308,18 @@ namespace PiPi {
         }
     }
 
+    void PiPiUtil::RemoveAllField(PdfMemDocument* document) {
+        PdfAcroForm* acroform = document->GetAcroForm();
+
+        PdfPageCollection& pagesRef = document->GetPages();
+        PdfPageCollection* pages = &pagesRef;
+        
+        RemoveAllPageField(pages);
+        RemoveAllAcroformField(acroform);
+        
+        document->CollectGarbage();
+    }
+
     void PiPiUtil::RemoveField(PdfMemDocument* document, std::string fieldName) {
         PdfAcroForm* acroform = document->GetAcroForm();
 
@@ -318,6 +330,58 @@ namespace PiPi {
         RemoveAcroformField(acroform, fieldName);
 
         document->CollectGarbage();
+    }
+
+    void PiPiUtil::FlattenAnnotation(PdfAnnotation *annotation) {
+        PdfDictionary& dictionary = annotation->GetDictionary();
+
+        std::vector<PdfAppearanceIdentity> apperanceStreams;
+        annotation->GetAppearanceStreams(apperanceStreams);
+
+        PdfObject* apperanceStream = nullptr;
+
+        size_t apperanceStreamCount = apperanceStreams.size();
+        if (apperanceStreamCount == 1) {
+            apperanceStream = const_cast<PdfObject*>(apperanceStreams[0].Object);
+        }
+        else {
+            PdfName as = dictionary.FindKeyAs<PdfName>(PdfName("AS"));
+            for (auto iterator = apperanceStreams.begin(); iterator != apperanceStreams.end(); iterator.operator++()) {
+                PdfAppearanceIdentity& apperanceIdentity = iterator.operator*();
+                if (apperanceIdentity.Type == PdfAppearanceType::Normal && apperanceIdentity.State == as) {
+                    apperanceStream = const_cast<PdfObject*>(apperanceIdentity.Object);
+                }
+            }
+        }
+
+        if (apperanceStream == nullptr) {
+            return;
+        }
+
+        PdfObject& apperanceStreanRef = *apperanceStream;
+
+        std::unique_ptr<PdfXObjectForm> xObjectUniquePtr;
+        bool xObjectCreated = PdfXObjectForm::TryCreateFromObject(apperanceStreanRef, xObjectUniquePtr);
+        if (!xObjectCreated) {
+            return;
+        }
+
+        PdfXObjectForm* xObject = xObjectUniquePtr.get();
+        PdfXObjectForm& xObjectRef = *xObject;
+
+        Rect rect = annotation->GetRect();
+        double left = rect.GetLeft();
+        double bottom = rect.GetBottom();
+
+        PdfPage* page = annotation->GetPage();
+        PdfPage& pageRef = *page;
+
+        PdfPainter* painter = new PdfPainter();
+        painter->SetCanvas(pageRef);
+        painter->DrawXObject(xObjectRef, left, bottom);
+        painter->FinishDrawing();
+
+        delete painter;
     }
 
     void PiPiUtil::SearchAllChildrenField(PdfField* field, std::map<const std::string, std::vector<const PdfField*>*>* fieldMap) {
@@ -360,6 +424,22 @@ namespace PiPi {
         }
     }
 
+    void PiPiUtil::RemoveAllPageField(PdfPageCollection* pages) {
+        unsigned int pageCount = pages->GetCount();
+        for (unsigned int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
+            PdfPage& pageRef = pages->GetPageAt(pageIndex);
+            PdfPage* page = &pageRef;
+            
+            PdfAnnotationCollection& annotsRef = page->GetAnnotations();
+            PdfAnnotationCollection* annots = &annotsRef;
+            
+            unsigned int annotCount = annots->GetCount();
+            for (unsigned annotIndex = annotCount; annotIndex > 0; annotIndex--) {
+                annots->RemoveAnnotAt(annotIndex - 1);
+            }
+        }
+    }
+
     void PiPiUtil::RemovePageField(PdfPageCollection* pages, std::string fieldName) {
         std::vector<const PdfAnnotation*>* tarAnnots = SearchAnnotation(pages, fieldName);
 
@@ -396,6 +476,12 @@ namespace PiPi {
         delete tarAnnots;
     }
 
+    void PiPiUtil::RemoveAllAcroformField(PdfAcroForm *acroform) {
+        unsigned int fieldCount = acroform->GetFieldCount();
+        for (unsigned int fieldIndex = fieldCount; fieldIndex > 0; fieldIndex--) {
+            acroform->RemoveFieldAt(fieldIndex - 1);
+        }
+    }
 
     void PiPiUtil::RemoveAcroformField(PdfAcroForm* acroform, std::string fieldName) {
         std::vector<unsigned int>* removeFieldIndexs = new std::vector<unsigned int>();
