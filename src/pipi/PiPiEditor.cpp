@@ -31,6 +31,8 @@ namespace PiPi {
         }
         
         PiPiUtil::RemoveAllField(document);
+
+        return this;
     }
 
 	PiPiEditor* PiPiEditor::flatten(std::string fieldName) {
