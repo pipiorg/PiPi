@@ -477,6 +477,10 @@ namespace PiPi {
     }
 
     void PiPiUtil::RemoveAllAcroformField(PdfAcroForm *acroform) {
+        if (acroform == nullptr) {
+            return;
+        }
+        
         unsigned int fieldCount = acroform->GetFieldCount();
         for (unsigned int fieldIndex = fieldCount; fieldIndex > 0; fieldIndex--) {
             acroform->RemoveFieldAt(fieldIndex - 1);
@@ -484,6 +488,10 @@ namespace PiPi {
     }
 
     void PiPiUtil::RemoveAcroformField(PdfAcroForm* acroform, std::string fieldName) {
+        if (acroform == nullptr) {
+            return;
+        }
+        
         std::vector<unsigned int>* removeFieldIndexs = new std::vector<unsigned int>();
 
         unsigned int fieldCount = acroform->GetFieldCount();
