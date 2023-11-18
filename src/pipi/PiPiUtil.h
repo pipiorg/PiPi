@@ -4,6 +4,7 @@
 #include <vector>
 #include <cstring>
 #include "PiPiFieldType.h"
+#include "PiPiCommon.h"
 
 using namespace PoDoFo;
 
@@ -56,7 +57,5 @@ namespace PiPi {
 
             static void RemoveAllPageField(PdfPageCollection* pages);
 			static void RemovePageField(PdfPageCollection* pages, std::string fieldName);
-
-			static std::vector<std::string>* split(const std::string& str, const std::string& pattern);
 	};
 }

@@ -200,7 +200,7 @@ namespace PiPi {
         PdfString da = daObj->GetString();
         std::string daValue = da.GetString();
 
-        std::vector<std::string>* splitted = split(daValue, " ");
+        std::vector<std::string>* splitted = PiPiCommon::split(daValue, " ");
         size_t splitSize = splitted->size();
 
         if (splitSize >= 1) {
@@ -230,7 +230,7 @@ namespace PiPi {
         PdfString da = daObj->GetString();
         std::string daValue = da.GetString();
 
-        std::vector<std::string>* splitted = split(daValue, " ");
+        std::vector<std::string>* splitted = PiPiCommon::split(daValue, " ");
         size_t splitSize = splitted->size();
 
         if (splitSize >= 2) {
@@ -586,28 +586,5 @@ namespace PiPi {
         }
 
         delete removeFieldIndexs;
-    }
-
-    std::vector<std::string>* PiPiUtil::split(const std::string& str, const std::string& pattern) {
-        std::vector<std::string>* result = new std::vector<std::string>();
-        std::string::size_type begin, end;
-
-        end = str.find(pattern);
-        begin = 0;
-
-        while (end != std::string::npos) {
-            if (end - begin != 0) {
-                result->push_back(str.substr(begin, end - begin));
-            }
-
-            begin = end + pattern.size();
-            end = str.find(pattern, begin);
-        }
-
-        if (begin != str.length()) {
-            result->push_back(str.substr(begin));
-        }
-
-        return result;
     }
 }
