@@ -31,7 +31,7 @@ namespace PiPi {
 			static double ExtractPageX(PdfPage* page);
 			static double ExtractPageY(PdfPage* page);
 
-			static std::string ExtractAnnotationFont(PdfAnnotation* annotation);
+			static std::string ExtractAnnotationFontName(PdfAnnotation* annotation);
 			static float ExtractAnnotationFontSize(PdfAnnotation* annotation);
 			
 			static double ExtractAnnotationWidth(PdfAnnotation* annotation);

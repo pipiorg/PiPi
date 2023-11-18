@@ -183,7 +183,7 @@ namespace PiPi {
         return y;
     }
 
-    std::string PiPiUtil::ExtractAnnotationFont(PdfAnnotation* annotation) {
+    std::string PiPiUtil::ExtractAnnotationFontName(PdfAnnotation* annotation) {
         PdfDictionary& dictRef = annotation->GetDictionary();
         PdfDictionary* dict = &dictRef;
 

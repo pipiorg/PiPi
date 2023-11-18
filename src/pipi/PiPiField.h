@@ -20,7 +20,7 @@ namespace PiPi {
 			double width;
 			double height;
 
-			std::string font;
+			std::string fontName;
 			float fontSize;
 	};
 }

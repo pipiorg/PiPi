@@ -56,12 +56,12 @@ namespace PiPi {
 				double width = PiPiUtil::ExtractAnnotationWidth(annot);
 				double height = PiPiUtil::ExtractAnnotationHeight(annot);
 
-				std::string font = PiPiUtil::ExtractAnnotationFont(annot);
+				std::string fontName = PiPiUtil::ExtractAnnotationFontName(annot);
 				float fontSize = PiPiUtil::ExtractAnnotationFontSize(annot);
 
 				PiPiFieldType type = PiPiUtil::ExtractAnnotationType(annot);
 
-				PiPiField* field = new PiPiField(name, type, pageIndex, x, y, width, height, font, fontSize);
+				PiPiField* field = new PiPiField(name, type, pageIndex, x, y, width, height, fontName, fontSize);
 
 				fields->push_back(field);
 			}
