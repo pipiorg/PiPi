@@ -26,6 +26,10 @@ namespace PiPi {
 		}
 
 		PdfFieldType type = field->GetType();
+		if (type != PdfFieldType::CheckBox && type != PdfFieldType::TextBox) {
+			return this;
+		}
+
 		if (type == PdfFieldType::TextBox) {
 			PdfTextBox* textBoxField = (PdfTextBox*)field;
 			PdfString valueString(value);
