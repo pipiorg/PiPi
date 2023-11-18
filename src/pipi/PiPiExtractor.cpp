@@ -37,15 +37,14 @@ namespace PiPi {
 		std::vector<const PiPiField*>* fields = new std::vector<const PiPiField*>();
 
 		PdfMemDocument* document = this->document;
-		std::map<const std::string, std::vector<const PdfAnnotation*>*>* annotMap = PiPiUtil::SerachAllFieldAnnotation(document);
+		std::map<const std::string, std::vector<PdfAnnotation*>*>* annotMap = PiPiUtil::SerachAllFieldAnnotation(document);
 		for (auto annotMapIterator = annotMap->begin(); annotMapIterator != annotMap->end(); annotMapIterator.operator++()) {
-			std::pair<const std::string, std::vector<const PdfAnnotation*>*> pair = annotMapIterator.operator*();
+			std::pair<const std::string, std::vector<PdfAnnotation*>*> pair = annotMapIterator.operator*();
 
 			std::string name = pair.first;
-			std::vector<const PdfAnnotation*>* annots = pair.second;
+			std::vector< PdfAnnotation*>* annots = pair.second;
 			for (auto annotIterator = annots->begin(); annotIterator != annots->end(); annotIterator.operator++()) {
-				const PdfAnnotation* constAnnot = annotIterator.operator*();
-				PdfAnnotation* annot = const_cast<PdfAnnotation*>(constAnnot);
+				PdfAnnotation* annot = annotIterator.operator*();
 
 				const PdfPage* constPage = annot->GetPage();
 				PdfPage* page = const_cast<PdfPage*>(constPage);

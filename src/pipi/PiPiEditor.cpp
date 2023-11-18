@@ -16,15 +16,14 @@ namespace PiPi {
     PiPiEditor* PiPiEditor::flatten() {
         PdfMemDocument* docuemnt = this->document;
         
-        std::map<const std::string, std::vector<const PdfAnnotation*>*>* annotMap = PiPiUtil::SerachAllFieldAnnotation(document);
+        std::map<const std::string, std::vector<PdfAnnotation*>*>* annotMap = PiPiUtil::SerachAllFieldAnnotation(document);
         
         for (auto mapIterator = annotMap->begin(); mapIterator != annotMap->end(); mapIterator.operator++()) {
-            std::pair<const std::string, std::vector<const PdfAnnotation*>*> pair = *mapIterator;
+            std::pair<const std::string, std::vector<PdfAnnotation*>*> pair = *mapIterator;
             
-            std::vector<const PdfAnnotation*>* annots = pair.second;
+            std::vector<PdfAnnotation*>* annots = pair.second;
             for (auto annotIterator = annots->begin(); annotIterator != annots->end(); annotIterator.operator++()) {
-                const PdfAnnotation* constAnnotation = *annotIterator;
-                PdfAnnotation* annotation = const_cast<PdfAnnotation*>(constAnnotation);
+                PdfAnnotation* annotation = *annotIterator;
 
                 PiPiUtil::FlattenAnnotation(annotation);
             }
@@ -40,7 +39,7 @@ namespace PiPi {
 	PiPiEditor* PiPiEditor::flatten(std::string fieldName) {
 		PdfMemDocument* document = this->document;
 
-		std::vector<const PdfAnnotation*>* annotations = PiPiUtil::SearchFieldAnnotation(document, fieldName);
+		std::vector<PdfAnnotation*>* annotations = PiPiUtil::SearchFieldAnnotation(document, fieldName);
 		
 		for (auto iterator = annotations->begin(); iterator != annotations->end(); ++iterator) {
 			const PdfAnnotation* constAnnotation = *iterator;
@@ -97,6 +96,4 @@ namespace PiPi {
 		PdfMemDocument* document = this->document;
 		return this;
 	}
-
-	
 }

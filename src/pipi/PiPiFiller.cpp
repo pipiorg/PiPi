@@ -50,7 +50,7 @@ namespace PiPi {
 	PiPiFiller* PiPiFiller::fillImage(std::string fieldName, char* imageBytes, size_t imageSize) {
 		PdfMemDocument* document = this->document;
 		
-		std::vector<const PdfAnnotation*>* annotations = PiPiUtil::SearchFieldAnnotation(document, fieldName);
+		std::vector<PdfAnnotation*>* annotations = PiPiUtil::SearchFieldAnnotation(document, fieldName);
 		for (auto iterator = annotations->begin(); iterator != annotations->end(); ++iterator) {
 			const PdfAnnotation* annotation = *iterator;
 
