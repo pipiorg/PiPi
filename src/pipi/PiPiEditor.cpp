@@ -29,6 +29,8 @@ namespace PiPi {
                 PiPiUtil::FlattenAnnotation(annotation);
             }
         }
+
+        delete annotMap;
         
         PiPiUtil::RemoveAllField(document);
 
