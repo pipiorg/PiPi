@@ -23,4 +23,19 @@ namespace PiPi {
 
         return result;
     }
+
+    std::string PiPiCommon::join(const std::vector<std::string>* strings, std::string gap) {
+        std::string result = "";
+
+        for (auto iterator = strings->begin(); iterator != strings->end() - 1; iterator.operator++()) {
+            std::string string = *iterator;
+            result.append(string);
+            result.append(gap);
+        }
+
+        std::string string = strings->back();
+        result.append(string);
+
+        return result;
+    }
 }
