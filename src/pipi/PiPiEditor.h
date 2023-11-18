@@ -3,6 +3,7 @@
 #include <iostream>
 #include "podofo/podofo.h"
 #include "PiPiUtil.h"
+#include "PiPiCommon.h"
 
 using namespace PoDoFo;
 

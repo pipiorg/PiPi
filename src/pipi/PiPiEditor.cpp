@@ -55,35 +55,10 @@ namespace PiPi {
 		return this;
 	}
 
-    PiPiEditor* PiPiEditor::addField(std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height) {
+    PiPiEditor* PiPiEditor::addField(std::string fieldName, PiPiFieldType type, unsigned int page, double x, double y, double width, double height) {
         PdfMemDocument* document = this->document;
-    
-        PdfPageCollection& pagesRef = document->GetPages();
-        PdfPageCollection* pages = &pagesRef;
-    
-        PdfPage& page = pages->GetPageAt(pageIndex);
-    
-        Rect pageRect = page.GetRect();
-        double pageTop = pageRect.GetTop();
-        double pageBottom = pageRect.GetBottom();
-        double pageHeight = pageTop - pageBottom;
-    
-        Rect fieldRect;
-        fieldRect.X = x;
-        fieldRect.Y = pageHeight - y - height;
-        fieldRect.Width = width;
-        fieldRect.Height = height;
-    
-        switch (type) {
-            case PiPiFieldType::CheckBox:
-                page.CreateField(fieldName, PdfFieldType::CheckBox, fieldRect);
-                return this;
-            case PiPiFieldType::TextBox:
-                page.CreateField(fieldName, PdfFieldType::TextBox, fieldRect);
-                return this;
-            default:
-                return this;
-        }
+		PiPiUtil::CreateField(document, fieldName, type, page, x, y, width, height);
+        return this;
     }
 
 	PiPiEditor* PiPiEditor::removeField(std::string fieldName) {

@@ -47,6 +47,8 @@ namespace PiPi {
 
             static void RemoveAllField(PdfMemDocument* document);
 			static void RemoveField(PdfMemDocument* document, std::string fieldName);
+
+			static void CreateField(PdfMemDocument* document, std::string fieldName, PiPiFieldType type, unsigned int page, double x, double y, double width, double height);
 		private:
 			static void SearchAllChildrenField(PdfField* field, std::map<const std::string, std::vector<PdfField*>*>* fieldMap);
 			static PdfField* SearchChildrenField(PdfField* field, std::string fieldName);
@@ -57,5 +59,8 @@ namespace PiPi {
 
             static void RemoveAllPageField(PdfPageCollection* pages);
 			static void RemovePageField(PdfPageCollection* pages, std::string fieldName);
+
+			static void GetOrCreateAcroformField(PdfAcroForm* acroform, std::string fieldName, PdfObject* kidsObj);
+			static PdfObject* GetOrCreateAcroformParentField(std::string fieldName, PdfObject* kidsObj);
 	};
 }
