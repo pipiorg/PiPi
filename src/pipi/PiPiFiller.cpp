@@ -19,32 +19,26 @@ namespace PiPi {
 		PdfAcroForm* acroForm = document->GetAcroForm();
 		acroForm->SetNeedAppearances(true);
 
-		std::vector<const PdfField*>* fields = PiPiUtil::SearchField(document, name);
+		const PdfField* field = PiPiUtil::SearchField(document, name);
 
-		if (fields == nullptr) {
+		if (field == nullptr) {
 			return this;
 		}
 
-		for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
-			const PdfField* field = iterator.operator*();
+		PdfFieldType type = field->GetType();
+		if (type == PdfFieldType::TextBox) {
+			PdfTextBox* textBoxField = (PdfTextBox*)field;
+			PdfString valueString(value);
+			textBoxField->SetText(valueString);
+		} else if (type == PdfFieldType::CheckBox) {
+			PdfCheckBox* checkBoxField = (PdfCheckBox*)field;
 
-			PdfFieldType type = field->GetType();
-			if (type == PdfFieldType::TextBox) {
-				PdfTextBox* textBoxField = (PdfTextBox*)field;
-				PdfString valueString(value);
-				textBoxField->SetText(valueString);
-			} else if (type == PdfFieldType::CheckBox) {
-				PdfCheckBox* checkBoxField = (PdfCheckBox*)field;
+			bool isCheckBox = checkBoxField->IsCheckBox();
+			if (!isCheckBox) return this;
 
-				bool isCheckBox = checkBoxField->IsCheckBox();
-				if (!isCheckBox) continue;
-
-				bool checked = value == "Yes" || value == "On";
-				checkBoxField->SetChecked(checked);
-			}
+			bool checked = value == "Yes" || value == "On";
+			checkBoxField->SetChecked(checked);
 		}
-
-		delete fields;
 
 		return this;
 	}

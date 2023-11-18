@@ -67,21 +67,21 @@ namespace PiPi {
         return annotMap;
     }
 
-    std::vector<const PdfField*>* PiPiUtil::SearchField(PdfMemDocument* document, std::string fieldName) {
+    const PdfField* PiPiUtil::SearchField(PdfMemDocument* document, std::string fieldName) {
         PdfAcroForm* acroform = document->GetAcroForm();
         return SearchField(acroform, fieldName);
     }
 
-    std::vector<const PdfField*>* PiPiUtil::SearchField(PdfAcroForm* acroform, std::string fieldName) {
+    const PdfField* PiPiUtil::SearchField(PdfAcroForm* acroform, std::string fieldName) {
         std::vector<const PdfField*>* fields = new std::vector<const PdfField*>();
 
         acroform->GetFieldCount();
         for (auto fieldIterator = acroform->begin(); fieldIterator != acroform->end(); fieldIterator.operator++()) {
             PdfField* field = fieldIterator.operator*();
-            SearchChildrenField(field, fieldName, fields);
+            return SearchChildrenField(field, fieldName);
         }
 
-        return fields;
+        return nullptr;
     }
 
     std::vector<const PdfAnnotation*>* PiPiUtil::SearchFieldAnnotation(PdfMemDocument* document, std::string fieldName) {
@@ -419,22 +419,26 @@ namespace PiPi {
         }
     }
 
-    void PiPiUtil::SearchChildrenField(PdfField* field, std::string fieldName, std::vector<const PdfField*>* fields) {
+    const PdfField* PiPiUtil::SearchChildrenField(PdfField* field, std::string fieldName) {
         const std::string name = field->GetFullName();
         PdfFieldChildrenCollectionBase& childrens = field->GetChildren();
 
         unsigned int childrenCount = childrens.GetCount();
         if (childrenCount == 0 && name == fieldName) {
-            fields->push_back(field);
-            return;
+            return field;
         }
 
         for (unsigned int childrenIndex = 0; childrenIndex < childrenCount; childrenIndex++) {
             PdfField& childrenFieldRef = childrens.GetFieldAt(childrenIndex);
             PdfField* childrenField = &childrenFieldRef;
 
-            SearchChildrenField(childrenField, fieldName, fields);
+            const PdfField* sChildrenField = SearchChildrenField(childrenField, fieldName);
+            if (sChildrenField != nullptr) {
+                return sChildrenField;
+            }
         }
+
+        return nullptr;
     }
 
     void PiPiUtil::RemoveAllPageField(PdfPageCollection* pages) {
