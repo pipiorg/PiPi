@@ -5,3 +5,4 @@
 #include "PiPiPager.h"
 #include "PiPiFiller.h"
 #include "PiPiExtractor.h"
+#include "PiPiFieldType.h"
