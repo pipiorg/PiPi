@@ -13,14 +13,14 @@ namespace PiPi {
 			static std::map<const std::string, std::vector<const PdfField*>*>* SearchAllField(PdfMemDocument* document);
 			static std::map<const std::string, std::vector<const PdfField*>*>* SearchAllField(PdfAcroForm* acroform);
 
-			static std::map<const std::string, std::vector<const PdfAnnotation*>*>* SerachAllAnnotation(PdfMemDocument* document);
-			static std::map<const std::string, std::vector<const PdfAnnotation*>*>* SerachAllAnnotation(PdfPageCollection* pages);
+			static std::map<const std::string, std::vector<const PdfAnnotation*>*>* SerachAllFieldAnnotation(PdfMemDocument* document);
+			static std::map<const std::string, std::vector<const PdfAnnotation*>*>* SerachAllFieldAnnotation(PdfPageCollection* pages);
 
 			static std::vector<const PdfField*>* SearchField(PdfMemDocument* document, std::string fieldName);
 			static std::vector<const PdfField*>* SearchField(PdfAcroForm* acroform, std::string fieldName);
 
-			static std::vector<const PdfAnnotation*>* SearchAnnotation(PdfMemDocument* document, std::string fieldName);
-			static std::vector<const PdfAnnotation*>* SearchAnnotation(PdfPageCollection* pages, std::string fieldName);
+			static std::vector<const PdfAnnotation*>* SearchFieldAnnotation(PdfMemDocument* document, std::string fieldName);
+			static std::vector<const PdfAnnotation*>* SearchFieldAnnotation(PdfPageCollection* pages, std::string fieldName);
 
 			static int SearchPageIndex(PdfMemDocument* document, PdfPage* page);
 			static int SearchPageIndex(PdfPageCollection* pages, PdfPage* page);

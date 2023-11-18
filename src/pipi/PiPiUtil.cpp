@@ -18,13 +18,13 @@ namespace PiPi {
         return fieldMap;
     }
 
-    std::map<const std::string, std::vector<const PdfAnnotation*>*>* PiPiUtil::SerachAllAnnotation(PdfMemDocument* document) {
+    std::map<const std::string, std::vector<const PdfAnnotation*>*>* PiPiUtil::SerachAllFieldAnnotation(PdfMemDocument* document) {
         PdfPageCollection& pagesRef = document->GetPages();
         PdfPageCollection* pages = &pagesRef;
-        return SerachAllAnnotation(pages);
+        return SerachAllFieldAnnotation(pages);
     }
 
-    std::map<const std::string, std::vector<const PdfAnnotation*>*>* PiPiUtil::SerachAllAnnotation(PdfPageCollection* pages) {
+    std::map<const std::string, std::vector<const PdfAnnotation*>*>* PiPiUtil::SerachAllFieldAnnotation(PdfPageCollection* pages) {
         std::map<const std::string, std::vector<const PdfAnnotation*>*>* annotMap = new std::map<const std::string, std::vector<const PdfAnnotation*>*>();
 
         unsigned int pageCount = pages->GetCount();
@@ -84,13 +84,13 @@ namespace PiPi {
         return fields;
     }
 
-    std::vector<const PdfAnnotation*>* PiPiUtil::SearchAnnotation(PdfMemDocument* document, std::string fieldName) {
+    std::vector<const PdfAnnotation*>* PiPiUtil::SearchFieldAnnotation(PdfMemDocument* document, std::string fieldName) {
         PdfPageCollection& pagesRef = document->GetPages();
         PdfPageCollection* pages = &pagesRef;
-        return SearchAnnotation(pages, fieldName);
+        return SearchFieldAnnotation(pages, fieldName);
     }
 
-    std::vector<const PdfAnnotation*>* PiPiUtil::SearchAnnotation(PdfPageCollection* pages, std::string fieldName) {
+    std::vector<const PdfAnnotation*>* PiPiUtil::SearchFieldAnnotation(PdfPageCollection* pages, std::string fieldName) {
         std::vector<const PdfAnnotation*>* resAnnots = new std::vector<const PdfAnnotation*>();
 
         unsigned int pageCount = pages->GetCount();
@@ -454,7 +454,7 @@ namespace PiPi {
     }
 
     void PiPiUtil::RemovePageField(PdfPageCollection* pages, std::string fieldName) {
-        std::vector<const PdfAnnotation*>* tarAnnots = SearchAnnotation(pages, fieldName);
+        std::vector<const PdfAnnotation*>* tarAnnots = SearchFieldAnnotation(pages, fieldName);
 
         unsigned int pageCount = pages->GetCount();
         for (unsigned int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
