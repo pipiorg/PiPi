@@ -55,7 +55,7 @@ namespace PiPi {
 		return this;
 	}
 
-    PiPiEditor* PiPiEditor::addFormField(std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height) {
+    PiPiEditor* PiPiEditor::addField(std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height) {
         PdfMemDocument* document = this->document;
     
         PdfPageCollection& pagesRef = document->GetPages();
@@ -86,13 +86,13 @@ namespace PiPi {
         }
     }
 
-	PiPiEditor* PiPiEditor::removeFormField(std::string fieldName) {
+	PiPiEditor* PiPiEditor::removeField(std::string fieldName) {
 		PdfMemDocument* document = this->document;
 		PiPiUtil::RemoveField(document, fieldName);
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::renameFormField(std::string oldFieldName, std::string newFieldName) {
+	PiPiEditor* PiPiEditor::renameField(std::string oldFieldName, std::string newFieldName) {
 		PdfMemDocument* document = this->document;
 		return this;
 	}
