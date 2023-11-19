@@ -67,26 +67,21 @@ namespace PiPi {
         return annotMap;
     }
 
-    PdfField* PiPiUtil::SearchField(PdfMemDocument* document, std::string fieldName) {
+    std::vector<const PdfField*>* PiPiUtil::SearchField(PdfMemDocument* document, std::string fieldName) {
         PdfAcroForm* acroform = document->GetAcroForm();
         return SearchField(acroform, fieldName);
     }
 
-    PdfField* PiPiUtil::SearchField(PdfAcroForm* acroform, std::string fieldName) {
+    std::vector<const PdfField*>* PiPiUtil::SearchField(PdfAcroForm* acroform, std::string fieldName) {
         std::vector<const PdfField*>* fields = new std::vector<const PdfField*>();
 
-        unsigned int fieldCount = acroform->GetFieldCount();
-        for (unsigned int fieldIndex = 0; fieldIndex < fieldCount; fieldIndex++) {
-            PdfField& fieldRef = acroform->GetFieldAt(fieldIndex);
-            PdfField* field = &fieldRef;
-            
-            PdfField* childrenField = SearchChildrenField(field, fieldName);
-            if (childrenField != nullptr) {
-                return childrenField;
-            }
+        acroform->GetFieldCount();
+        for (auto fieldIterator = acroform->begin(); fieldIterator != acroform->end(); fieldIterator.operator++()) {
+            PdfField* field = fieldIterator.operator*();
+            SearchChildrenField(field, fieldName, fields);
         }
 
-        return nullptr;
+        return fields;
     }
 
     std::vector<PdfAnnotation*>* PiPiUtil::SearchFieldAnnotation(PdfMemDocument* document, std::string fieldName) {
@@ -546,26 +541,22 @@ namespace PiPi {
         }
     }
 
-    PdfField* PiPiUtil::SearchChildrenField(PdfField* field, std::string fieldName) {
+    void PiPiUtil::SearchChildrenField(PdfField* field, std::string fieldName, std::vector<const PdfField*>* fields) {
         const std::string name = field->GetFullName();
         PdfFieldChildrenCollectionBase& childrens = field->GetChildren();
 
         unsigned int childrenCount = childrens.GetCount();
         if (childrenCount == 0 && name == fieldName) {
-            return field;
+            fields->push_back(field);
+            return;
         }
 
         for (unsigned int childrenIndex = 0; childrenIndex < childrenCount; childrenIndex++) {
             PdfField& childrenFieldRef = childrens.GetFieldAt(childrenIndex);
             PdfField* childrenField = &childrenFieldRef;
 
-            PdfField* sChildrenField = SearchChildrenField(childrenField, fieldName);
-            if (sChildrenField != nullptr) {
-                return sChildrenField;
-            }
+            SearchChildrenField(childrenField, fieldName, fields);
         }
-
-        return nullptr;
     }
 
     void PiPiUtil::RemoveAllPageField(PdfPageCollection* pages) {
