@@ -57,10 +57,9 @@ namespace PiPi {
 		
 		std::vector<PdfAnnotation*>* annotations = PiPiUtil::SearchFieldAnnotation(document, fieldName);
 		for (auto iterator = annotations->begin(); iterator != annotations->end(); ++iterator) {
-			const PdfAnnotation* annotation = *iterator;
+			PdfAnnotation* annotation = *iterator;
 
-			const PdfPage* constPage = annotation->GetPage();
-			PdfPage* page = const_cast<PdfPage*>(constPage);
+			PdfPage* page = annotation->GetPage();
 			PdfPage& pageRef = *page;
 
 			Rect annotRect = annotation->GetRect();
