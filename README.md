@@ -22,7 +22,7 @@ cmake ..
 
 ## Known Bugs
 
-- Appearance not generate immediate after form field be filled
+- Appearance not generate immediate after textbox form field be filled
 
 ## License
 
