@@ -25,23 +25,6 @@ namespace PiPi {
 
 			static int SearchPageIndex(PdfMemDocument* document, PdfPage* page);
 			static int SearchPageIndex(PdfPageCollection* pages, PdfPage* page);
-
-			static double ExtractPageWidth(PdfPage* page);
-			static double ExtractPageHeight(PdfPage* page);
-
-			static double ExtractPageX(PdfPage* page);
-			static double ExtractPageY(PdfPage* page);
-
-			static std::string ExtractAnnotationFontName(PdfAnnotation* annotation);
-			static float ExtractAnnotationFontSize(PdfAnnotation* annotation);
-			
-			static double ExtractAnnotationWidth(PdfAnnotation* annotation);
-			static double ExtractAnnotationHeight(PdfAnnotation* annotation);
-
-			static double ExtractAnnotationX(PdfAnnotation* annotation);
-			static double ExtractAnnotationY(PdfAnnotation* annotation);
-
-			static PiPiFieldType ExtractAnnotationType(PdfAnnotation* annotation);
         
             static void FlattenAnnotation(PdfAnnotation* annotation);
 

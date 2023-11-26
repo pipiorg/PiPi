@@ -23,8 +23,8 @@ namespace PiPi {
 			PdfPage& pdfPageRef = pdfPages.GetPageAt(pdfPageIndex);
 			PdfPage* pdfPage = &pdfPageRef;
 
-			double width = PiPiUtil::ExtractPageWidth(pdfPage);
-			double height = PiPiUtil::ExtractPageHeight(pdfPage);
+			double width = PiPiExtractUtil::ExtractPageWidth(pdfPage);
+			double height = PiPiExtractUtil::ExtractPageHeight(pdfPage);
 
 			const PiPi::PiPiPage* page = new PiPi::PiPiPage(width, height);
 			pages->push_back(page);
@@ -50,15 +50,15 @@ namespace PiPi {
 				PdfPage* page = const_cast<PdfPage*>(constPage);
 				unsigned int pageIndex = PiPiUtil::SearchPageIndex(document, page);
 
-				double x = PiPiUtil::ExtractAnnotationX(annot);
-				double y = PiPiUtil::ExtractAnnotationY(annot);
-				double width = PiPiUtil::ExtractAnnotationWidth(annot);
-				double height = PiPiUtil::ExtractAnnotationHeight(annot);
+				double x = PiPiExtractUtil::ExtractAnnotationX(annot);
+				double y = PiPiExtractUtil::ExtractAnnotationY(annot);
+				double width = PiPiExtractUtil::ExtractAnnotationWidth(annot);
+				double height = PiPiExtractUtil::ExtractAnnotationHeight(annot);
 
-				std::string fontName = PiPiUtil::ExtractAnnotationFontName(annot);
-				float fontSize = PiPiUtil::ExtractAnnotationFontSize(annot);
+				std::string fontName = PiPiExtractUtil::ExtractAnnotationFontName(annot);
+				float fontSize = PiPiExtractUtil::ExtractAnnotationFontSize(annot);
 
-				PiPiFieldType type = PiPiUtil::ExtractAnnotationType(annot);
+				PiPiFieldType type = PiPiExtractUtil::ExtractAnnotationType(annot);
 
 				PiPiField* field = new PiPiField(name, type, pageIndex, x, y, width, height, fontName, fontSize);
 

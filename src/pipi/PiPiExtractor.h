@@ -4,6 +4,7 @@
 #include "PiPiPage.h"
 #include "PiPiField.h"
 #include "PiPiUtil.h"
+#include "PiPiExtractUtil.h"
 
 using namespace PoDoFo;
 
