@@ -14,6 +14,7 @@ namespace PiPi {
 		this->editor = new PiPiEditor(document);
 		this->filler = new PiPiFiller(document);
 		this->extractor = new PiPiExtractor(document);
+		this->fontManager = new PiPiFontManager(document);
 		this->document = document;
 	}
 
@@ -31,6 +32,10 @@ namespace PiPi {
 
 	PiPiExtractor* PiPiOperator::getExtractor() {
 		return this->extractor;
+	}
+
+	PiPiFontManager* PiPiOperator::getFontManager() {
+		return this->fontManager;
 	}
 
 	bool PiPiOperator::isOperable() {

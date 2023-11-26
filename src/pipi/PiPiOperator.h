@@ -7,6 +7,7 @@
 #include "PiPiEditor.h"
 #include "PiPiPager.h"
 #include "PiPiExtractor.h"
+#include "PiPiFontManager.h"
 
 using namespace std;
 
@@ -19,6 +20,7 @@ namespace PiPi {
 			PiPiEditor* getEditor();
 			PiPiPager* getPager();
 			PiPiExtractor* getExtractor();
+			PiPiFontManager* getFontManager();
 
 			bool isOperable();
 
@@ -31,6 +33,7 @@ namespace PiPi {
 			PiPiEditor* editor;
 			PiPiPager* pager;
 			PiPiExtractor* extractor;
+			PiPiFontManager* fontManager;
 
 			void init(char* pdfBytes, size_t pdfSize);
 	};

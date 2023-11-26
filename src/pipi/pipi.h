@@ -6,3 +6,4 @@
 #include "PiPiFiller.h"
 #include "PiPiExtractor.h"
 #include "PiPiFieldType.h"
+#include "PiPiFontManager.h"
