@@ -18,6 +18,8 @@ namespace PiPi {
 			case PdfFieldType::CheckBox:
 				ClearCheckBoxAppearance(annot);
 				GenerateCheckBoxAppearance(annot);
+			case PdfFieldType::TextBox:
+				GenerateTextBoxAppearance(annot);
 		}
 	}
 
@@ -191,5 +193,32 @@ namespace PiPi {
 		delete painter;
 
 		annot->SetAppearanceStream(xObjectRef, PdfAppearanceType::Down, PdfName("Off"));
+	}
+
+	void PiPiAppearanceUtil::GenerateTextBoxAppearance(PdfAnnotation* annot) {
+		PdfDocument& documentRef = annot->GetDocument();
+		PdfDocument* document = &documentRef;
+
+		Rect annotRect = annot->GetRect();
+
+		double width = annotRect.Width;
+		double height = annotRect.Height;
+
+		Rect xObjectRect = Rect(0, 0, width, height);
+
+		std::unique_ptr<PdfXObjectForm> xObjectPtr = document->CreateXObjectForm(xObjectRect);
+		PdfXObjectForm* xObject = xObjectPtr.get();
+		PdfXObjectForm& xObjectRef = *xObject;
+
+		PdfPainter* painter = new PdfPainter();
+
+		painter->SetCanvas(xObjectRef);
+		painter->SetClipRect(xObjectRect);
+
+		painter->FinishDrawing();
+
+		delete painter;
+
+		annot->SetAppearanceStream(xObjectRef);
 	}
 }

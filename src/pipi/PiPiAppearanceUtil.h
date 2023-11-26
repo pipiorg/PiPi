@@ -14,5 +14,7 @@ namespace PiPi {
 			static void GenerateCheckBoxNormalCheckAppearance(PdfAnnotation* annot);
 			static void GenerateCheckBoxDownCheckAppearance(PdfAnnotation* annot);
 			static void GenerateCheckBoxDownUnCheckAppearance(PdfAnnotation* annot);
+
+			static void GenerateTextBoxAppearance(PdfAnnotation* annot);
 	};
 }
