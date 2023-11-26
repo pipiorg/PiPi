@@ -1,4 +1,4 @@
-#include "PiPiFiller.h"
+﻿#include "PiPiFiller.h"
 
 namespace PiPi {
 	PiPiFiller::PiPiFiller(PdfMemDocument* document) {
@@ -17,7 +17,6 @@ namespace PiPi {
 		PdfMemDocument* document = this->document;
 
 		PdfAcroForm* acroForm = document->GetAcroForm();
-		acroForm->SetNeedAppearances(true);
 
 		std::vector<const PdfField*>* fields = PiPiUtil::SearchField(document, name);
 
@@ -48,6 +47,19 @@ namespace PiPi {
 		}
 
 		delete fields;
+
+		PdfPageCollection& pagesRef = document->GetPages();
+		PdfPageCollection* pages = &pagesRef;
+
+		std::vector<PdfAnnotation*>* annots = PiPiUtil::SearchFieldAnnotation(pages, name);
+
+		for (auto iterator = annots->begin(); iterator != annots->end(); iterator.operator++()) {
+			PdfAnnotation* annot = *iterator;
+
+			PiPiAppearanceUtil::GenerateAppearance(annot);
+		}
+
+		delete annots;
 
 		return this;
 	}

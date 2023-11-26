@@ -2,6 +2,7 @@
 
 #include "podofo/podofo.h"
 #include "PiPiUtil.h"
+#include "PiPiAppearanceUtil.h"
 
 using namespace PoDoFo;
 

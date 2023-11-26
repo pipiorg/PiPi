@@ -467,8 +467,7 @@ namespace PiPi {
             apperanceStream = const_cast<PdfObject*>(apperanceStreams[0].Object);
         }
         else {
-            PdfName as = dictionary.HasKey(PdfName("AS")) ? dictionary.FindKeyAsSafe<PdfName>(PdfName("AS")) : PdfName("No");
-            PdfName v = dictionary.HasKey(PdfName("V")) ? dictionary.FindKeyAsSafe<PdfName>(PdfName("V")) : PdfName("No");
+            PdfName as = dictionary.HasKey(PdfName("AS")) ? dictionary.FindKeyAsSafe<PdfName>(PdfName("AS")) : PdfName("Off");
             
             unsigned int normalCount = 0;
             for (auto iterator = apperanceStreams.begin(); iterator != apperanceStreams.end(); iterator.operator++()) {
@@ -481,9 +480,7 @@ namespace PiPi {
             for (auto iterator = apperanceStreams.begin(); iterator != apperanceStreams.end(); iterator.operator++()) {
                 PdfAppearanceIdentity& apperanceIdentity = iterator.operator*();
                 
-                bool found = (apperanceIdentity.Type == PdfAppearanceType::Normal && normalCount == 1 && as == v) || (apperanceIdentity.Type == PdfAppearanceType::Normal && apperanceIdentity.State == as);
-                
-                if (found) {
+                if (apperanceIdentity.Type == PdfAppearanceType::Normal && apperanceIdentity.State == as) {
                     apperanceStream = const_cast<PdfObject*>(apperanceIdentity.Object);
                 }
             }
@@ -513,6 +510,7 @@ namespace PiPi {
 
         PdfPainter* painter = new PdfPainter();
         painter->SetCanvas(pageRef);
+        painter->SetClipRect(rect);
         painter->DrawXObject(xObjectRef, left, bottom);
         painter->FinishDrawing();
 
