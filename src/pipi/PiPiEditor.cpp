@@ -14,7 +14,7 @@ namespace PiPi {
 	}
 
     PiPiEditor* PiPiEditor::flatten() {
-        PdfMemDocument* docuemnt = this->document;
+        PdfMemDocument* document = this->document;
         
         std::map<const std::string, std::vector<PdfAnnotation*>*>* annotMap = PiPiUtil::SerachAllFieldAnnotation(document);
         
