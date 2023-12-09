@@ -100,7 +100,9 @@ namespace PiPi {
 			*(*newPdfBytes + i) = outputVector[i];
 		}
 
+		delete this->fontManager;
 		delete this->document;
 		this->document = nullptr;
+		this->fontManager = nullptr;
 	}
 }
