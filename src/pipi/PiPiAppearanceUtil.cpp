@@ -18,8 +18,10 @@ namespace PiPi {
 			case PdfFieldType::CheckBox:
 				ClearCheckBoxAppearance(annot, (PdfCheckBox*)field);
 				GenerateCheckBoxAppearance(annot, (PdfCheckBox*)field);
+				break;
 			case PdfFieldType::TextBox:
 				GenerateTextBoxAppearance(fontManager, annot, (PdfTextBox*)field);
+				break;
 		}
 	}
 
