@@ -10,6 +10,10 @@ namespace PiPi {
 		this->fontMap = new std::map<const std::string, const PdfFont*>();
 	}
 
+	bool PiPiFontManager::isOperable() {
+		return this->document != nullptr;
+	}
+
 	void PiPiFontManager::registerFont(char* fontBytes, size_t fontSize) {
 		PdfMemDocument* document = this->document;
 
