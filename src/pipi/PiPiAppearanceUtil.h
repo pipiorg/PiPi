@@ -1,20 +1,22 @@
 #include "podofo/podofo.h"
 #include "PiPiCommon.h"
+#include "PiPiExtractUtil.h"
+#include "PiPiFontManager.h"
 
 using namespace PoDoFo;
 
 namespace PiPi {
 	class PiPiAppearanceUtil {
 		public:
-			static void GenerateAppearance(PdfAnnotation* annot);
+			static void GenerateAppearance(PiPiFontManager* fontManager, PdfAnnotation* annot);
 		private:
-			static void ClearCheckBoxAppearance(PdfAnnotation* annot);
+			static void ClearCheckBoxAppearance(PdfAnnotation* annot, PdfCheckBox* field);
 
-			static void GenerateCheckBoxAppearance(PdfAnnotation* annot);
-			static void GenerateCheckBoxNormalCheckAppearance(PdfAnnotation* annot);
-			static void GenerateCheckBoxDownCheckAppearance(PdfAnnotation* annot);
-			static void GenerateCheckBoxDownUnCheckAppearance(PdfAnnotation* annot);
+			static void GenerateCheckBoxAppearance(PdfAnnotation* annot, PdfCheckBox* field);
+			static void GenerateCheckBoxNormalCheckAppearance(PdfAnnotation* annot, PdfCheckBox* field);
+			static void GenerateCheckBoxDownCheckAppearance(PdfAnnotation* annot, PdfCheckBox* field);
+			static void GenerateCheckBoxDownUnCheckAppearance(PdfAnnotation* annot, PdfCheckBox* field);
 
-			static void GenerateTextBoxAppearance(PdfAnnotation* annot);
+			static void GenerateTextBoxAppearance(PiPiFontManager* fontManager, PdfAnnotation* annot, PdfTextBox* field);
 	};
 }

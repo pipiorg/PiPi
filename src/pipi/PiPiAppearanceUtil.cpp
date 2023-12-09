@@ -1,7 +1,7 @@
 #include "PiPiAppearanceUtil.h"
 
 namespace PiPi {
-	void PiPiAppearanceUtil::GenerateAppearance(PdfAnnotation* annot) {
+	void PiPiAppearanceUtil::GenerateAppearance(PiPiFontManager* fontManager, PdfAnnotation* annot) {
 		PdfObject& annotObjRef = annot->GetObject();
 
 		std::unique_ptr<PdfField> fieldPtr;
@@ -16,14 +16,14 @@ namespace PiPi {
 
 		switch (type) {
 			case PdfFieldType::CheckBox:
-				ClearCheckBoxAppearance(annot);
-				GenerateCheckBoxAppearance(annot);
+				ClearCheckBoxAppearance(annot, (PdfCheckBox*)field);
+				GenerateCheckBoxAppearance(annot, (PdfCheckBox*)field);
 			case PdfFieldType::TextBox:
-				GenerateTextBoxAppearance(annot);
+				GenerateTextBoxAppearance(fontManager, annot, (PdfTextBox*)field);
 		}
 	}
 
-	void PiPiAppearanceUtil::ClearCheckBoxAppearance(PdfAnnotation* annot) {
+	void PiPiAppearanceUtil::ClearCheckBoxAppearance(PdfAnnotation* annot, PdfCheckBox* field) {
 		PdfDictionary& dictRef = annot->GetDictionary();
 		PdfDictionary* dict = &dictRef;
 
@@ -46,13 +46,13 @@ namespace PiPi {
 		}
 	}
 
-	void PiPiAppearanceUtil::GenerateCheckBoxAppearance(PdfAnnotation* annot) {
-		PiPiAppearanceUtil::GenerateCheckBoxDownCheckAppearance(annot);
-		PiPiAppearanceUtil::GenerateCheckBoxDownUnCheckAppearance(annot);
-		PiPiAppearanceUtil::GenerateCheckBoxNormalCheckAppearance(annot);
+	void PiPiAppearanceUtil::GenerateCheckBoxAppearance(PdfAnnotation* annot, PdfCheckBox* field) {
+		PiPiAppearanceUtil::GenerateCheckBoxDownCheckAppearance(annot, field);
+		PiPiAppearanceUtil::GenerateCheckBoxDownUnCheckAppearance(annot, field);
+		PiPiAppearanceUtil::GenerateCheckBoxNormalCheckAppearance(annot, field);
 	}
 
-	void PiPiAppearanceUtil::GenerateCheckBoxNormalCheckAppearance(PdfAnnotation* annot) {
+	void PiPiAppearanceUtil::GenerateCheckBoxNormalCheckAppearance(PdfAnnotation* annot, PdfCheckBox* field) {
 		PdfDocument& documentRef = annot->GetDocument();
 		PdfDocument* document = &documentRef;
 
@@ -103,7 +103,7 @@ namespace PiPi {
 		annot->SetAppearanceStream(xObjectRef, PdfAppearanceType::Normal, PdfName("Yes"));
 	}
 
-	void PiPiAppearanceUtil::GenerateCheckBoxDownCheckAppearance(PdfAnnotation* annot) {
+	void PiPiAppearanceUtil::GenerateCheckBoxDownCheckAppearance(PdfAnnotation* annot, PdfCheckBox* field) {
 		PdfDocument& documentRef = annot->GetDocument();
 		PdfDocument* document = &documentRef;
 
@@ -161,7 +161,7 @@ namespace PiPi {
 		annot->SetAppearanceStream(xObjectRef, PdfAppearanceType::Down, PdfName("Yes"));
 	}
 
-	void PiPiAppearanceUtil::GenerateCheckBoxDownUnCheckAppearance(PdfAnnotation* annot) {
+	void PiPiAppearanceUtil::GenerateCheckBoxDownUnCheckAppearance(PdfAnnotation* annot, PdfCheckBox* field) {
 		PdfDocument& documentRef = annot->GetDocument();
 		PdfDocument* document = &documentRef;
 
@@ -195,7 +195,7 @@ namespace PiPi {
 		annot->SetAppearanceStream(xObjectRef, PdfAppearanceType::Down, PdfName("Off"));
 	}
 
-	void PiPiAppearanceUtil::GenerateTextBoxAppearance(PdfAnnotation* annot) {
+	void PiPiAppearanceUtil::GenerateTextBoxAppearance(PiPiFontManager* fontManager, PdfAnnotation* annot, PdfTextBox* field) {
 		PdfDocument& documentRef = annot->GetDocument();
 		PdfDocument* document = &documentRef;
 
@@ -212,8 +212,38 @@ namespace PiPi {
 
 		PdfPainter* painter = new PdfPainter();
 
+		PdfGraphicsStateWrapper& graphicsStateRef = painter->GraphicsState;
+		PdfGraphicsStateWrapper* graphicsState = &graphicsStateRef;
+
+		PdfTextStateWrapper& textStateRef = painter->TextState;
+		PdfTextStateWrapper* textState = &textStateRef;
+
 		painter->SetCanvas(xObjectRef);
 		painter->SetClipRect(xObjectRect);
+
+		// 解決字體
+		float fontSize = PiPiExtractUtil::ExtractAnnotationFontSize(annot);
+		std::string fontName = PiPiExtractUtil::ExtractAnnotationFontName(annot);
+		
+		const PdfFont* font = fontName == ""
+			? fontManager->accessDefaultFont()
+			: fontManager->accessFont(fontName) == nullptr
+				? fontManager->accessDefaultFont()
+				: fontManager->accessFont(fontName);
+		const PdfFont& fontRef = *font;
+		
+		textState->SetFont(fontRef, fontSize);
+
+		// 解決值
+		nullable<const PdfString&> nullalbleTextRef = field->GetText();
+		if (nullalbleTextRef.has_value()) {
+			const PdfString& textRef = nullalbleTextRef.value();
+			const PdfString* text = &textRef;
+
+			std::string sText = text->GetString();
+
+			painter->DrawText(sText, 0, 0);
+		}
 
 		painter->FinishDrawing();
 
