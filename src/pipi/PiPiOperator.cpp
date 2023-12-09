@@ -10,31 +10,78 @@ namespace PiPi {
 		auto input = make_shared<PoDoFo::SpanStreamDevice>(pdfBytes, pdfSize);
 		document->LoadFromDevice(input);
 		
-		this->pager = new PiPiPager(document);
-		this->editor = new PiPiEditor(document);
-		this->filler = new PiPiFiller(document);
-		this->extractor = new PiPiExtractor(document);
-		this->fontManager = new PiPiFontManager(document);
 		this->document = document;
+
+		this->pager = nullptr;
+		this->editor = nullptr;
+		this->filler = nullptr;
+		this->extractor = nullptr;
+		this->fontManager = nullptr;
 	}
 
 	PiPiFiller* PiPiOperator::getFiller() {
+		if (this->filler != nullptr) {
+			return this->filler;
+		}
+
+		PdfMemDocument* document = this->document;
+		PiPiFontManager* fontManager = getFontManager();
+		PiPiFiller* filler = new PiPiFiller(document, fontManager);
+
+		this->filler = filler;
+
 		return this->filler;
 	}
 
 	PiPiPager* PiPiOperator::getPager() {
+		if (this->pager != nullptr) {
+			return this->pager;
+		}
+
+		PdfMemDocument* document = this->document;
+		PiPiPager* pager = new PiPiPager(document);
+
+		this->pager = pager;
+
 		return this->pager;
 	}
 
 	PiPiEditor* PiPiOperator::getEditor() {
+		if (this->editor != nullptr) {
+			return this->editor;
+		}
+
+		PdfMemDocument* document = this->document;
+		PiPiEditor* editor = new PiPiEditor(document);
+
+		this->editor = editor;
+
 		return this->editor;
 	}
 
 	PiPiExtractor* PiPiOperator::getExtractor() {
+		if (this->extractor != nullptr) {
+			return this->extractor;
+		}
+
+		PdfMemDocument* document = this->document;
+		PiPiExtractor* extractor = new PiPiExtractor(document);
+
+		this->extractor = extractor;
+
 		return this->extractor;
 	}
 
 	PiPiFontManager* PiPiOperator::getFontManager() {
+		if (this->fontManager != nullptr) {
+			return this->fontManager;
+		}
+		
+		PdfMemDocument* document = this->document;
+		PiPiFontManager* fontManager = new PiPiFontManager(document);
+
+		this->fontManager = fontManager;
+		
 		return this->fontManager;
 	}
 

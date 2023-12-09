@@ -1,12 +1,13 @@
 ﻿#include "PiPiFiller.h"
 
 namespace PiPi {
-	PiPiFiller::PiPiFiller(PdfMemDocument* document) {
-		this->init(document);
+	PiPiFiller::PiPiFiller(PdfMemDocument* document, PiPiFontManager* fontManager) {
+		this->init(document, fontManager);
 	}
 
-	void PiPiFiller::init(PdfMemDocument* document) {
+	void PiPiFiller::init(PdfMemDocument* document, PiPiFontManager* fontManager) {
 		this->document = document;
+		this->fontManager = fontManager;
 	}
 
 	bool PiPiFiller::isOperable() {
@@ -15,6 +16,7 @@ namespace PiPi {
 
 	PiPiFiller* PiPiFiller::fillValue(std::string name, std::string value) {
 		PdfMemDocument* document = this->document;
+		PiPiFontManager* fontManager = this->fontManager;
 
 		PdfAcroForm* acroForm = document->GetAcroForm();
 
@@ -56,7 +58,7 @@ namespace PiPi {
 		for (auto iterator = annots->begin(); iterator != annots->end(); iterator.operator++()) {
 			PdfAnnotation* annot = *iterator;
 
-			PiPiAppearanceUtil::GenerateAppearance(annot);
+			PiPiAppearanceUtil::GenerateAppearance(fontManager, annot);
 		}
 
 		delete annots;
