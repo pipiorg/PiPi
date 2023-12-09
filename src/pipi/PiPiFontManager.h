@@ -11,6 +11,7 @@ namespace PiPi {
 
 			void registerFont(char* fontBytes, size_t fontSize);
 			const PdfFont* accessFont(const std::string fontName);
+			const PdfFont* accessDefaultFont();
 
 		private:
 			PdfMemDocument* document;

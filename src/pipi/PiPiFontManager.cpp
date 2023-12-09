@@ -36,4 +36,16 @@ namespace PiPi {
 
 		return fontPair->second;
 	}
+
+	const PdfFont* PiPiFontManager::accessDefaultFont() {
+		PdfMemDocument* document = this->document;
+
+		PdfFontManager& fontManagerRef = document->GetFonts();
+		PdfFontManager* fontManager = &fontManagerRef;
+
+		PdfFont& fontRef = fontManager->GetStandard14Font(PdfStandard14FontType::Helvetica);
+		PdfFont* font = &fontRef;
+
+		return font;
+	}
 }
