@@ -3,6 +3,7 @@
 #include <podofo/podofo.h>
 #include "PiPiCommon.h"
 #include "PiPiFieldType.h"
+#include "PiPiTextHorizontalAlignment.h"
 
 using namespace PoDoFo;
 
@@ -25,5 +26,9 @@ namespace PiPi {
 			static double ExtractAnnotationY(PdfAnnotation* annotation);
 
 			static PiPiFieldType ExtractAnnotationType(PdfAnnotation* annotation);
+        
+            static bool ExtractAnnotationTextMultiine(PdfAnnotation* annotation);
+            
+            static PiPiTextHorizontalAlignment ExtractAnnotationTextHorizontalAlignment(PdfAnnotation* annotation);
 	};
 }

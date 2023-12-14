@@ -164,4 +164,51 @@ namespace PiPi {
             return PiPiFieldType::Unknown;
         }
     }
+
+    bool PiPiExtractUtil::ExtractAnnotationTextMultiine(PdfAnnotation *annotation) {
+        PiPiFieldType type = ExtractAnnotationType(annotation);
+        if (type != PiPiFieldType::TextBox) {
+            return false;
+        }
+        
+        const PdfObject& constObject = annotation->GetObject();
+        PdfObject& object = const_cast<PdfObject&>(constObject);
+
+        std::unique_ptr<PdfField> fieldPtr;
+        bool created = PdfField::TryCreateFromObject(object, fieldPtr);
+        if (!created) {
+            return false;
+        }
+
+        PdfField* field = fieldPtr.get();
+        PdfTextBox* textbox = (PdfTextBox*)field;
+        
+        bool multiline = textbox->IsMultiLine();
+        
+        return multiline;
+    }
+
+    PiPiTextHorizontalAlignment PiPiExtractUtil::ExtractAnnotationTextHorizontalAlignment(PdfAnnotation *annotation) {
+        PdfObject& objRef = annotation->GetObject();
+        PdfObject* obj = &objRef;
+        
+        PdfDictionary& dictRef = obj->GetDictionary();
+        PdfDictionary* dict = &dictRef;
+        
+        PdfObject* qObj = dict->FindKey(PdfName("Q"));
+        if (qObj == nullptr) {
+            return PiPiTextHorizontalAlignment::Left;
+        }
+        
+        int64_t alignmentValue = qObj->GetNumber();
+        
+        switch (alignmentValue) {
+            case 1:
+                return PiPiTextHorizontalAlignment::Center;
+            case 2:
+                return PiPiTextHorizontalAlignment::Right;
+            default:
+                return PiPiTextHorizontalAlignment::Left;
+        }
+    }
 }
