@@ -67,13 +67,13 @@ namespace PiPi {
         return annotMap;
     }
 
-    std::vector<const PdfField*>* PiPiUtil::SearchField(PdfMemDocument* document, std::string fieldName) {
+    std::vector<PdfField*>* PiPiUtil::SearchField(PdfMemDocument* document, std::string fieldName) {
         PdfAcroForm* acroform = document->GetAcroForm();
         return SearchField(acroform, fieldName);
     }
 
-    std::vector<const PdfField*>* PiPiUtil::SearchField(PdfAcroForm* acroform, std::string fieldName) {
-        std::vector<const PdfField*>* fields = new std::vector<const PdfField*>();
+    std::vector<PdfField*>* PiPiUtil::SearchField(PdfAcroForm* acroform, std::string fieldName) {
+        std::vector<PdfField*>* fields = new std::vector<PdfField*>();
 
         acroform->GetFieldCount();
         for (auto fieldIterator = acroform->begin(); fieldIterator != acroform->end(); fieldIterator.operator++()) {
@@ -376,7 +376,7 @@ namespace PiPi {
         }
     }
 
-    void PiPiUtil::SearchChildrenField(PdfField* field, std::string fieldName, std::vector<const PdfField*>* fields) {
+    void PiPiUtil::SearchChildrenField(PdfField* field, std::string fieldName, std::vector<PdfField*>* fields) {
         const std::string name = field->GetFullName();
         PdfFieldChildrenCollectionBase& childrens = field->GetChildren();
 
