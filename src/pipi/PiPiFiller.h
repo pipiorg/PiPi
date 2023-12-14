@@ -13,6 +13,7 @@ namespace PiPi {
 			PiPiFiller(PdfMemDocument* document, PiPiFontManager* fontManager);
 
 			PiPiFiller* fillValue(std::string fieldName, std::string value);
+            PiPiFiller* fillValue(std::string fieldName, std::string value, bool ellipsis);
 			PiPiFiller* fillImage(std::string fieldName, char* imageBytes, size_t imageSize);
 
 			bool isOperable();
@@ -23,5 +24,7 @@ namespace PiPi {
 			PiPiFontManager* fontManager;
 
 			void init(PdfMemDocument* document, PiPiFontManager* fontManager);
+            std::string ellipsisValue(std::string value, float width, float height, std::string fontName, float fontSize);
+            std::string ellipsisValueMultiline(std::string value, float width, float height, std::string fontName, float fontSize);
 	};
 }

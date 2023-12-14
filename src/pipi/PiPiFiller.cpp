@@ -18,8 +18,6 @@ namespace PiPi {
 		PdfMemDocument* document = this->document;
 		PiPiFontManager* fontManager = this->fontManager;
 
-		PdfAcroForm* acroForm = document->GetAcroForm();
-
 		std::vector<PdfField*>* fields = PiPiUtil::SearchField(document, name);
 
 		for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
@@ -50,10 +48,7 @@ namespace PiPi {
 
 		delete fields;
 
-		PdfPageCollection& pagesRef = document->GetPages();
-		PdfPageCollection* pages = &pagesRef;
-
-		std::vector<PdfAnnotation*>* annots = PiPiUtil::SearchFieldAnnotation(pages, name);
+		std::vector<PdfAnnotation*>* annots = PiPiUtil::SearchFieldAnnotation(document, name);
 
 		for (auto iterator = annots->begin(); iterator != annots->end(); iterator.operator++()) {
 			PdfAnnotation* annot = *iterator;
@@ -65,6 +60,53 @@ namespace PiPi {
 
 		return this;
 	}
+
+    PiPiFiller* PiPiFiller::fillValue(std::string fieldName, std::string value, bool ellipsis) {
+        PdfMemDocument* document = this->document;
+        
+        if (ellipsis) {
+            std::vector<PdfAnnotation*>* annots =  PiPiUtil::SearchFieldAnnotation(document, fieldName);
+            
+            if (annots->size() > 0) {
+                PdfAnnotation* minAnnot = nullptr;
+                float minAnnotWidth = 0;
+                float minAnnotHeight = 0;
+                
+                for (auto iterator = annots->begin(); iterator != annots->end(); iterator.operator++()) {
+                    PdfAnnotation* annot = *iterator;
+                    
+                    float annotWidth = PiPiExtractUtil::ExtractAnnotationWidth(annot);
+                    float annotHeight = PiPiExtractUtil::ExtractAnnotationHeight(annot);
+                    float annotArea = annotWidth * annotHeight;
+                    
+                    if (minAnnot == nullptr) {
+                        minAnnot = annot;
+                        minAnnotWidth = annotWidth;
+                        minAnnotHeight = annotHeight;
+                        continue;
+                    }
+                    
+                    float minAnnotArea = minAnnotWidth * minAnnotHeight;
+                    
+                    if (minAnnotArea > annotArea) {
+                        minAnnot = annot;
+                    }
+                }
+                
+                bool multiline = PiPiExtractUtil::ExtractAnnotationTextMultiine(minAnnot);
+                std::string fontName = PiPiExtractUtil::ExtractAnnotationFontName(minAnnot);
+                float fontSize = PiPiExtractUtil::ExtractAnnotationFontSize(minAnnot);
+                
+                value = multiline
+                    ? this->ellipsisValueMultiline(value, minAnnotWidth, minAnnotHeight, fontName, fontSize)
+                    : this->ellipsisValue(value, minAnnotWidth, minAnnotHeight, fontName, fontSize);
+            }
+            
+            delete annots;
+        }
+        
+        this->fillValue(fieldName, value);
+    }
 
 	PiPiFiller* PiPiFiller::fillImage(std::string fieldName, char* imageBytes, size_t imageSize) {
 		PdfMemDocument* document = this->document;
@@ -123,4 +165,56 @@ namespace PiPi {
 
 		return this;
 	}
+
+    std::string PiPiFiller::ellipsisValue(std::string value, float width, float height, std::string fontName, float fontSize) {
+        PiPiFontManager* fontManager = this->fontManager;
+        
+        const PdfFont* font = fontManager->accessFont(fontName);
+        
+        const PdfFontMetrics& fontMetricsRef = font->GetMetrics();
+        const PdfFontMetrics* fontMetrics = &fontMetricsRef;
+        
+        double xHeight = fontMetrics->GetXHeight() * fontSize / 1000;
+        double ascent = fontMetrics->GetAscent() * fontSize / 1000;
+        double decent = fontMetrics->GetDescent() * fontSize / 1000;
+        return value;
+    }
+
+    std::string PiPiFiller::ellipsisValueMultiline(std::string value, float width, float height, std::string fontName, float fontSize) {
+        PiPiFontManager* fontManager = this->fontManager;
+        
+        const PdfFont* font = fontManager->accessFont(fontName);
+        
+        const PdfFontMetrics& fontMetricsRef = font->GetMetrics();
+        const PdfFontMetrics* fontMetrics = &fontMetricsRef;
+        
+        PdfTextState textState;
+        textState.Font = font;
+        textState.FontSize = fontSize;
+        
+        // 計算單行高度
+        double leading = fontMetrics->GetLeading() * fontSize;
+        double ascent = fontMetrics->GetAscent() * fontSize;
+        double decent = fontMetrics->GetDescent() * fontSize;
+        double signleLineHeight = ascent + (-decent);
+        
+        // 切割每行有哪些字
+        std::vector<std::string>* lines = new std::vector<std::string>();
+        std::string line = "";
+        
+        for (auto iterator = value.begin(); iterator != value.end(); iterator.operator++()) {
+            auto character = *iterator;
+            
+            line += character;
+            
+            double lineWidth = font->GetStringLength(line, textState);
+            if (lineWidth > width) {
+                line.pop_back();
+                lines->push_back(line);
+                line = character;
+            }
+        }
+        
+        return value;
+    }
 }
