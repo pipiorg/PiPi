@@ -338,9 +338,17 @@ namespace PiPi {
         PdfXObjectForm* xObject = xObjectUniquePtr.get();
         PdfXObjectForm& xObjectRef = *xObject;
 
-        Rect rect = annotation->GetRect();
-        double left = rect.GetLeft();
-        double bottom = rect.GetBottom();
+        Rect annotRect = annotation->GetRect();
+        double left = annotRect.GetLeft();
+        double bottom = annotRect.GetBottom();
+        
+        Rect xObjRect = xObject->GetRect();
+        
+        Rect rect;
+        rect.X = left;
+        rect.Y = bottom;
+        rect.Width = xObjRect.Width;
+        rect.Height = xObjRect.Height;
 
         PdfPage* page = annotation->GetPage();
         PdfPage& pageRef = *page;

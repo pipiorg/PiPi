@@ -201,28 +201,68 @@ namespace PiPi {
 		PdfDocument& documentRef = annot->GetDocument();
 		PdfDocument* document = &documentRef;
 
+        double borderWidth = PiPiExtractUtil::ExtractAnnotationBorderWidth(annot);
+        
 		Rect annotRect = annot->GetRect();
 
 		double width = annotRect.Width;
 		double height = annotRect.Height;
 
-		Rect xObjectRect = Rect(0, 0, width, height);
+        Rect xObjectRect = Rect(0, 0, width + borderWidth * 2, height + borderWidth * 2);
 
 		std::unique_ptr<PdfXObjectForm> xObjectPtr = document->CreateXObjectForm(xObjectRect);
 		PdfXObjectForm* xObject = xObjectPtr.get();
 		PdfXObjectForm& xObjectRef = *xObject;
 
+        double initSX = borderWidth;
+        double initSY = borderWidth;
+        
 		PdfPainter* painter = new PdfPainter();
-
-		PdfGraphicsStateWrapper& graphicsStateRef = painter->GraphicsState;
-		PdfGraphicsStateWrapper* graphicsState = &graphicsStateRef;
-
-		PdfTextStateWrapper& textStateRef = painter->TextState;
-		PdfTextStateWrapper* textState = &textStateRef;
-
+        
 		painter->SetCanvas(xObjectRef);
 		painter->SetClipRect(xObjectRect);
-
+        
+        PdfGraphicsStateWrapper& graphicsStateRef = painter->GraphicsState;
+        PdfGraphicsStateWrapper* graphicsState = &graphicsStateRef;
+        
+        PdfTextStateWrapper& textStateRef = painter->TextState;
+        PdfTextStateWrapper* textState = &textStateRef;
+        
+        // 畫邊框
+        painter->Save();
+        
+        float borderColorRed = 0;
+        float borderColorGreen = 0;
+        float borderColorBlue = 0;
+        PiPiExtractUtil::ExtractAnnotationBorderColor(annot, &borderColorRed, &borderColorGreen, &borderColorBlue);
+        
+        graphicsState->SetLineWidth(borderWidth);
+        graphicsState->SetStrokeColor(PdfColor(borderColorRed, borderColorGreen, borderColorBlue));
+        graphicsState->SetLineCapStyle(PdfLineCapStyle::Round);
+        
+        painter->DrawRectangle(0 + borderWidth / 2, 0 + borderWidth / 2, width + borderWidth, height + borderWidth);
+        
+        painter->Restore();
+        
+        // 畫背景
+        painter->Save();
+        
+        float backgroundColorRed = 0;
+        float backgroundColorGreen = 0;
+        float backgroundColorBlue = 0;
+        PiPiExtractUtil::ExtractAnnotationBackgroundColor(annot, &backgroundColorRed, &backgroundColorGreen, &backgroundColorBlue);
+        
+        graphicsState->SetLineWidth(width);
+        graphicsState->SetStrokeColor(PdfColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue));
+        graphicsState->SetFillColor(PdfColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue));
+        
+        painter->DrawLine(borderWidth + width / 2, borderWidth, borderWidth + width / 2, borderWidth + height);
+        
+        painter->Restore();
+        
+        // 畫文字
+        painter->Save();
+        
 		float fontSize = PiPiExtractUtil::ExtractAnnotationFontSize(annot);
 		std::string fontName = PiPiExtractUtil::ExtractAnnotationFontName(annot);
 		
@@ -249,7 +289,7 @@ namespace PiPi {
             if (multiline) {
                 PdfDrawTextMultiLineParams multineParams;
                 
-                multineParams.VerticalAlignment = PdfVerticalAlignment::Center;
+                multineParams.VerticalAlignment = PdfVerticalAlignment::Top;
 
                 switch (horizontalAlignment) {
                     case PiPiTextHorizontalAlignment::Left:
@@ -263,11 +303,26 @@ namespace PiPi {
                         break;
                 }
                 
-                painter->DrawTextMultiLine(sText, 0, 0, width, height, multineParams);
+                painter->DrawTextMultiLine(sText, initSX, initSY, width, height, multineParams);
             } else {
-                painter->DrawText(sText, 0, 0);
+                PdfHorizontalAlignment pHorizontalAlignment;
+                switch (horizontalAlignment) {
+                    case PiPiTextHorizontalAlignment::Left:
+                        pHorizontalAlignment = PdfHorizontalAlignment::Left;
+                        break;
+                    case PiPiTextHorizontalAlignment::Center:
+                        pHorizontalAlignment = PdfHorizontalAlignment::Center;
+                        break;
+                    case PiPiTextHorizontalAlignment::Right:
+                        pHorizontalAlignment = PdfHorizontalAlignment::Right;
+                        break;
+                }
+                
+                painter->DrawTextAligned(sText, initSX, initSY, width, pHorizontalAlignment);
             }
 		}
+        
+        painter->Restore();
 
 		painter->FinishDrawing();
 
