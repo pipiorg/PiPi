@@ -21,5 +21,6 @@ namespace PiPi {
 			std::map<const std::string, const PdfFont*>* fontMap;
 
 			void init(PdfMemDocument* document);
+			void loadAcroformFont();
 	};
 }
