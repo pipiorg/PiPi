@@ -3,7 +3,7 @@
 namespace PiPi {
 	PiPiFontManager::PiPiFontManager(PdfMemDocument* document) {
 		this->init(document);
-		this->loadAcroformFont();
+		this->loadAcroformFonts();
 	}
 
 	void PiPiFontManager::init(PdfMemDocument* document) {
@@ -11,7 +11,7 @@ namespace PiPi {
 		this->fontMap = new std::map<const std::string, const PdfFont*>();
 	}
 
-	void PiPiFontManager::loadAcroformFont() {
+	void PiPiFontManager::loadAcroformFonts() {
 		PdfMemDocument* document = this->document;
 
 		PdfIndirectObjectList& indirectObjectListRef = document->GetObjects();
@@ -45,8 +45,10 @@ namespace PiPi {
 			auto pair = *iterator;
 			
 			const PdfName& fontNameRef = pair.first;
-			PdfObject& fontReferenceObjectRef = pair.second;
-			PdfReference& fontReferenceRef = fontReferenceObjectRef.GetReference();
+            const std::string sFontName = fontNameRef.GetString();
+            
+			const PdfObject& fontReferenceObjectRef = pair.second;
+			const PdfReference& fontReferenceRef = fontReferenceObjectRef.GetReference();
 
 			PdfObject* fontObject = indirectObjectList->GetObject(fontReferenceRef);
 			PdfObject& fontObjectRef = *fontObject;
@@ -56,17 +58,70 @@ namespace PiPi {
 			if (!created) {
 				continue;
 			}
-
-			const std::string sFontName = fontNameRef.GetString();
+			
 			const PdfFont* font = fontPtr.get();
 			
 			this->fontMap->insert(std::pair(sFontName, font));
 		}
 	}
 
+    void PiPiFontManager::embedAcroformFonts() {
+        PdfMemDocument* document = this->document;
+        
+        PdfAcroForm* acroForm = document->GetAcroForm();
+        if (acroForm == nullptr) {
+            return;
+        }
+
+        PdfDictionary& acroformDictRef = acroForm->GetDictionary();
+        PdfDictionary* acroformDict = &acroformDictRef;
+
+        PdfObject* drObj = acroformDict->FindKey(PdfName("DR"));
+        if (drObj == nullptr) {
+            return;
+        }
+
+        PdfDictionary& drRef = drObj->GetDictionary();
+        PdfDictionary* dr = &drRef;
+
+        PdfObject* fontsObj = dr->FindKey(PdfName("Font"));
+        if (fontsObj == nullptr) {
+            return;
+        }
+
+        PdfDictionary& fontsRef = fontsObj->GetDictionary();
+        PdfDictionary* fonts = &fontsRef;
+        
+        std::map<const std::string, const PdfFont*>* fontMap = this->fontMap;
+        
+        for (auto iterator = fontMap->begin(); iterator != fontMap->end(); iterator.operator++()) {
+            std::pair<const std::string, const PdfFont*> fontPair = *iterator;
+            
+            const std::string fontName = fontPair.first;
+            const PdfFont* font = fontPair.second;
+            
+            if (fonts->HasKey(PdfName(fontName))) {
+                continue;
+            }
+                
+            fonts->AddKeyIndirect(PdfName(fontName), font->GetObject());
+        }
+    }
+
 	bool PiPiFontManager::isOperable() {
 		return this->document != nullptr;
 	}
+
+    void PiPiFontManager::embedFonts() {
+        PdfMemDocument* document = this->document;
+        
+        PdfFontManager& fontManagerRef = document->GetFonts();
+        PdfFontManager* fontManager = &fontManagerRef;
+        
+        fontManager->EmbedFonts();
+        
+        this->embedAcroformFonts();
+    }
 
 	void PiPiFontManager::registerFont(char* fontBytes, size_t fontSize) {
 		PdfMemDocument* document = this->document;

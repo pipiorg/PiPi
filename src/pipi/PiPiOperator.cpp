@@ -52,7 +52,8 @@ namespace PiPi {
 		}
 
 		PdfMemDocument* document = this->document;
-		PiPiEditor* editor = new PiPiEditor(document);
+        PiPiFontManager* fontManager = getFontManager();
+		PiPiEditor* editor = new PiPiEditor(document, fontManager);
 
 		this->editor = editor;
 
@@ -92,17 +93,23 @@ namespace PiPi {
 	void PiPiOperator::finalize(char** newPdfBytes, size_t* newPdfSize) {
 		vector<char> outputVector;
 		PoDoFo::VectorStreamDevice outputStreamDevice(outputVector);
-		this->document->Save(outputStreamDevice);
+        
+        
+        PiPiFontManager* fontManager = this->getFontManager();
+        PdfMemDocument* document = this->document;
+		
+        fontManager->embedFonts();
+        document->Save(outputStreamDevice);
 
 		*newPdfSize = outputVector.size();
 		*newPdfBytes = new char[*newPdfSize];
 		for (size_t i = 0; i < *newPdfSize; i++) {
 			*(*newPdfBytes + i) = outputVector[i];
 		}
-
-		delete this->fontManager;
-		delete this->document;
-		this->document = nullptr;
-		this->fontManager = nullptr;
+        
+        if (this->document != nullptr) {
+            delete this->document;
+            this->document = nullptr;
+        }
 	}
 }

@@ -11,7 +11,10 @@ namespace PiPi {
 
 			bool isOperable();
 
+            void embedFonts();
+        
 			void registerFont(char* fontBytes, size_t fontSize);
+        
 			const PdfFont* accessFont(const std::string fontName);
 			const PdfFont* accessDefaultFont();
 
@@ -21,6 +24,7 @@ namespace PiPi {
 			std::map<const std::string, const PdfFont*>* fontMap;
 
 			void init(PdfMemDocument* document);
-			void loadAcroformFont();
+			void loadAcroformFonts();
+            void embedAcroformFonts();
 	};
 }
