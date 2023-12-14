@@ -174,10 +174,39 @@ namespace PiPi {
         const PdfFontMetrics& fontMetricsRef = font->GetMetrics();
         const PdfFontMetrics* fontMetrics = &fontMetricsRef;
         
-        double xHeight = fontMetrics->GetXHeight() * fontSize / 1000;
-        double ascent = fontMetrics->GetAscent() * fontSize / 1000;
-        double decent = fontMetrics->GetDescent() * fontSize / 1000;
-        return value;
+        PdfTextState textState;
+        textState.Font = font;
+        textState.FontSize = fontSize;
+        textState.FontScale = 1.0;
+        textState.RenderingMode = PdfTextRenderingMode::Fill;
+        
+        double fLineWidth = font->GetStringLength(value, textState);
+        if (fLineWidth < width) {
+            return value;
+        }
+        
+        
+        std::string line = "";
+        std::string nextLine = "";
+        
+        auto iterator = value.begin();
+        while (iterator != value.end()) {
+            utf8::utfchar32_t character = utf8::next(iterator, value.end());
+            
+            utf8::append(character, nextLine);
+            
+            std::string nextLineWithEllipsis = nextLine + "...";
+            
+            double lineWidth = font->GetStringLength(nextLineWithEllipsis, textState);
+            if (lineWidth > width) {
+                line += "...";
+                break;
+            }
+            
+            utf8::append(character, line);
+        }
+        
+        return line;
     }
 
     std::string PiPiFiller::ellipsisValueMultiline(std::string value, float width, float height, std::string fontName, float fontSize) {
@@ -191,28 +220,90 @@ namespace PiPi {
         PdfTextState textState;
         textState.Font = font;
         textState.FontSize = fontSize;
-        
-        // 計算單行高度
-        double leading = fontMetrics->GetLeading() * fontSize;
-        double ascent = fontMetrics->GetAscent() * fontSize;
-        double decent = fontMetrics->GetDescent() * fontSize;
-        double signleLineHeight = ascent + (-decent);
+        textState.FontScale = 1.0;
+        textState.RenderingMode = PdfTextRenderingMode::Fill;
         
         // 切割每行有哪些字
         std::vector<std::string>* lines = new std::vector<std::string>();
-        std::string line = "";
         
-        for (auto iterator = value.begin(); iterator != value.end(); iterator.operator++()) {
-            auto character = *iterator;
+        std::string line = "";
+        std::string nextLine = "";
+
+        auto iterator = value.begin();
+        while (iterator != value.end()) {
+            utf8::utfchar32_t character = utf8::next(iterator, value.end());
             
-            line += character;
+            utf8::append(character, nextLine);
             
-            double lineWidth = font->GetStringLength(line, textState);
+            double lineWidth = font->GetStringLength(nextLine, textState);
             if (lineWidth > width) {
-                line.pop_back();
                 lines->push_back(line);
-                line = character;
+                
+                line = "";
+                nextLine = "";
+                
+                utf8::append(character, line);
+                utf8::append(character, nextLine);
+                
+                continue;
             }
+            
+            utf8::append(character, line);
+        }
+        
+        if (line.length() != 0) {
+            lines->push_back(line);
+        }
+        
+        // 計算單行高度
+        double leading = fontMetrics->GetLeading();
+        double lineSpacing = font->GetLineSpacing(textState);
+        double descent = font->GetDescent(textState);
+        double signalLineHeight = lineSpacing + leading;
+        
+        // 計算可塞下幾行
+        double lineHieght = leading;
+        size_t availableLineCount = 0;
+        size_t lineCount = lines->size();
+        while(lineCount--) {
+            if (lineHieght + signalLineHeight > height) {
+                break;
+            }
+            
+            lineHieght += signalLineHeight;
+            availableLineCount++;
+        }
+        
+        // 開始湊完整值
+        value = "";
+        for (size_t i = 0; i < availableLineCount; i++) {
+            if (i == availableLineCount - 1) {
+                // 做 ...
+                std::string lastLine = (*lines)[i];
+                std::string newLastLine = "";
+                std::string postNewLastLine = "";
+                auto iterator = lastLine.begin();
+                while (iterator != lastLine.end()) {
+                    utf8::utfchar32_t character = utf8::next(iterator, lastLine.end());
+                    
+                    utf8::append(character, postNewLastLine);
+                    
+                    std::string postNewLastLineWithEllipsis = postNewLastLine + "...";
+                    
+                    double lastLineWidth = font->GetStringLength(postNewLastLineWithEllipsis, textState);
+                    if (lastLineWidth > width) {
+                        newLastLine += "...";
+                        break;
+                    }
+                    
+                    utf8::append(character, newLastLine);
+                }
+                
+                value += newLastLine;
+                break;
+            }
+            
+            value += (*lines)[i];
         }
         
         return value;
