@@ -138,6 +138,63 @@ namespace PiPi {
         return x;
     }
 
+    double PiPiExtractUtil::ExtractAnnotationBorderWidth(PdfAnnotation *annotation) {
+        PdfDictionary& dictRef = annotation->GetDictionary();
+        PdfDictionary* dict = &dictRef;
+        
+        PdfObject* bsObj = dict->FindKey(PdfName("BS"));
+        if (bsObj == nullptr) {
+            return 0;
+        }
+        
+        PdfDictionary& bsRef = bsObj->GetDictionary();
+        PdfDictionary* bs = &bsRef;
+        
+        PdfObject* w = bs->FindKey(PdfName("W"));
+        if (w == nullptr) {
+            return 0;
+        }
+        
+        int width = (int) w->GetNumber();
+        
+        return width;
+    }
+
+    void PiPiExtractUtil::ExtractAnnotationColor(PdfAnnotation *annotation, float *red, float *green, float *blue) {
+        
+    }
+
+    void PiPiExtractUtil::ExtractAnnotationBackgroundColor(PdfAnnotation *annotation, float *red, float *green, float *blue) {
+        
+    }
+
+    void PiPiExtractUtil::ExtractAnnotationBorderColor(PdfAnnotation *annotation, float *red, float *green, float *blue) {
+        *red = 0;
+        *green = 0;
+        *blue = 0;
+        
+        PdfDictionary& dictRef = annotation->GetDictionary();
+        PdfDictionary* dict = &dictRef;
+        
+        PdfObject* mkObj = dict->GetKey(PdfName("MK"));
+        if (mkObj == nullptr) {
+            return;
+        }
+        
+        PdfDictionary& mkRef = mkObj->GetDictionary();
+        PdfDictionary* mk = &mkRef;
+        
+        PdfObject* bcObj = mk->GetKey(PdfName("BC"));
+        if (bcObj == nullptr) {
+            return;
+        }
+        
+        PdfArray& bcRef = bcObj->GetArray();
+        PdfArray* bc = &bcRef;
+        
+        PiPiColorConverter::ConvertPoDoFoArrayToRGB(bc, red, green, blue);
+    }
+
     PiPiFieldType PiPiExtractUtil::ExtractAnnotationType(PdfAnnotation* annotation) {
         const PdfObject& constObject = annotation->GetObject();
         PdfObject& object = const_cast<PdfObject&>(constObject);

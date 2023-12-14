@@ -2,6 +2,7 @@
 
 #include <podofo/podofo.h>
 #include "PiPiCommon.h"
+#include "PiPiColorConverter.h"
 #include "PiPiFieldType.h"
 #include "PiPiTextHorizontalAlignment.h"
 
@@ -24,6 +25,12 @@ namespace PiPi {
 
 			static double ExtractAnnotationX(PdfAnnotation* annotation);
 			static double ExtractAnnotationY(PdfAnnotation* annotation);
+        
+            static double ExtractAnnotationBorderWidth(PdfAnnotation* annotation);
+        
+            static void ExtractAnnotationColor(PdfAnnotation* annotation, float* red, float* green, float* blue);
+            static void ExtractAnnotationBackgroundColor(PdfAnnotation* annotation, float* red, float* green, float* blue);
+            static void ExtractAnnotationBorderColor(PdfAnnotation* annotation, float* red, float* green, float* blue);
 
 			static PiPiFieldType ExtractAnnotationType(PdfAnnotation* annotation);
         
