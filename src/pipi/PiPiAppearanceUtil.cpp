@@ -223,7 +223,6 @@ namespace PiPi {
 		painter->SetCanvas(xObjectRef);
 		painter->SetClipRect(xObjectRect);
 
-		// 解決字體
 		float fontSize = PiPiExtractUtil::ExtractAnnotationFontSize(annot);
 		std::string fontName = PiPiExtractUtil::ExtractAnnotationFontName(annot);
 		
@@ -236,15 +235,38 @@ namespace PiPi {
 		
 		textState->SetFont(fontRef, fontSize);
 
-		// 解決值
 		nullable<const PdfString&> nullalbleTextRef = field->GetText();
 		if (nullalbleTextRef.has_value()) {
 			const PdfString& textRef = nullalbleTextRef.value();
 			const PdfString* text = &textRef;
 
 			std::string sText = text->GetString();
+            
+            bool multiline = PiPiExtractUtil::ExtractAnnotationTextMultiine(annot);
+            PiPiTextHorizontalAlignment horizontalAlignment = PiPiExtractUtil::ExtractAnnotationTextHorizontalAlignment(annot);
+            
+            
+            if (multiline) {
+                PdfDrawTextMultiLineParams multineParams;
+                
+                multineParams.VerticalAlignment = PdfVerticalAlignment::Center;
 
-			painter->DrawText(sText, 0, 0);
+                switch (horizontalAlignment) {
+                    case PiPiTextHorizontalAlignment::Left:
+                        multineParams.HorizontalAlignment = PdfHorizontalAlignment::Left;
+                        break;
+                    case PiPiTextHorizontalAlignment::Center:
+                        multineParams.HorizontalAlignment = PdfHorizontalAlignment::Center;
+                        break;
+                    case PiPiTextHorizontalAlignment::Right:
+                        multineParams.HorizontalAlignment = PdfHorizontalAlignment::Right;
+                        break;
+                }
+                
+                painter->DrawTextMultiLine(sText, 0, 0, width, height, multineParams);
+            } else {
+                painter->DrawText(sText, 0, 0);
+            }
 		}
 
 		painter->FinishDrawing();

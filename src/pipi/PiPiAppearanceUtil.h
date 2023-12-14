@@ -1,3 +1,5 @@
+#pragma once
+
 #include "podofo/podofo.h"
 #include "PiPiCommon.h"
 #include "PiPiExtractUtil.h"
