@@ -13,7 +13,7 @@ namespace PiPi {
 
             void embedFonts();
         
-			void registerFont(char* fontBytes, size_t fontSize);
+			const std::string registerFont(char* fontBytes, size_t fontSize);
         
 			const PdfFont* accessFont(const std::string fontName);
 			const PdfFont* accessDefaultFont();

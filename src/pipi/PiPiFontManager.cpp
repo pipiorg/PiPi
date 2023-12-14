@@ -123,7 +123,7 @@ namespace PiPi {
         this->embedAcroformFonts();
     }
 
-	void PiPiFontManager::registerFont(char* fontBytes, size_t fontSize) {
+	const std::string PiPiFontManager::registerFont(char* fontBytes, size_t fontSize) {
 		PdfMemDocument* document = this->document;
 
 		PdfFontManager& fontManagerRef = document->GetFonts();
@@ -136,6 +136,8 @@ namespace PiPi {
 
 		std::map<const std::string, const PdfFont*>* fontMap = this->fontMap;
 		fontMap->insert(std::pair(fontName, font));
+        
+        return fontName;
 	}
 
 	const PdfFont* PiPiFontManager::accessFont(const std::string fontName) {
