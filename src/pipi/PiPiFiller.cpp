@@ -1,4 +1,4 @@
-﻿#include "PiPiFiller.h"
+#include "PiPiFiller.h"
 
 namespace PiPi {
 	PiPiFiller::PiPiFiller(PdfMemDocument* document, PiPiFontManager* fontManager) {
@@ -20,10 +20,10 @@ namespace PiPi {
 
 		PdfAcroForm* acroForm = document->GetAcroForm();
 
-		std::vector<const PdfField*>* fields = PiPiUtil::SearchField(document, name);
+		std::vector<PdfField*>* fields = PiPiUtil::SearchField(document, name);
 
 		for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
-			const PdfField* field = *iterator;
+            PdfField* field = *iterator;
 
 			PdfFieldType type = field->GetType();
 			if (type != PdfFieldType::CheckBox && type != PdfFieldType::TextBox) {
