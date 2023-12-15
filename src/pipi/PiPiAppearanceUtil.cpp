@@ -263,6 +263,14 @@ namespace PiPi {
         // 畫文字
         painter->Save();
         
+        float textColorRed = 0;
+        float textColorGreen = 0;
+        float textColorBlue = 0;
+        PiPiExtractUtil::ExtractAnnotationColor(annot, &textColorRed, &textColorGreen, &textColorBlue);
+        
+        graphicsState->SetFillColor(PdfColor(textColorRed, textColorGreen, textColorBlue));
+        graphicsState->SetStrokeColor(PdfColor(textColorRed, textColorGreen, textColorBlue));
+        
 		float fontSize = PiPiExtractUtil::ExtractAnnotationFontSize(annot);
 		std::string fontName = PiPiExtractUtil::ExtractAnnotationFontName(annot);
 		
