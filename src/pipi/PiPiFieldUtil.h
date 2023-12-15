@@ -9,7 +9,7 @@
 using namespace PoDoFo;
 
 namespace PiPi {
-	class PiPiUtil {
+	class PiPiFieldUtil {
 		public:
 			static std::map<const std::string, std::vector<PdfField*>*>* SearchAllField(PdfMemDocument* document);
 			static std::map<const std::string, std::vector<PdfField*>*>* SearchAllField(PdfAcroForm* acroform);

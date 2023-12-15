@@ -3,7 +3,7 @@
 #include "podofo/podofo.h"
 #include "utf8.h"
 #include "PiPiFontManager.h"
-#include "PiPiUtil.h"
+#include "PiPiFieldUtil.h"
 #include "PiPiAppearanceUtil.h"
 
 using namespace PoDoFo;
