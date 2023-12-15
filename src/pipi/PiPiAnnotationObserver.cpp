@@ -7,7 +7,13 @@ namespace PiPi {
     }
 
     PiPiAnnotationObserver::~PiPiAnnotationObserver() {
+        for (auto iterator = this->annotMap->begin(); iterator != this->annotMap->end(); iterator.operator++()) {
+            delete iterator->second;
+            iterator->second = nullptr;
+        }
+        
         delete this->annotMap;
+        this->annotMap = nullptr;
     }
 
     void PiPiAnnotationObserver::observer(const std::map<const std::string, const std::vector<PdfAnnotation *> *> * observedAnnotMap) {
