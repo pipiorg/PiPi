@@ -65,8 +65,6 @@ namespace PiPi {
 		this->filler = nullptr;
 		this->extractor = nullptr;
 		this->fontManager = nullptr;
-        this->fieldObserver = nullptr;
-        this->annotObserver = nullptr;
 	}
 
 	PiPiFiller* PiPiOperator::getFiller() {
