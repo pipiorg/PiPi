@@ -46,7 +46,7 @@ namespace PiPi {
         std::unique_ptr<PdfField> fieldPtr;
         bool created = PdfField::TryCreateFromObject(objRef, fieldPtr);
         if (!created) {
-            return;
+            return "";
         }
 
         PdfField* field = fieldPtr.get();

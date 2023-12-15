@@ -124,7 +124,7 @@ namespace PiPi {
         
         const PdfFont* font = fontManager->accessFont(fontName);
         if (font == nullptr) {
-            return;
+            return this;
         }
         
         std::vector<PdfField*>* fields = PiPiFieldUtil::SearchField(fieldObserver, document, fieldName);

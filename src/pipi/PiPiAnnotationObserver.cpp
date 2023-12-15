@@ -17,7 +17,7 @@ namespace PiPi {
     }
 
     bool PiPiAnnotationObserver::isObserved() {
-        this->observed;
+        return this->observed;
     }
 
     void PiPiAnnotationObserver::observe(PiPiAnnotationObserveType observeType, const std::string fieldName, PdfAnnotation *annot) {

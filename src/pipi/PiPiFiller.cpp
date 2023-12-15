@@ -114,7 +114,7 @@ namespace PiPi {
             delete annots;
         }
         
-        this->fillValue(fieldName, value);
+        return this->fillValue(fieldName, value);
     }
 
 	PiPiFiller* PiPiFiller::fillImage(std::string fieldName, char* imageBytes, size_t imageSize) {
