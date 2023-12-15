@@ -37,7 +37,6 @@ namespace PiPi {
 			static void CreateField(PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver, PdfMemDocument* document, std::string fieldName, PiPiFieldType type, unsigned int page, double x, double y, double width, double height);
 		private:
 			static void SearchAllChildrenField(PdfField* field, std::map<const std::string, std::vector<PdfField*>*>* fieldMap);
-			static void SearchChildrenField(PdfField* field, std::string fieldName, std::vector<PdfField*>* fields);
 
             static void RemoveAllAcroformField(PiPiFieldObserver* fieldObserver, PdfAcroForm* acroform);
 			static void RemoveAcroformField(PiPiFieldObserver* fieldObserver, PdfAcroForm* acroform, std::string fieldName);

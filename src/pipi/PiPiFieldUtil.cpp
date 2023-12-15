@@ -306,24 +306,6 @@ namespace PiPi {
         }
     }
 
-    void PiPiFieldUtil::SearchChildrenField(PdfField* field, std::string fieldName, std::vector<PdfField*>* fields) {
-        const std::string name = field->GetFullName();
-        PdfFieldChildrenCollectionBase& childrens = field->GetChildren();
-
-        unsigned int childrenCount = childrens.GetCount();
-        if (childrenCount == 0 && name == fieldName) {
-            fields->push_back(field);
-            return;
-        }
-
-        for (unsigned int childrenIndex = 0; childrenIndex < childrenCount; childrenIndex++) {
-            PdfField& childrenFieldRef = childrens.GetFieldAt(childrenIndex);
-            PdfField* childrenField = &childrenFieldRef;
-
-            SearchChildrenField(childrenField, fieldName, fields);
-        }
-    }
-
     void PiPiFieldUtil::RemoveAllPageField(PiPiAnnotationObserver* annotObserver, PdfPageCollection* pages) {
         unsigned int pageCount = pages->GetCount();
         for (unsigned int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
