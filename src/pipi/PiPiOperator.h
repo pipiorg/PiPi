@@ -17,6 +17,7 @@ namespace PiPi {
 	class PiPiOperator {
 		public:
 			PiPiOperator(char* pdfBytes, size_t pdfSize);
+            ~PiPiOperator();
 
 			PiPiFiller* getFiller();
 			PiPiEditor* getEditor();

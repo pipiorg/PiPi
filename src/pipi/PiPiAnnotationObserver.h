@@ -7,8 +7,9 @@ using namespace PoDoFo;
 namespace PiPi {
     class PiPiAnnotationObserver {
         public:
-        PiPiAnnotationObserver();
-
+            PiPiAnnotationObserver();
+            ~PiPiAnnotationObserver();
+        
         private:
             std::map<const std::string, const PdfAnnotation*>* annotMap;
     };

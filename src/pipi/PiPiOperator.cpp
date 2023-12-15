@@ -5,6 +5,48 @@ namespace PiPi {
 		this->init(pdfBytes, pdfSize);
 	}
 
+    PiPiOperator::~PiPiOperator() {
+        if (this->annotObserver != nullptr) {
+            delete this->annotObserver;
+            this->annotObserver = nullptr;
+        }
+        
+        if (this->fieldObserver != nullptr) {
+            delete this->fieldObserver;
+            this->fieldObserver = nullptr;
+        }
+        
+        if (this->fontManager != nullptr) {
+            delete this->fontManager;
+            this->fontManager = nullptr;
+        }
+        
+        if (this->pager != nullptr) {
+            delete this->pager;
+            this->pager = nullptr;
+        }
+        
+        if (this->editor != nullptr) {
+            delete this->editor;
+            this->editor = nullptr;
+        }
+        
+        if (this->filler != nullptr) {
+            delete this->filler;
+            this->filler = nullptr;
+        }
+        
+        if (this->extractor != nullptr) {
+            delete this->extractor;
+            this->extractor = nullptr;
+        }
+        
+        if (this->document != nullptr) {
+            delete this->document;
+            this->document = nullptr;
+        }
+    }
+
 	void PiPiOperator::init(char* pdfBytes, size_t pdfSize) {
 		PoDoFo::PdfMemDocument * document = new PoDoFo::PdfMemDocument();
 		auto input = make_shared<PoDoFo::SpanStreamDevice>(pdfBytes, pdfSize);
@@ -23,6 +65,8 @@ namespace PiPi {
 		this->filler = nullptr;
 		this->extractor = nullptr;
 		this->fontManager = nullptr;
+        this->fieldObserver = nullptr;
+        this->annotObserver = nullptr;
 	}
 
 	PiPiFiller* PiPiOperator::getFiller() {
@@ -112,10 +156,5 @@ namespace PiPi {
 		for (size_t i = 0; i < *newPdfSize; i++) {
 			*(*newPdfBytes + i) = outputVector[i];
 		}
-        
-        if (this->document != nullptr) {
-            delete this->document;
-            this->document = nullptr;
-        }
 	}
 }

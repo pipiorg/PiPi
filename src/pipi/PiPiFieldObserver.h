@@ -8,6 +8,7 @@ namespace PiPi {
     class PiPiFieldObserver {
         public:
             PiPiFieldObserver();
+            ~PiPiFieldObserver();
 
         private:
             std::map<const std::string, const PdfField*>* fieldMap;
