@@ -5,13 +5,15 @@
 #include "PiPiFontManager.h"
 #include "PiPiFieldUtil.h"
 #include "PiPiAppearanceUtil.h"
+#include "PiPiAnnotationObserver.h"
+#include "PiPiFieldObserver.h"
 
 using namespace PoDoFo;
 
 namespace PiPi {
 	class PiPiFiller {
 		public:
-			PiPiFiller(PdfMemDocument* document, PiPiFontManager* fontManager);
+			PiPiFiller(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver);
 
 			PiPiFiller* fillValue(std::string fieldName, std::string value);
             PiPiFiller* fillValue(std::string fieldName, std::string value, bool ellipsis);
@@ -23,8 +25,9 @@ namespace PiPi {
 			PdfMemDocument* document;
 			
 			PiPiFontManager* fontManager;
+            PiPiFieldObserver* fieldObserver;
+            PiPiAnnotationObserver* annotObserver;
 
-			void init(PdfMemDocument* document, PiPiFontManager* fontManager);
             std::string ellipsisValue(std::string value, float width, float height, std::string fontName, float fontSize);
             std::string ellipsisValueMultiline(std::string value, float width, float height, std::string fontName, float fontSize);
 	};

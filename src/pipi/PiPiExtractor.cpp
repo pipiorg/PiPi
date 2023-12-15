@@ -1,12 +1,9 @@
 #include "PiPiExtractor.h"
 
 namespace PiPi {
-	PiPiExtractor::PiPiExtractor(PdfMemDocument* document) {
-		this->init(document);
-	}
-
-	void PiPiExtractor::init(PdfMemDocument* document) {
-		this->document = document;
+	PiPiExtractor::PiPiExtractor(PdfMemDocument* document, PiPiAnnotationObserver* annotObserver) {
+        this->document = document;
+        this->annotObserver = annotObserver;
 	}
 
 	bool PiPiExtractor::isOperable() {
@@ -34,10 +31,12 @@ namespace PiPi {
 	}
 
 	std::vector<const PiPiField*>* PiPiExtractor::extractField() {
+        PiPiAnnotationObserver* annotObserver = this->annotObserver;
+        
 		std::vector<const PiPiField*>* fields = new std::vector<const PiPiField*>();
 
 		PdfMemDocument* document = this->document;
-		std::map<const std::string, std::vector<PdfAnnotation*>*>* annotMap = PiPiFieldUtil::SerachAllFieldAnnotation(document);
+		std::map<const std::string, std::vector<PdfAnnotation*>*>* annotMap = PiPiFieldUtil::SerachAllFieldAnnotation(annotObserver, document);
 		for (auto annotMapIterator = annotMap->begin(); annotMapIterator != annotMap->end(); annotMapIterator.operator++()) {
 			std::pair<const std::string, std::vector<PdfAnnotation*>*> pair = annotMapIterator.operator*();
 

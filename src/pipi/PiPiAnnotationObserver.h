@@ -6,12 +6,12 @@ using namespace PoDoFo;
 
 namespace PiPi {
     class PiPiAnnotationObserver {
-        enum PiPiAnnotationObserveType {
-            Add,
-            Remove
-        };
-        
         public:
+            enum PiPiAnnotationObserveType {
+                Add,
+                Remove
+            };
+        
             PiPiAnnotationObserver();
             ~PiPiAnnotationObserver();
         

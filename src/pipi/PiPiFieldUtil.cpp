@@ -1,12 +1,20 @@
 #include "PiPiFieldUtil.h"
 
 namespace PiPi {
-    std::map<const std::string, std::vector<PdfField *>*>* PiPiFieldUtil::SearchAllField(PdfMemDocument* document) {
+    std::map<const std::string, std::vector<PdfField *>*>* PiPiFieldUtil::SearchAllField(PiPiFieldObserver* fieldObserver, PdfMemDocument* document) {
         PdfAcroForm* acroform = document->GetAcroForm();
-        return SearchAllField(acroform);
+        return SearchAllField(fieldObserver, acroform);
     }
 
-    std::map<const std::string, std::vector<PdfField*>*>* PiPiFieldUtil::SearchAllField(PdfAcroForm* acroform) {
+    std::map<const std::string, std::vector<PdfField*>*>* PiPiFieldUtil::SearchAllField(PiPiFieldObserver* fieldObserver, PdfAcroForm* acroform) {
+        if (fieldObserver->isObserved()) {
+            std::map<const std::string, std::vector<PdfField*>*>* fieldMap;
+            bool accessed = fieldObserver->accessAll(&fieldMap);
+            if (accessed) {
+                return fieldMap;
+            }
+        }
+        
         std::map<const std::string, std::vector<PdfField*>*>* fieldMap = new std::map<const std::string, std::vector<PdfField*>*>();
 
         acroform->GetFieldCount();
@@ -14,17 +22,28 @@ namespace PiPi {
             PdfField* field = fieldIterator.operator*();
             SearchAllChildrenField(field, fieldMap);
         }
+        
+        fieldObserver->observeAll(fieldMap);
 
         return fieldMap;
     }
 
-    std::map<const std::string, std::vector<PdfAnnotation*>*>* PiPiFieldUtil::SerachAllFieldAnnotation(PdfMemDocument* document) {
+    std::map<const std::string, std::vector<PdfAnnotation*>*>* PiPiFieldUtil::SerachAllFieldAnnotation(PiPiAnnotationObserver* annotObserver, PdfMemDocument* document) {
         PdfPageCollection& pagesRef = document->GetPages();
         PdfPageCollection* pages = &pagesRef;
-        return SerachAllFieldAnnotation(pages);
+        return SerachAllFieldAnnotation(annotObserver, pages);
     }
 
-    std::map<const std::string, std::vector<PdfAnnotation*>*>* PiPiFieldUtil::SerachAllFieldAnnotation(PdfPageCollection* pages) {
+    std::map<const std::string, std::vector<PdfAnnotation*>*>* PiPiFieldUtil::SerachAllFieldAnnotation(PiPiAnnotationObserver* annotObserver, PdfPageCollection* pages) {
+        
+        if (annotObserver->isObserved()) {
+            std::map<const std::string, std::vector<PdfAnnotation*>*>* annotMap;
+            bool accessed = annotObserver->accessAll(&annotMap);
+            if (accessed) {
+                return annotMap;
+            }
+        }
+        
         std::map<const std::string, std::vector<PdfAnnotation*>*>* annotMap = new std::map<const std::string, std::vector<PdfAnnotation*>*>();
 
         unsigned int pageCount = pages->GetCount();
@@ -63,70 +82,59 @@ namespace PiPi {
                 fieldPtr.reset();
             }
         }
+        
+        annotObserver->observeAll(annotMap);
 
         return annotMap;
     }
 
-    std::vector<PdfField*>* PiPiFieldUtil::SearchField(PdfMemDocument* document, std::string fieldName) {
+    std::vector<PdfField*>* PiPiFieldUtil::SearchField(PiPiFieldObserver* fieldObserver, PdfMemDocument* document, std::string fieldName) {
         PdfAcroForm* acroform = document->GetAcroForm();
-        return SearchField(acroform, fieldName);
+        return SearchField(fieldObserver, acroform, fieldName);
     }
 
-    std::vector<PdfField*>* PiPiFieldUtil::SearchField(PdfAcroForm* acroform, std::string fieldName) {
-        std::vector<PdfField*>* fields = new std::vector<PdfField*>();
-
-        acroform->GetFieldCount();
-        for (auto fieldIterator = acroform->begin(); fieldIterator != acroform->end(); fieldIterator.operator++()) {
-            PdfField* field = fieldIterator.operator*();
-            SearchChildrenField(field, fieldName, fields);
-        }
-
-        return fields;
-    }
-
-    std::vector<PdfAnnotation*>* PiPiFieldUtil::SearchFieldAnnotation(PdfMemDocument* document, std::string fieldName) {
-        PdfPageCollection& pagesRef = document->GetPages();
-        PdfPageCollection* pages = &pagesRef;
-        return SearchFieldAnnotation(pages, fieldName);
-    }
-
-    std::vector<PdfAnnotation*>* PiPiFieldUtil::SearchFieldAnnotation(PdfPageCollection* pages, std::string fieldName) {
-        std::vector<PdfAnnotation*>* resAnnots = new std::vector<PdfAnnotation*>();
-
-        unsigned int pageCount = pages->GetCount();
-        for (unsigned int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
-            PdfPage& pageRef = pages->GetPageAt(pageIndex);
-            PdfPage* page = &pageRef;
-
-            PdfAnnotationCollection& annotsRef = page->GetAnnotations();
-            PdfAnnotationCollection* annots = &annotsRef;
-
-            unsigned int annotCount = annots->GetCount();
-            for (unsigned int annotIndex = 0; annotIndex < annotCount; annotIndex++) {
-                PdfAnnotation& annotRef = annots->GetAnnotAt(annotIndex);
-                PdfAnnotation* annot = &annotRef;
-
-                const PdfObject& constObject = annot->GetObject();
-                PdfObject& object = const_cast<PdfObject&>(constObject);
-
-                std::unique_ptr<PdfField> fieldPtr;
-                bool created = PdfField::TryCreateFromObject(object, fieldPtr);
-                if (!created) {
-                    continue;
-                }
-
-                PdfField* field = fieldPtr.get();
-
-                std::string name = field->GetFullName();
-                if (name == fieldName) {
-                    resAnnots->push_back(annot);
-                }
-
-                fieldPtr.reset();
+    std::vector<PdfField*>* PiPiFieldUtil::SearchField(PiPiFieldObserver* fieldObserver, PdfAcroForm* acroform, std::string fieldName) {
+        if (fieldObserver->isObserved()) {
+            std::vector<PdfField*>* fields;
+            bool accessed = fieldObserver->access(fieldName, &fields);
+            if (accessed) {
+                return fields;
             }
         }
+        
+        std::map<const std::string, std::vector<PdfField*>*>* fieldMap = PiPiFieldUtil::SearchAllField(fieldObserver, acroform);
+        
+        auto findIterator = fieldMap->find(fieldName);
+        if (findIterator != fieldMap->end()) {
+            return findIterator->second;
+        }
+        
+        return new std::vector<PdfField*>();
+    }
 
-        return resAnnots;
+    std::vector<PdfAnnotation*>* PiPiFieldUtil::SearchFieldAnnotation(PiPiAnnotationObserver* annotObserver, PdfMemDocument* document, std::string fieldName) {
+        PdfPageCollection& pagesRef = document->GetPages();
+        PdfPageCollection* pages = &pagesRef;
+        return SearchFieldAnnotation(annotObserver, pages, fieldName);
+    }
+
+    std::vector<PdfAnnotation*>* PiPiFieldUtil::SearchFieldAnnotation(PiPiAnnotationObserver* annotObserver, PdfPageCollection* pages, std::string fieldName) {
+        if (annotObserver->isObserved()) {
+            std::vector<PdfAnnotation*>* resAnnots;
+            bool accessed = annotObserver->access(fieldName, &resAnnots);
+            if (accessed) {
+                return resAnnots;
+            }
+        }
+        
+        std::map<const std::string, std::vector<PdfAnnotation*>*>* resAnnots = SerachAllFieldAnnotation(annotObserver, pages);
+        
+        auto findIterator = resAnnots->find(fieldName);
+        if (findIterator != resAnnots->end()) {
+            return findIterator->second;
+        }
+
+        return new std::vector<PdfAnnotation*>();
     }
 
     int PiPiFieldUtil::SearchPageIndex(PdfMemDocument* document, PdfPage* page) {
@@ -145,31 +153,34 @@ namespace PiPi {
         return -1;
     }
 
-    void PiPiFieldUtil::RemoveAllField(PdfMemDocument* document) {
+    void PiPiFieldUtil::RemoveAllField(PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver, PdfMemDocument* document) {
         PdfAcroForm* acroform = document->GetAcroForm();
 
         PdfPageCollection& pagesRef = document->GetPages();
         PdfPageCollection* pages = &pagesRef;
         
-        RemoveAllPageField(pages);
-        RemoveAllAcroformField(acroform);
+        RemoveAllPageField(annotObserver, pages);
+        RemoveAllAcroformField(fieldObserver, acroform);
         
         document->CollectGarbage();
     }
 
-    void PiPiFieldUtil::RemoveField(PdfMemDocument* document, std::string fieldName) {
+    void PiPiFieldUtil::RemoveField(PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver, PdfMemDocument* document, std::string fieldName) {
         PdfAcroForm* acroform = document->GetAcroForm();
 
         PdfPageCollection& pagesRef = document->GetPages();
         PdfPageCollection* pages = &pagesRef;
 
-        RemovePageField(pages, fieldName);
-        RemoveAcroformField(acroform, fieldName);
+        RemovePageField(annotObserver, pages, fieldName);
+        RemoveAcroformField(fieldObserver, acroform, fieldName);
 
         document->CollectGarbage();
     }
 
-    void PiPiFieldUtil::CreateField(PdfMemDocument* document, std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height) {
+    void PiPiFieldUtil::CreateField(PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver, PdfMemDocument* document, std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height) {
+        // TODO: solve add feature
+        
+        /*
         PdfAcroForm& acroformRef = document->GetOrCreateAcroForm();
         PdfAcroForm* acroform = &acroformRef;
 
@@ -207,6 +218,7 @@ namespace PiPi {
             delete splitted;
             return;
         }
+         */
     }
 
     void PiPiFieldUtil::FlattenAnnotation(PdfAnnotation *annotation) {
@@ -312,7 +324,7 @@ namespace PiPi {
         }
     }
 
-    void PiPiFieldUtil::RemoveAllPageField(PdfPageCollection* pages) {
+    void PiPiFieldUtil::RemoveAllPageField(PiPiAnnotationObserver* annotObserver, PdfPageCollection* pages) {
         unsigned int pageCount = pages->GetCount();
         for (unsigned int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
             PdfPage& pageRef = pages->GetPageAt(pageIndex);
@@ -322,14 +334,20 @@ namespace PiPi {
             PdfAnnotationCollection* annots = &annotsRef;
             
             unsigned int annotCount = annots->GetCount();
-            for (unsigned annotIndex = annotCount; annotIndex > 0; annotIndex--) {
-                annots->RemoveAnnotAt(annotIndex - 1);
+            for (unsigned annotIndex = annotCount - 1; annotIndex >= 0; annotIndex--) {
+                PdfAnnotation& annotRef = annots->GetAnnotAt(annotIndex);
+                PdfAnnotation* annot = &annotRef;
+                
+                std::string fieldName = PiPiExtractUtil::ExtractAnnotationName(annot);
+                annotObserver->observe(PiPiAnnotationObserver::PiPiAnnotationObserveType::Remove, fieldName, annot);
+                
+                annots->RemoveAnnotAt(annotIndex);
             }
         }
     }
 
-    void PiPiFieldUtil::RemovePageField(PdfPageCollection* pages, std::string fieldName) {
-        std::vector<PdfAnnotation*>* tarAnnots = SearchFieldAnnotation(pages, fieldName);
+    void PiPiFieldUtil::RemovePageField(PiPiAnnotationObserver* annotObserver, PdfPageCollection* pages, std::string fieldName) {
+        std::vector<PdfAnnotation*>* tarAnnots = SearchFieldAnnotation(annotObserver, pages, fieldName);
 
         unsigned int pageCount = pages->GetCount();
         for (unsigned int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
@@ -354,6 +372,13 @@ namespace PiPi {
 
             while (removeAnnotIndexs->size()) {
                 unsigned int removeAnnotIndex = removeAnnotIndexs->back();
+                
+                PdfAnnotation& annotRef = annots->GetAnnotAt(removeAnnotIndex);
+                PdfAnnotation* annot = &annotRef;
+                
+                std::string fieldName = PiPiExtractUtil::ExtractAnnotationName(annot);
+                annotObserver->observe(PiPiAnnotationObserver::PiPiAnnotationObserveType::Remove, fieldName, annot);
+                
                 annots->RemoveAnnotAt(removeAnnotIndex);
                 removeAnnotIndexs->pop_back();
             }
@@ -364,18 +389,25 @@ namespace PiPi {
         delete tarAnnots;
     }
 
-    void PiPiFieldUtil::RemoveAllAcroformField(PdfAcroForm *acroform) {
+    void PiPiFieldUtil::RemoveAllAcroformField(PiPiFieldObserver* fieldObserver, PdfAcroForm *acroform) {
         if (acroform == nullptr) {
             return;
         }
         
         unsigned int fieldCount = acroform->GetFieldCount();
         for (unsigned int fieldIndex = fieldCount; fieldIndex > 0; fieldIndex--) {
+            PdfField& fieldRef = acroform->GetFieldAt(fieldIndex);
+            PdfField* field = &fieldRef;
+            
+            std::string fieldName = field->GetFullName();
+            
+            fieldObserver->observe(PiPiFieldObserver::PiPiFieldObserveType::Remove, fieldName, field);
+            
             acroform->RemoveFieldAt(fieldIndex - 1);
         }
     }
 
-    void PiPiFieldUtil::RemoveAcroformField(PdfAcroForm* acroform, std::string fieldName) {
+    void PiPiFieldUtil::RemoveAcroformField(PiPiFieldObserver* fieldObserver, PdfAcroForm* acroform, std::string fieldName) {
         if (acroform == nullptr) {
             return;
         }
@@ -397,7 +429,7 @@ namespace PiPi {
             unsigned int childrenCount = childrens.GetCount();
 
             if (childrenCount != 0) {
-                RemoveAcroformChildrenField(field, fieldName);
+                RemoveAcroformChildrenField(fieldObserver, field, fieldName);
 
                 childrenCount = childrens.GetCount();
                 if (childrenCount == 0) {
@@ -409,6 +441,14 @@ namespace PiPi {
 
         while (removeFieldIndexs->size()) {
             unsigned int removeFieldIndex = removeFieldIndexs->back();
+            
+            PdfField& fieldRef = acroform->GetFieldAt(removeFieldIndex);
+            PdfField* field = &fieldRef;
+            
+            std::string fieldName = field->GetFullName();
+            
+            fieldObserver->observe(PiPiFieldObserver::PiPiFieldObserveType::Remove, fieldName, field);
+            
             acroform->RemoveFieldAt(removeFieldIndex);
             removeFieldIndexs->pop_back();
         }
@@ -416,7 +456,7 @@ namespace PiPi {
         delete removeFieldIndexs;
     }
 
-    void PiPiFieldUtil::RemoveAcroformChildrenField(PdfField* field, std::string fieldName) {
+    void PiPiFieldUtil::RemoveAcroformChildrenField(PiPiFieldObserver* fieldObserver, PdfField* field, std::string fieldName) {
         PdfFieldChildrenCollectionBase& childrensRef = field->GetChildren();
         PdfFieldChildrenCollectionBase* childrens = &childrensRef;
 
@@ -440,7 +480,7 @@ namespace PiPi {
             unsigned int guardsonCount = guardsones->GetCount();
 
             if (guardsonCount != 0) {
-                RemoveAcroformChildrenField(childrenField, fieldName);
+                RemoveAcroformChildrenField(fieldObserver, childrenField, fieldName);
 
                 guardsonCount = guardsones->GetCount();
                 if (guardsonCount == 0) {
@@ -452,6 +492,14 @@ namespace PiPi {
 
         while (removeFieldIndexs->size()) {
             unsigned int removeFieldIndex = removeFieldIndexs->back();
+            
+            PdfField& fieldRef = childrens->GetFieldAt(removeFieldIndex);
+            PdfField* field = &fieldRef;
+            
+            std::string fieldName = field->GetFullName();
+            
+            fieldObserver->observe(PiPiFieldObserver::PiPiFieldObserveType::Remove, fieldName, field);
+            
             childrens->RemoveFieldAt(removeFieldIndex);
             removeFieldIndexs->pop_back();
         }

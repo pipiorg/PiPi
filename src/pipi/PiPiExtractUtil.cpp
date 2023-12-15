@@ -39,6 +39,25 @@ namespace PiPi {
         return y;
     }
 
+    std::string PiPiExtractUtil::ExtractAnnotationName(PdfAnnotation *annotation) {
+        PdfObject& objRef = annotation->GetObject();
+        PdfObject* obj = &objRef;
+        
+        std::unique_ptr<PdfField> fieldPtr;
+        bool created = PdfField::TryCreateFromObject(objRef, fieldPtr);
+        if (!created) {
+            return;
+        }
+
+        PdfField* field = fieldPtr.get();
+
+        PdfFieldType type = field->GetType();
+        
+        std::string name = field->GetFullName();
+        
+        return name;
+    }
+
     std::string PiPiExtractUtil::ExtractAnnotationFontName(PdfAnnotation* annotation) {
         PdfDictionary& dictRef = annotation->GetDictionary();
         PdfDictionary* dict = &dictRef;

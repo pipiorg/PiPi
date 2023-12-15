@@ -1,13 +1,11 @@
 #include "PiPiFiller.h"
 
 namespace PiPi {
-	PiPiFiller::PiPiFiller(PdfMemDocument* document, PiPiFontManager* fontManager) {
-		this->init(document, fontManager);
-	}
-
-	void PiPiFiller::init(PdfMemDocument* document, PiPiFontManager* fontManager) {
-		this->document = document;
-		this->fontManager = fontManager;
+	PiPiFiller::PiPiFiller(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver) {
+        this->document = document;
+        this->fontManager = fontManager;
+        this->fieldObserver = fieldObserver;
+        this->annotObserver = annotObserver;
 	}
 
 	bool PiPiFiller::isOperable() {
@@ -17,8 +15,10 @@ namespace PiPi {
 	PiPiFiller* PiPiFiller::fillValue(std::string name, std::string value) {
 		PdfMemDocument* document = this->document;
 		PiPiFontManager* fontManager = this->fontManager;
+        PiPiFieldObserver* fieldObserver = this->fieldObserver;
+        PiPiAnnotationObserver* annotObserver = this->annotObserver;
 
-		std::vector<PdfField*>* fields = PiPiFieldUtil::SearchField(document, name);
+		std::vector<PdfField*>* fields = PiPiFieldUtil::SearchField(fieldObserver, document, name);
 
 		for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
             PdfField* field = *iterator;
@@ -48,7 +48,7 @@ namespace PiPi {
 
 		delete fields;
 
-		std::vector<PdfAnnotation*>* annots = PiPiFieldUtil::SearchFieldAnnotation(document, name);
+		std::vector<PdfAnnotation*>* annots = PiPiFieldUtil::SearchFieldAnnotation(annotObserver, document, name);
 
 		for (auto iterator = annots->begin(); iterator != annots->end(); iterator.operator++()) {
 			PdfAnnotation* annot = *iterator;
@@ -63,9 +63,10 @@ namespace PiPi {
 
     PiPiFiller* PiPiFiller::fillValue(std::string fieldName, std::string value, bool ellipsis) {
         PdfMemDocument* document = this->document;
+        PiPiAnnotationObserver* annotObserver = this->annotObserver;
         
         if (ellipsis) {
-            std::vector<PdfAnnotation*>* annots =  PiPiFieldUtil::SearchFieldAnnotation(document, fieldName);
+            std::vector<PdfAnnotation*>* annots =  PiPiFieldUtil::SearchFieldAnnotation(annotObserver, document, fieldName);
             
             if (annots->size() > 0) {
                 PdfAnnotation* minAnnot = nullptr;
@@ -118,8 +119,10 @@ namespace PiPi {
 
 	PiPiFiller* PiPiFiller::fillImage(std::string fieldName, char* imageBytes, size_t imageSize) {
 		PdfMemDocument* document = this->document;
+        PiPiAnnotationObserver* annotObserver = this->annotObserver;
+        PiPiFieldObserver* fieldObserver = this->fieldObserver;
 		
-		std::vector<PdfAnnotation*>* annotations = PiPiFieldUtil::SearchFieldAnnotation(document, fieldName);
+		std::vector<PdfAnnotation*>* annotations = PiPiFieldUtil::SearchFieldAnnotation(annotObserver, document, fieldName);
 		for (auto iterator = annotations->begin(); iterator != annotations->end(); ++iterator) {
 			PdfAnnotation* annotation = *iterator;
 
@@ -169,7 +172,7 @@ namespace PiPi {
 
 		delete annotations;
 
-		PiPiFieldUtil::RemoveField(document, fieldName);
+		PiPiFieldUtil::RemoveField(fieldObserver, annotObserver, document, fieldName);
 
 		return this;
 	}

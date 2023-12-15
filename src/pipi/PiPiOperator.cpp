@@ -75,8 +75,12 @@ namespace PiPi {
 		}
 
 		PdfMemDocument* document = this->document;
+        PiPiFieldObserver* fieldObserver = this->fieldObserver;
+        PiPiAnnotationObserver* annotObserver = this->annotObserver;
+        
 		PiPiFontManager* fontManager = getFontManager();
-		PiPiFiller* filler = new PiPiFiller(document, fontManager);
+		
+        PiPiFiller* filler = new PiPiFiller(document, fontManager, fieldObserver, annotObserver);
 
 		this->filler = filler;
 
@@ -102,8 +106,12 @@ namespace PiPi {
 		}
 
 		PdfMemDocument* document = this->document;
+        PiPiFieldObserver* fieldObserver = this->fieldObserver;
+        PiPiAnnotationObserver* annotObserver = this->annotObserver;
+        
         PiPiFontManager* fontManager = getFontManager();
-		PiPiEditor* editor = new PiPiEditor(document, fontManager);
+        
+		PiPiEditor* editor = new PiPiEditor(document, fontManager, fieldObserver, annotObserver);
 
 		this->editor = editor;
 
@@ -116,7 +124,9 @@ namespace PiPi {
 		}
 
 		PdfMemDocument* document = this->document;
-		PiPiExtractor* extractor = new PiPiExtractor(document);
+        PiPiAnnotationObserver* annotObserver = this->annotObserver;
+        
+		PiPiExtractor* extractor = new PiPiExtractor(document, annotObserver);
 
 		this->extractor = extractor;
 
