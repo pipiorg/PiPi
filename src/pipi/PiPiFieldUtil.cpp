@@ -316,14 +316,14 @@ namespace PiPi {
             PdfAnnotationCollection* annots = &annotsRef;
             
             unsigned int annotCount = annots->GetCount();
-            for (unsigned annotIndex = annotCount - 1; annotIndex >= 0; annotIndex--) {
-                PdfAnnotation& annotRef = annots->GetAnnotAt(annotIndex);
+            for (unsigned int annotIndex = annotCount; annotIndex > 0; annotIndex--) {
+                PdfAnnotation& annotRef = annots->GetAnnotAt(annotIndex - 1);
                 PdfAnnotation* annot = &annotRef;
                 
                 std::string fieldName = PiPiExtractUtil::ExtractAnnotationName(annot);
                 annotObserver->observe(PiPiAnnotationObserver::PiPiAnnotationObserveType::Remove, fieldName, annot);
                 
-                annots->RemoveAnnotAt(annotIndex);
+                annots->RemoveAnnotAt(annotIndex - 1);
             }
         }
     }
