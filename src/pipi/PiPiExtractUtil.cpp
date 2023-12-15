@@ -161,7 +161,58 @@ namespace PiPi {
     }
 
     void PiPiExtractUtil::ExtractAnnotationColor(PdfAnnotation *annotation, float *red, float *green, float *blue) {
+        *red = 0;
+        *green = 0;
+        *blue = 0;
         
+        PdfDictionary& dictRef = annotation->GetDictionary();
+        PdfDictionary* dict = &dictRef;
+
+        PdfObject* daObj = dict->FindKey("DA");
+
+        if (daObj == nullptr) {
+            return;
+        }
+
+        if (!daObj->IsString()) {
+            return;
+        }
+
+        PdfString da = daObj->GetString();
+        std::string daValue = da.GetString();
+        
+        std::vector<std::string>* splitted = PiPiCommon::split(daValue, " ");
+        size_t splitSize = splitted->size();
+        
+        if (splitSize <= 0) {
+            return;
+        }
+        
+        std::string colorSign = splitted->back();
+        if (colorSign == "g") {
+            if (splitSize >= 2) {
+                float gray = std::stof((*splitted)[splitSize - 2]);
+                
+                PiPiColorConverter::ConvertGrayToRGB(gray, red, green, blue);
+            }
+        } else if (colorSign == "rg") {
+            if (splitSize >= 4) {
+                *red = std::stof((*splitted)[splitSize - 4]);
+                *green = std::stof((*splitted)[splitSize - 3]);
+                *blue = std::stof((*splitted)[splitSize - 2]);
+            }
+        } else if (colorSign == "k") {
+            if (splitSize >= 5) {
+                float cyan = std::stof((*splitted)[splitSize - 5]);
+                float magenta = std::stof((*splitted)[splitSize - 4]);
+                float yellow = std::stof((*splitted)[splitSize - 3]);
+                float black = std::stof((*splitted)[splitSize - 2]);
+                
+                PiPiColorConverter::ConvertCMYKToRGB(cyan, magenta, yellow, black, red, green, blue);
+            }
+        }
+        
+        delete splitted;
     }
 
     void PiPiExtractUtil::ExtractAnnotationBackgroundColor(PdfAnnotation *annotation, float *red, float *green, float *blue) {
@@ -177,11 +228,19 @@ namespace PiPi {
             return;
         }
         
+        if (!mkObj->IsDictionary()) {
+            return;
+        }
+        
         PdfDictionary& mkRef = mkObj->GetDictionary();
         PdfDictionary* mk = &mkRef;
         
         PdfObject* bcObj = mk->GetKey(PdfName("BG"));
         if (bcObj == nullptr) {
+            return;
+        }
+        
+        if (!bcObj->IsArray()) {
             return;
         }
         
@@ -204,11 +263,19 @@ namespace PiPi {
             return;
         }
         
+        if (!mkObj->IsDictionary()) {
+            return;
+        }
+        
         PdfDictionary& mkRef = mkObj->GetDictionary();
         PdfDictionary* mk = &mkRef;
         
         PdfObject* bcObj = mk->GetKey(PdfName("BC"));
         if (bcObj == nullptr) {
+            return;
+        }
+        
+        if (!bcObj->IsArray()) {
             return;
         }
         
