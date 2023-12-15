@@ -26,11 +26,14 @@ namespace PiPi {
 			static double ExtractAnnotationX(PdfAnnotation* annotation);
 			static double ExtractAnnotationY(PdfAnnotation* annotation);
         
+            static bool ExtractAnnotationBorderExists(PdfAnnotation* annotation);
             static double ExtractAnnotationBorderWidth(PdfAnnotation* annotation);
+            static void ExtractAnnotationBorderColor(PdfAnnotation* annotation, float* red, float* green, float* blue);
+        
+            static bool ExtractAnnotationBackgroundExists(PdfAnnotation* annotaiton);
+            static void ExtractAnnotationBackgroundColor(PdfAnnotation* annotation, float* red, float* green, float* blue);
         
             static void ExtractAnnotationColor(PdfAnnotation* annotation, float* red, float* green, float* blue);
-            static void ExtractAnnotationBackgroundColor(PdfAnnotation* annotation, float* red, float* green, float* blue);
-            static void ExtractAnnotationBorderColor(PdfAnnotation* annotation, float* red, float* green, float* blue);
 
 			static PiPiFieldType ExtractAnnotationType(PdfAnnotation* annotation);
         

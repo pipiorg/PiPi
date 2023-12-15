@@ -77,7 +77,10 @@ namespace PiPi {
                     
                     float annotWidth = PiPiExtractUtil::ExtractAnnotationWidth(annot);
                     float annotHeight = PiPiExtractUtil::ExtractAnnotationHeight(annot);
-                    float annotBorderWidth = PiPiExtractUtil::ExtractAnnotationBorderWidth(annot);
+                    
+                    float annotBorderWidth = PiPiExtractUtil::ExtractAnnotationBorderExists(annot)
+                        ? PiPiExtractUtil::ExtractAnnotationBorderWidth(annot)
+                        : 0;
                     
                     float annotWidthWithoutBorder = annotWidth - annotBorderWidth * 2;
                     float annotHeightWithoutBorder = annotHeight - annotBorderWidth * 2;

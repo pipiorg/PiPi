@@ -138,6 +138,34 @@ namespace PiPi {
         return x;
     }
 
+    bool PiPiExtractUtil::ExtractAnnotationBorderExists(PdfAnnotation *annotation) {
+        PdfDictionary& dictRef = annotation->GetDictionary();
+        PdfDictionary* dict = &dictRef;
+        
+        PdfObject* mkObj = dict->GetKey(PdfName("MK"));
+        if (mkObj == nullptr) {
+            return false;
+        }
+        
+        if (!mkObj->IsDictionary()) {
+            return false;
+        }
+        
+        PdfDictionary& mkRef = mkObj->GetDictionary();
+        PdfDictionary* mk = &mkRef;
+        
+        PdfObject* bcObj = mk->GetKey(PdfName("BC"));
+        if (bcObj == nullptr) {
+            return false;
+        }
+        
+        if (!bcObj->IsArray()) {
+            return false;
+        }
+        
+        return true;
+    }
+
     double PiPiExtractUtil::ExtractAnnotationBorderWidth(PdfAnnotation *annotation) {
         PdfDictionary& dictRef = annotation->GetDictionary();
         PdfDictionary* dict = &dictRef;
@@ -158,6 +186,41 @@ namespace PiPi {
         int width = (int) w->GetNumber();
         
         return width;
+    }
+
+    void PiPiExtractUtil::ExtractAnnotationBorderColor(PdfAnnotation *annotation, float *red, float *green, float *blue) {
+        *red = 0;
+        *green = 0;
+        *blue = 0;
+        
+        PdfDictionary& dictRef = annotation->GetDictionary();
+        PdfDictionary* dict = &dictRef;
+        
+        PdfObject* mkObj = dict->GetKey(PdfName("MK"));
+        if (mkObj == nullptr) {
+            return;
+        }
+        
+        if (!mkObj->IsDictionary()) {
+            return;
+        }
+        
+        PdfDictionary& mkRef = mkObj->GetDictionary();
+        PdfDictionary* mk = &mkRef;
+        
+        PdfObject* bcObj = mk->GetKey(PdfName("BC"));
+        if (bcObj == nullptr) {
+            return;
+        }
+        
+        if (!bcObj->IsArray()) {
+            return;
+        }
+        
+        PdfArray& bcRef = bcObj->GetArray();
+        PdfArray* bc = &bcRef;
+        
+        PiPiColorConverter::ConvertPoDoFoArrayToRGB(bc, red, green, blue);
     }
 
     void PiPiExtractUtil::ExtractAnnotationColor(PdfAnnotation *annotation, float *red, float *green, float *blue) {
@@ -215,6 +278,34 @@ namespace PiPi {
         delete splitted;
     }
 
+    bool PiPiExtractUtil::ExtractAnnotationBackgroundExists(PdfAnnotation *annotation) {
+        PdfDictionary& dictRef = annotation->GetDictionary();
+        PdfDictionary* dict = &dictRef;
+        
+        PdfObject* mkObj = dict->GetKey(PdfName("MK"));
+        if (mkObj == nullptr) {
+            return false;
+        }
+        
+        if (!mkObj->IsDictionary()) {
+            return false;
+        }
+        
+        PdfDictionary& mkRef = mkObj->GetDictionary();
+        PdfDictionary* mk = &mkRef;
+        
+        PdfObject* bcObj = mk->GetKey(PdfName("BG"));
+        if (bcObj == nullptr) {
+            return false;
+        }
+        
+        if (!bcObj->IsArray()) {
+            return false;
+        }
+        
+        return true;
+    }
+
     void PiPiExtractUtil::ExtractAnnotationBackgroundColor(PdfAnnotation *annotation, float *red, float *green, float *blue) {
         *red = 0;
         *green = 0;
@@ -236,41 +327,6 @@ namespace PiPi {
         PdfDictionary* mk = &mkRef;
         
         PdfObject* bcObj = mk->GetKey(PdfName("BG"));
-        if (bcObj == nullptr) {
-            return;
-        }
-        
-        if (!bcObj->IsArray()) {
-            return;
-        }
-        
-        PdfArray& bcRef = bcObj->GetArray();
-        PdfArray* bc = &bcRef;
-        
-        PiPiColorConverter::ConvertPoDoFoArrayToRGB(bc, red, green, blue);
-    }
-
-    void PiPiExtractUtil::ExtractAnnotationBorderColor(PdfAnnotation *annotation, float *red, float *green, float *blue) {
-        *red = 0;
-        *green = 0;
-        *blue = 0;
-        
-        PdfDictionary& dictRef = annotation->GetDictionary();
-        PdfDictionary* dict = &dictRef;
-        
-        PdfObject* mkObj = dict->GetKey(PdfName("MK"));
-        if (mkObj == nullptr) {
-            return;
-        }
-        
-        if (!mkObj->IsDictionary()) {
-            return;
-        }
-        
-        PdfDictionary& mkRef = mkObj->GetDictionary();
-        PdfDictionary* mk = &mkRef;
-        
-        PdfObject* bcObj = mk->GetKey(PdfName("BC"));
         if (bcObj == nullptr) {
             return;
         }
