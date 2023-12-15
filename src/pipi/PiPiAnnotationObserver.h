@@ -10,7 +10,8 @@ namespace PiPi {
             PiPiAnnotationObserver();
             ~PiPiAnnotationObserver();
         
-        void observer(const std::map<const std::string, std::vector<PdfAnnotation*>*>* observedMap);
+        void observerAll(const std::map<const std::string, std::vector<PdfAnnotation*>*>* observedMap);
+        
         bool access(const std::string fieldName, std::unique_ptr<std::vector<PdfAnnotation*>> annotsPtr);
         bool access(const std::string fieldName, std::unique_ptr<std::map<const std::string, std::vector<PdfAnnotation*>*>> annotMapPtr);
         

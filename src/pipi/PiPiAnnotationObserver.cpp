@@ -16,7 +16,7 @@ namespace PiPi {
         this->annotMap = nullptr;
     }
 
-    void PiPiAnnotationObserver::observer(const std::map<const std::string, std::vector<PdfAnnotation *> *> * observedAnnotMap) {
+    void PiPiAnnotationObserver::observerAll(const std::map<const std::string, std::vector<PdfAnnotation *> *> * observedAnnotMap) {
         if (observed) {
             return;
         }

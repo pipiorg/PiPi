@@ -10,7 +10,8 @@ namespace PiPi {
             PiPiFieldObserver();
             ~PiPiFieldObserver();
         
-        void observer(const std::map<const std::string, std::vector<PdfField*>*>* observedMap);
+        void observerAll(const std::map<const std::string, std::vector<PdfField*>*>* observedMap);
+        
         bool access(const std::string fieldName, std::unique_ptr<std::vector<PdfField*>> fieldsPtr);
         bool access(const std::string fieldName, std::unique_ptr<std::map<const std::string, std::vector<PdfField*>*>> fieldMapPtr);
 

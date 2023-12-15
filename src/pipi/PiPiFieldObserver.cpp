@@ -16,7 +16,7 @@ namespace PiPi {
         this->fieldMap = nullptr;
     }
 
-    void PiPiFieldObserver::observer(const std::map<const std::string, std::vector<PdfField *> *> *observedMap) {
+    void PiPiFieldObserver::observerAll(const std::map<const std::string, std::vector<PdfField *> *> *observedMap) {
         if (this->observed) {
             return;
         }
