@@ -16,7 +16,7 @@ namespace PiPi {
         this->annotMap = nullptr;
     }
 
-    void PiPiAnnotationObserver::observer(const std::map<const std::string, const std::vector<PdfAnnotation *> *> * observedAnnotMap) {
+    void PiPiAnnotationObserver::observer(const std::map<const std::string, std::vector<PdfAnnotation *> *> * observedAnnotMap) {
         if (observed) {
             return;
         }
@@ -25,7 +25,7 @@ namespace PiPi {
         
         for (auto mapIterator = observedAnnotMap->begin(); mapIterator != observedAnnotMap->end(); mapIterator.operator++()) {
             const std::string fieldName = mapIterator->first;
-            const std::vector<PdfAnnotation*>* observedAnnots = mapIterator->second;
+            std::vector<PdfAnnotation*>* observedAnnots = mapIterator->second;
             
             std::vector<PdfAnnotation*>* annots = new std::vector<PdfAnnotation*>();
             annots->assign(observedAnnots->begin(), observedAnnots->end());
