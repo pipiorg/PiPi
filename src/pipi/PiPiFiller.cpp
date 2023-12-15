@@ -69,24 +69,29 @@ namespace PiPi {
             
             if (annots->size() > 0) {
                 PdfAnnotation* minAnnot = nullptr;
-                float minAnnotWidth = 0;
-                float minAnnotHeight = 0;
+                float minAnnotWidthWithoutBorder = 0;
+                float minAnnotHeightWithoutBorder = 0;
                 
                 for (auto iterator = annots->begin(); iterator != annots->end(); iterator.operator++()) {
                     PdfAnnotation* annot = *iterator;
                     
                     float annotWidth = PiPiExtractUtil::ExtractAnnotationWidth(annot);
                     float annotHeight = PiPiExtractUtil::ExtractAnnotationHeight(annot);
-                    float annotArea = annotWidth * annotHeight;
+                    float annotBorderWidth = PiPiExtractUtil::ExtractAnnotationBorderWidth(annot);
+                    
+                    float annotWidthWithoutBorder = annotWidth - annotBorderWidth * 2;
+                    float annotHeightWithoutBorder = annotHeight - annotBorderWidth * 2;
+                    
+                    float annotArea = annotWidthWithoutBorder * annotHeightWithoutBorder;
                     
                     if (minAnnot == nullptr) {
                         minAnnot = annot;
-                        minAnnotWidth = annotWidth;
-                        minAnnotHeight = annotHeight;
+                        minAnnotWidthWithoutBorder = annotWidthWithoutBorder;
+                        minAnnotHeightWithoutBorder = annotHeightWithoutBorder;
                         continue;
                     }
                     
-                    float minAnnotArea = minAnnotWidth * minAnnotHeight;
+                    float minAnnotArea = minAnnotWidthWithoutBorder * minAnnotHeightWithoutBorder;
                     
                     if (minAnnotArea > annotArea) {
                         minAnnot = annot;
@@ -98,8 +103,8 @@ namespace PiPi {
                 float fontSize = PiPiExtractUtil::ExtractAnnotationFontSize(minAnnot);
                 
                 value = multiline
-                    ? this->ellipsisValueMultiline(value, minAnnotWidth, minAnnotHeight, fontName, fontSize)
-                    : this->ellipsisValue(value, minAnnotWidth, minAnnotHeight, fontName, fontSize);
+                    ? this->ellipsisValueMultiline(value, minAnnotWidthWithoutBorder, minAnnotHeightWithoutBorder, fontName, fontSize)
+                    : this->ellipsisValue(value, minAnnotWidthWithoutBorder, minAnnotHeightWithoutBorder, fontName, fontSize);
             }
             
             delete annots;
