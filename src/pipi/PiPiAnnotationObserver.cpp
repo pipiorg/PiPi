@@ -16,6 +16,10 @@ namespace PiPi {
         this->annotMap = nullptr;
     }
 
+    bool PiPiAnnotationObserver::isObserved() {
+        this->observed;
+    }
+
     void PiPiAnnotationObserver::observe(PiPiAnnotationObserveType observeType, const std::string fieldName, PdfAnnotation *annot) {
         switch (observeType) {
             case PiPiAnnotationObserveType::Add:
@@ -47,15 +51,14 @@ namespace PiPi {
         observed = true;
     }
 
-    bool PiPiAnnotationObserver::access(const std::string fieldName, std::unique_ptr<std::vector<PdfAnnotation *>> annotsPtr) {
+    bool PiPiAnnotationObserver::access(const std::string fieldName, std::vector<PdfAnnotation *>** annotsPtr) {
         if (!observed) {
             return false;
         }
         
         std::map<const std::string, std::vector<PdfAnnotation*>*>* annotMap = this->annotMap;
         
-        std::vector<PdfAnnotation*>* outAnnots = new std::vector<PdfAnnotation*>();
-        annotsPtr.reset(outAnnots);
+        *annotsPtr = new std::vector<PdfAnnotation*>();
         
         auto findIterator = annotMap->find(fieldName);
         if (findIterator == annotMap->end()) {
@@ -63,20 +66,19 @@ namespace PiPi {
         }
         
         std::vector<PdfAnnotation*>* annots = findIterator->second;
-        outAnnots->assign(annots->begin(), annots->end());
+        (*annotsPtr)->assign(annots->begin(), annots->end());
         
         return true;
     }
 
-    bool PiPiAnnotationObserver::access(const std::string fieldName, std::unique_ptr<std::map<const std::string, std::vector<PdfAnnotation*>*>> annotMapPtr) {
+    bool PiPiAnnotationObserver::accessAll(std::map<const std::string, std::vector<PdfAnnotation*>*>** annotMapPtr) {
         if (!observed) {
             return false;
         }
         
         std::map<const std::string, std::vector<PdfAnnotation*>*>* annotMap = this->annotMap;
         
-        std::map<const std::string, std::vector<PdfAnnotation*>*>* outAnnotMap = new std::map<const std::string, std::vector<PdfAnnotation*>*>();
-        annotMapPtr.reset(outAnnotMap);
+        *annotMapPtr = new std::map<const std::string, std::vector<PdfAnnotation*>*>();
         
         for (auto mapIterator = annotMap->begin(); mapIterator != annotMap->end(); mapIterator.operator++()) {
             const std::string fieldName = mapIterator->first;
@@ -85,7 +87,7 @@ namespace PiPi {
             std::vector<PdfAnnotation*>* outAnnots = new std::vector<PdfAnnotation*>();
             outAnnots->assign(annots->begin(), annots->end());
             
-            outAnnotMap->insert(std::pair<const std::string, std::vector<PdfAnnotation*>*>(fieldName, outAnnots));
+            (*annotMapPtr)->insert(std::pair<const std::string, std::vector<PdfAnnotation*>*>(fieldName, outAnnots));
         }
         
         return true;

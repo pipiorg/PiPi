@@ -16,6 +16,10 @@ namespace PiPi {
         this->fieldMap = nullptr;
     }
 
+    bool PiPiFieldObserver::isObserved() {
+        return this->observed;
+    }
+
     void PiPiFieldObserver::observe(PiPiFieldObserveType observeType, const std::string fieldName, PdfField *field) {
         switch (observeType) {
             case PiPiFieldObserveType::Add:
@@ -47,15 +51,14 @@ namespace PiPi {
         this->observed = true;
     }
 
-    bool PiPiFieldObserver::access(const std::string fieldName, std::unique_ptr<std::vector<PdfField *>> fieldsPtr) {
+    bool PiPiFieldObserver::access(const std::string fieldName, std::vector<PdfField *>** fieldsPtr) {
         if (!this->observed) {
             return false;
         }
         
         std::map<const std::string, std::vector<PdfField*>*>* fieldMap = this->fieldMap;
         
-        std::vector<PdfField*>* outFields = new std::vector<PdfField*>();
-        fieldsPtr.reset(outFields);
+        *fieldsPtr = new std::vector<PdfField*>();
         
         auto findIterator = fieldMap->find(fieldName);
         if (findIterator == fieldMap->end()){
@@ -63,20 +66,19 @@ namespace PiPi {
         }
         
         std::vector<PdfField*>* fields = findIterator->second;
-        outFields->assign(fields->begin(), fields->end());
+        (*fieldsPtr)->assign(fields->begin(), fields->end());
         
         return true;
     }
 
-    bool PiPiFieldObserver::access(const std::string fieldName, std::unique_ptr<std::map<const std::string, std::vector<PdfField *> *>> fieldMapPtr) {
+    bool PiPiFieldObserver::accessAll(std::map<const std::string, std::vector<PdfField *> *>** fieldMapPtr) {
         if (!this->observed) {
             return false;
         }
         
         std::map<const std::string, std::vector<PdfField*>*>* fieldMap = this->fieldMap;
         
-        std::map<const std::string, std::vector<PdfField*>*>* outFieldMap = new std::map<const std::string, std::vector<PdfField*>*>();
-        fieldMapPtr.reset(outFieldMap);
+        *fieldMapPtr = new std::map<const std::string, std::vector<PdfField*>*>();
         
         for (auto mapIterator = fieldMap->begin(); mapIterator != fieldMap->end(); mapIterator.operator++()) {
             const std::string fieldName = mapIterator->first;
@@ -85,7 +87,7 @@ namespace PiPi {
             std::vector<PdfField*>* outFields = new std::vector<PdfField*>();
             outFields->assign(fields->begin(), fields->end());
             
-            outFieldMap->insert(std::pair<const std::string, std::vector<PdfField*>*>(fieldName, outFields));
+            (*fieldMapPtr)->insert(std::pair<const std::string, std::vector<PdfField*>*>(fieldName, outFields));
         }
         
         return true;
