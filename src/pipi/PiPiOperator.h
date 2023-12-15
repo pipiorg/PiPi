@@ -8,6 +8,8 @@
 #include "PiPiPager.h"
 #include "PiPiExtractor.h"
 #include "PiPiFontManager.h"
+#include "PiPiFieldObserver.h"
+#include "PiPiAnnotationObserver.h"
 
 using namespace std;
 
@@ -34,6 +36,8 @@ namespace PiPi {
 			PiPiPager* pager;
 			PiPiExtractor* extractor;
 			PiPiFontManager* fontManager;
+            PiPiFieldObserver* fieldObserver;
+            PiPiAnnotationObserver* annotObserver;
 
 			void init(char* pdfBytes, size_t pdfSize);
 	};

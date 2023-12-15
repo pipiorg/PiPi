@@ -11,6 +11,12 @@ namespace PiPi {
 		document->LoadFromDevice(input);
 		
 		this->document = document;
+        
+        PiPiAnnotationObserver* annotObserver = new PiPiAnnotationObserver();
+        this->annotObserver = annotObserver;
+        
+        PiPiFieldObserver* fieldObserver = new PiPiFieldObserver();
+        this->fieldObserver = fieldObserver;
 
 		this->pager = nullptr;
 		this->editor = nullptr;
