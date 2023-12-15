@@ -95,35 +95,36 @@ namespace PiPi {
 
     void PiPiAnnotationObserver::observeRemove(const std::string fieldName, PdfAnnotation *annot) {
         std::map<const std::string, std::vector<PdfAnnotation*>*>* annotMap = this->annotMap;
-        
-        std::vector<PdfAnnotation*>* annots = nullptr;
-        
-        auto mapFindIterator = annotMap->find(fieldName);
-        if (mapFindIterator == annotMap->end()) {
-            annots = new std::vector<PdfAnnotation*>();
-            
-            std::pair<const std::string, std::vector<PdfAnnotation*>*> annotPair(fieldName, annots);
-            annotMap->insert(annotPair);
-        } else {
-            annots = mapFindIterator->second;
-        }
-        
-        auto findIterator = std::find(annots->begin(), annots->end(), annot);
-        if (findIterator == annots->end()) {
-            annots->push_back(annot);
-        }
-    }
 
-    void PiPiAnnotationObserver::observeAdd(const std::string fieldName, PdfAnnotation *annot) {
-        std::map<const std::string, std::vector<PdfAnnotation*>*>* annotMap = this->annotMap;
-        
         auto mapFindIterator = annotMap->find(fieldName);
         if (mapFindIterator == annotMap->end()) {
             return;
         }
-        
+
         std::vector<PdfAnnotation*>* annots = mapFindIterator->second;
-        
+
         annots->erase(std::remove(annots->begin(), annots->end(), annot), annots->end());
+    }
+
+    void PiPiAnnotationObserver::observeAdd(const std::string fieldName, PdfAnnotation *annot) {
+        std::map<const std::string, std::vector<PdfAnnotation*>*>* annotMap = this->annotMap;
+
+        std::vector<PdfAnnotation*>* annots = nullptr;
+
+        auto mapFindIterator = annotMap->find(fieldName);
+        if (mapFindIterator == annotMap->end()) {
+            annots = new std::vector<PdfAnnotation*>();
+
+            std::pair<const std::string, std::vector<PdfAnnotation*>*> annotPair(fieldName, annots);
+            annotMap->insert(annotPair);
+        }
+        else {
+            annots = mapFindIterator->second;
+        }
+
+        auto findIterator = std::find(annots->begin(), annots->end(), annot);
+        if (findIterator == annots->end()) {
+            annots->push_back(annot);
+        }
     }
 }
