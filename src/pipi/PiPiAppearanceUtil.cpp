@@ -261,15 +261,13 @@ namespace PiPi {
 	void PiPiAppearanceUtil::GenerateCheckBoxDownUnCheckAppearance(PdfAnnotation* annot, PdfCheckBox* field) {
 		PdfDocument& documentRef = annot->GetDocument();
 		PdfDocument* document = &documentRef;
-        
-        double borderWidth = PiPiExtractUtil::ExtractAnnotationBorderWidth(annot);
 
 		Rect annotRect = annot->GetRect();
 
 		double width = annotRect.Width;
 		double height = annotRect.Height;
 
-		Rect xObjectRect = Rect(0, 0, width + borderWidth * 2, height + borderWidth * 2);
+		Rect xObjectRect = Rect(0, 0, width, height);
 
 		std::unique_ptr<PdfXObjectForm> xObjectPtr = document->CreateXObjectForm(xObjectRect);
 		PdfXObjectForm* xObject = xObjectPtr.get();
@@ -286,6 +284,8 @@ namespace PiPi {
         // 畫邊框
         painter->Save();
         
+        double borderWidth = PiPiExtractUtil::ExtractAnnotationBorderWidth(annot);
+        
         float borderColorRed = 0;
         float borderColorGreen = 0;
         float borderColorBlue = 0;
@@ -295,7 +295,7 @@ namespace PiPi {
         graphicsState->SetStrokeColor(PdfColor(borderColorRed, borderColorGreen, borderColorBlue));
         graphicsState->SetLineCapStyle(PdfLineCapStyle::Round);
         
-        painter->DrawRectangle(0 + borderWidth / 2, 0 + borderWidth / 2, width + borderWidth, height + borderWidth);
+        painter->DrawRectangle(borderWidth / 2, borderWidth / 2, width - borderWidth, height - borderWidth, PdfPathDrawMode::Stroke);
         
         painter->Restore();
         
@@ -315,7 +315,7 @@ namespace PiPi {
         PdfColor& bgColorRef = *bgColor;
         graphicsState->SetFillColor(bgColorRef);
 
-        painter->DrawRectangle(borderWidth, borderWidth, width, height, PdfPathDrawMode::Fill);
+        painter->DrawRectangle(borderWidth, borderWidth, width - borderWidth * 2, height - borderWidth * 2, PdfPathDrawMode::Fill);
         
         painter->Restore();
         
@@ -329,22 +329,17 @@ namespace PiPi {
 	void PiPiAppearanceUtil::GenerateTextBoxAppearance(PiPiFontManager* fontManager, PdfAnnotation* annot, PdfTextBox* field) {
 		PdfDocument& documentRef = annot->GetDocument();
 		PdfDocument* document = &documentRef;
-
-        double borderWidth = PiPiExtractUtil::ExtractAnnotationBorderWidth(annot);
         
 		Rect annotRect = annot->GetRect();
 
 		double width = annotRect.Width;
 		double height = annotRect.Height;
 
-        Rect xObjectRect = Rect(0, 0, width + borderWidth * 2, height + borderWidth * 2);
+        Rect xObjectRect = Rect(0, 0, width, height);
 
 		std::unique_ptr<PdfXObjectForm> xObjectPtr = document->CreateXObjectForm(xObjectRect);
 		PdfXObjectForm* xObject = xObjectPtr.get();
 		PdfXObjectForm& xObjectRef = *xObject;
-
-        double initSX = borderWidth;
-        double initSY = borderWidth;
         
 		PdfPainter* painter = new PdfPainter();
         
@@ -360,6 +355,8 @@ namespace PiPi {
         // 畫邊框
         painter->Save();
         
+        double borderWidth = PiPiExtractUtil::ExtractAnnotationBorderWidth(annot);
+        
         float borderColorRed = 0;
         float borderColorGreen = 0;
         float borderColorBlue = 0;
@@ -369,7 +366,7 @@ namespace PiPi {
         graphicsState->SetStrokeColor(PdfColor(borderColorRed, borderColorGreen, borderColorBlue));
         graphicsState->SetLineCapStyle(PdfLineCapStyle::Round);
         
-        painter->DrawRectangle(0 + borderWidth / 2, 0 + borderWidth / 2, width + borderWidth, height + borderWidth);
+        painter->DrawRectangle(borderWidth / 2, borderWidth / 2, width - borderWidth, height - borderWidth, PdfPathDrawMode::Stroke);
         
         painter->Restore();
         
@@ -381,11 +378,9 @@ namespace PiPi {
         float backgroundColorBlue = 0;
         PiPiExtractUtil::ExtractAnnotationBackgroundColor(annot, &backgroundColorRed, &backgroundColorGreen, &backgroundColorBlue);
         
-        graphicsState->SetLineWidth(width);
-        graphicsState->SetStrokeColor(PdfColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue));
         graphicsState->SetFillColor(PdfColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue));
-        
-        painter->DrawLine(borderWidth + width / 2, borderWidth, borderWidth + width / 2, borderWidth + height);
+
+        painter->DrawRectangle(borderWidth, borderWidth, width - borderWidth * 2, height - borderWidth * 2, PdfPathDrawMode::Fill);
         
         painter->Restore();
         
@@ -440,7 +435,7 @@ namespace PiPi {
                         break;
                 }
                 
-                painter->DrawTextMultiLine(sText, initSX, initSY, width, height, multineParams);
+                painter->DrawTextMultiLine(sText, borderWidth, borderWidth, width - borderWidth * 2, height - borderWidth * 2, multineParams);
             } else {
                 PdfHorizontalAlignment pHorizontalAlignment;
                 switch (horizontalAlignment) {
@@ -455,7 +450,7 @@ namespace PiPi {
                         break;
                 }
                 
-                painter->DrawTextAligned(sText, initSX, initSY, width, pHorizontalAlignment);
+                painter->DrawTextAligned(sText, borderWidth, borderWidth, width - borderWidth * 2, pHorizontalAlignment);
             }
 		}
         
