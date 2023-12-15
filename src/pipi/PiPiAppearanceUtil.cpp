@@ -57,15 +57,13 @@ namespace PiPi {
 	void PiPiAppearanceUtil::GenerateCheckBoxNormalCheckAppearance(PdfAnnotation* annot, PdfCheckBox* field) {
 		PdfDocument& documentRef = annot->GetDocument();
 		PdfDocument* document = &documentRef;
-        
-        double borderWidth = PiPiExtractUtil::ExtractAnnotationBorderWidth(annot);
 
 		Rect annotRect = annot->GetRect();
 
 		double width = annotRect.Width;
 		double height = annotRect.Height;
 
-		Rect xObjectRect = Rect(0, 0, width + borderWidth * 2, height + borderWidth * 2);
+		Rect xObjectRect = Rect(0, 0, width, height);
 
 		std::unique_ptr<PdfXObjectForm> xObjectPtr = document->CreateXObjectForm(xObjectRect);
 		PdfXObjectForm* xObject = xObjectPtr.get();
@@ -87,11 +85,13 @@ namespace PiPi {
         float borderColorBlue = 0;
         PiPiExtractUtil::ExtractAnnotationBorderColor(annot, &borderColorRed, &borderColorGreen, &borderColorBlue);
         
+        double borderWidth = PiPiExtractUtil::ExtractAnnotationBorderWidth(annot);
+        
         graphicsState->SetLineWidth(borderWidth);
         graphicsState->SetStrokeColor(PdfColor(borderColorRed, borderColorGreen, borderColorBlue));
         graphicsState->SetLineCapStyle(PdfLineCapStyle::Round);
         
-        painter->DrawRectangle(0 + borderWidth / 2, 0 + borderWidth / 2, width + borderWidth, height + borderWidth);
+        painter->DrawRectangle(borderWidth / 2, borderWidth / 2, width - borderWidth, height - borderWidth, PdfPathDrawMode::Stroke);
         
         painter->Restore();
         
@@ -107,7 +107,7 @@ namespace PiPi {
         PdfColor& bgColorRef = *bgColor;
         graphicsState->SetFillColor(bgColorRef);
         
-        painter->DrawRectangle(borderWidth, borderWidth, width, height, PdfPathDrawMode::Fill);
+        painter->DrawRectangle(borderWidth, borderWidth, width - borderWidth * 2, height - borderWidth * 2, PdfPathDrawMode::Fill);
         
         painter->Restore();
 
@@ -122,10 +122,10 @@ namespace PiPi {
 		graphicsState->SetLineWidth(1.5);
 		graphicsState->SetStrokeColor(PdfColor(colorRed, colorGreen, colorBlue));
 		
-        double cx = (width + borderWidth * 2) / 2;
-        double cy = (height + borderWidth * 2) / 2;
+        double cx = width / 2;
+        double cy = height / 2;
 
-        double size = std::min(width, height) / 2;
+        double size = std::min(width - borderWidth * 2, height - borderWidth * 2) / 2;
 
         double p2x = -1 + 0.75;
         double p2y = -1 + 0.51;
@@ -155,15 +155,13 @@ namespace PiPi {
 	void PiPiAppearanceUtil::GenerateCheckBoxDownCheckAppearance(PdfAnnotation* annot, PdfCheckBox* field) {
 		PdfDocument& documentRef = annot->GetDocument();
 		PdfDocument* document = &documentRef;
-        
-        double borderWidth = PiPiExtractUtil::ExtractAnnotationBorderWidth(annot);
 
 		Rect annotRect = annot->GetRect();
 
 		double width = annotRect.Width;
 		double height = annotRect.Height;
 
-		Rect xObjectRect = Rect(0, 0, width + borderWidth * 2, height + borderWidth * 2);
+		Rect xObjectRect = Rect(0, 0, width, height);
 
 		std::unique_ptr<PdfXObjectForm> xObjectPtr = document->CreateXObjectForm(xObjectRect);
 		PdfXObjectForm* xObject = xObjectPtr.get();
@@ -180,6 +178,8 @@ namespace PiPi {
         // 畫邊框
         painter->Save();
         
+        double borderWidth = PiPiExtractUtil::ExtractAnnotationBorderWidth(annot);
+        
         float borderColorRed = 0;
         float borderColorGreen = 0;
         float borderColorBlue = 0;
@@ -189,7 +189,7 @@ namespace PiPi {
         graphicsState->SetStrokeColor(PdfColor(borderColorRed, borderColorGreen, borderColorBlue));
         graphicsState->SetLineCapStyle(PdfLineCapStyle::Round);
         
-        painter->DrawRectangle(0 + borderWidth / 2, 0 + borderWidth / 2, width + borderWidth, height + borderWidth);
+        painter->DrawRectangle(borderWidth / 2, borderWidth / 2, width - borderWidth, height - borderWidth, PdfPathDrawMode::Stroke);
         
         painter->Restore();
         
@@ -209,7 +209,7 @@ namespace PiPi {
         PdfColor& bgColorRef = *bgColor;
         graphicsState->SetFillColor(bgColorRef);
 
-        painter->DrawRectangle(borderWidth, borderWidth, width, height, PdfPathDrawMode::Fill);
+        painter->DrawRectangle(borderWidth, borderWidth, width - borderWidth * 2, height - borderWidth * 2, PdfPathDrawMode::Fill);
         
         painter->Restore();
         
@@ -228,10 +228,10 @@ namespace PiPi {
 		graphicsState->SetLineWidth(1.5);
 		graphicsState->SetStrokeColor(PdfColor(invertColorRed, invertColorGreen, invertColorBlue));
 
-        double cx = (width + borderWidth * 2) / 2;
-        double cy = (height + borderWidth * 2) / 2;
+        double cx = width / 2;
+        double cy = height / 2;
 
-        double size = std::min(width, height) / 2;
+        double size = std::min(width - borderWidth * 2, height - borderWidth * 2) / 2;
 
         double p2x = -1 + 0.75;
         double p2y = -1 + 0.51;
