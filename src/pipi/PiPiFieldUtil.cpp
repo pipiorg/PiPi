@@ -286,9 +286,10 @@ namespace PiPi {
 
     void PiPiFieldUtil::SearchAllChildrenField(PdfField* field, std::map<const std::string, std::vector<PdfField*>*>* fieldMap) {
         const std::string name = field->GetFullName();
-        PdfFieldChildrenCollectionBase& childrens = field->GetChildren();
+        PdfFieldChildrenCollectionBase& childrensRef = field->GetChildren();
+        PdfFieldChildrenCollectionBase* childrens = &childrensRef;
 
-        unsigned int childrenCount = childrens.GetCount();
+        unsigned int childrenCount = childrens->GetCount();
         if (childrenCount == 0) {
             if ((*fieldMap)[name] == nullptr) {
                 (*fieldMap)[name] = new std::vector<PdfField*>();
@@ -299,7 +300,7 @@ namespace PiPi {
         }
 
         for (unsigned int childrenIndex = 0; childrenIndex < childrenCount; childrenIndex++) {
-            PdfField& childrenFieldRef = childrens.GetFieldAt(childrenIndex);
+            PdfField& childrenFieldRef = childrens->GetFieldAt(childrenIndex);
             PdfField* childrenField = &childrenFieldRef;
 
             SearchAllChildrenField(childrenField, fieldMap);
@@ -452,14 +453,15 @@ namespace PiPi {
             PdfField* childrenField = &childrenFieldRef;
 
             std::string childrenName = childrenField->GetFullName();
-            if (childrenName == fieldName) {
-                removeFieldIndexs->push_back(childrenIndex);
-                continue;
-            }
 
             PdfFieldChildrenCollectionBase& guardsonesRef = childrenField->GetChildren();
             PdfFieldChildrenCollectionBase* guardsones = &guardsonesRef;
             unsigned int guardsonCount = guardsones->GetCount();
+
+            if (childrenName == fieldName && guardsonCount == 0) {
+                removeFieldIndexs->push_back(childrenIndex);
+                continue;
+            }
 
             if (guardsonCount != 0) {
                 RemoveAcroformChildrenField(fieldObserver, childrenField, fieldName);
