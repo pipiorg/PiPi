@@ -19,6 +19,7 @@ namespace PiPi {
 
 			void MarkNeedAppearance(std::string fieldName);
 			void UnMarkNeedAppearance(std::string fieldName);
+			void ClearNeedAppearance();
 	
 		private:
 			PdfMemDocument* document;

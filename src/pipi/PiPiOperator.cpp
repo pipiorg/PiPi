@@ -2,7 +2,28 @@
 
 namespace PiPi {
 	PiPiOperator::PiPiOperator(char* pdfBytes, size_t pdfSize) {
-		this->init(pdfBytes, pdfSize);
+		PoDoFo::PdfMemDocument* document = new PoDoFo::PdfMemDocument();
+		auto input = make_shared<PoDoFo::SpanStreamDevice>(pdfBytes, pdfSize);
+		document->LoadFromDevice(input);
+
+		this->document = document;
+
+		PiPiFontManager* fontManager = new PiPiFontManager(document);
+		this->fontManager = fontManager;
+
+		PiPiAnnotationObserver* annotObserver = new PiPiAnnotationObserver();
+		this->annotObserver = annotObserver;
+
+		PiPiFieldObserver* fieldObserver = new PiPiFieldObserver();
+		this->fieldObserver = fieldObserver;
+
+		PiPiAppearanceManager* appearanceManager = new PiPiAppearanceManager(document, fontManager, annotObserver);
+		this->appearanceManager = appearanceManager;
+
+		this->pager = nullptr;
+		this->editor = nullptr;
+		this->filler = nullptr;
+		this->extractor = nullptr;
 	}
 
     PiPiOperator::~PiPiOperator() {
@@ -52,31 +73,6 @@ namespace PiPi {
         }
     }
 
-	void PiPiOperator::init(char* pdfBytes, size_t pdfSize) {
-		PoDoFo::PdfMemDocument * document = new PoDoFo::PdfMemDocument();
-		auto input = make_shared<PoDoFo::SpanStreamDevice>(pdfBytes, pdfSize);
-		document->LoadFromDevice(input);
-		
-		this->document = document;
-
-		PiPiFontManager* fontManager = new PiPiFontManager(document);
-		this->fontManager = fontManager;
-        
-        PiPiAnnotationObserver* annotObserver = new PiPiAnnotationObserver();
-        this->annotObserver = annotObserver;
-        
-        PiPiFieldObserver* fieldObserver = new PiPiFieldObserver();
-        this->fieldObserver = fieldObserver;
-
-		PiPiAppearanceManager* appearanceManager = new PiPiAppearanceManager(document, fontManager, annotObserver);
-		this->appearanceManager = appearanceManager;
-
-		this->pager = nullptr;
-		this->editor = nullptr;
-		this->filler = nullptr;
-		this->extractor = nullptr;
-	}
-
 	PiPiFontManager* PiPiOperator::getFontManager() {
 		return this->fontManager;
 	}
@@ -90,8 +86,9 @@ namespace PiPi {
         PiPiFieldObserver* fieldObserver = this->fieldObserver;
         PiPiAnnotationObserver* annotObserver = this->annotObserver;
 		PiPiFontManager* fontManager = this->fontManager;
+		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
 		
-        PiPiFiller* filler = new PiPiFiller(document, fontManager, fieldObserver, annotObserver);
+        PiPiFiller* filler = new PiPiFiller(document, fontManager, appearanceManager, fieldObserver, annotObserver);
 
 		this->filler = filler;
 
@@ -120,8 +117,9 @@ namespace PiPi {
         PiPiFieldObserver* fieldObserver = this->fieldObserver;
         PiPiAnnotationObserver* annotObserver = this->annotObserver;
         PiPiFontManager* fontManager = this->fontManager;
+		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         
-		PiPiEditor* editor = new PiPiEditor(document, fontManager, fieldObserver, annotObserver);
+		PiPiEditor* editor = new PiPiEditor(document, fontManager, appearanceManager, fieldObserver, annotObserver);
 
 		this->editor = editor;
 

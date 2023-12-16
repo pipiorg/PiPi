@@ -68,4 +68,9 @@ namespace PiPi {
 		std::set<std::string>* fieldNames = this->fieldNames;
 		fieldNames->erase(fieldName);
 	}
+
+	void PiPiAppearanceManager::ClearNeedAppearance() {
+		std::set<std::string>* fieldNames = this->fieldNames;
+		fieldNames->clear();
+	}
 }

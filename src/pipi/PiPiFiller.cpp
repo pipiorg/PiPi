@@ -1,8 +1,9 @@
 #include "PiPiFiller.h"
 
 namespace PiPi {
-	PiPiFiller::PiPiFiller(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver) {
+	PiPiFiller::PiPiFiller(PdfMemDocument* document, PiPiFontManager* fontManage, PiPiAppearanceManager* appearanceManager, PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver) {
         this->document = document;
+        this->appearanceManager = appearanceManager;
         this->fontManager = fontManager;
         this->fieldObserver = fieldObserver;
         this->annotObserver = annotObserver;
@@ -15,6 +16,7 @@ namespace PiPi {
 	PiPiFiller* PiPiFiller::fillValue(std::string name, std::string value) {
 		PdfMemDocument* document = this->document;
 		PiPiFontManager* fontManager = this->fontManager;
+        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         PiPiFieldObserver* fieldObserver = this->fieldObserver;
         PiPiAnnotationObserver* annotObserver = this->annotObserver;
 
@@ -48,15 +50,7 @@ namespace PiPi {
 
 		delete fields;
 
-		std::vector<PdfAnnotation*>* annots = PiPiFieldUtil::SearchFieldAnnotation(annotObserver, document, name);
-
-		for (auto iterator = annots->begin(); iterator != annots->end(); iterator.operator++()) {
-			PdfAnnotation* annot = *iterator;
-
-			PiPiAppearanceUtil::GenerateAppearance(fontManager, annot);
-		}
-
-		delete annots;
+        appearanceManager->MarkNeedAppearance(name);
 
 		return this;
 	}

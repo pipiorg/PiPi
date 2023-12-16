@@ -41,7 +41,5 @@ namespace PiPi {
 			PiPiAppearanceManager* appearanceManager;
             PiPiFieldObserver* fieldObserver;
             PiPiAnnotationObserver* annotObserver;
-
-			void init(char* pdfBytes, size_t pdfSize);
 	};
 }

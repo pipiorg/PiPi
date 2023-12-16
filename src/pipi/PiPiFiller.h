@@ -4,7 +4,7 @@
 #include "utf8.h"
 #include "PiPiFontManager.h"
 #include "PiPiFieldUtil.h"
-#include "PiPiAppearanceUtil.h"
+#include "PiPiAppearanceManager.h"
 #include "PiPiAnnotationObserver.h"
 #include "PiPiFieldObserver.h"
 
@@ -13,7 +13,7 @@ using namespace PoDoFo;
 namespace PiPi {
 	class PiPiFiller {
 		public:
-			PiPiFiller(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver);
+			PiPiFiller(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiAppearanceManager* appearanceManager, PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver);
 
 			PiPiFiller* fillValue(std::string fieldName, std::string value);
             PiPiFiller* fillValue(std::string fieldName, std::string value, bool ellipsis);
@@ -25,6 +25,7 @@ namespace PiPi {
 			PdfMemDocument* document;
 			
 			PiPiFontManager* fontManager;
+			PiPiAppearanceManager* appearanceManager;
             PiPiFieldObserver* fieldObserver;
             PiPiAnnotationObserver* annotObserver;
 

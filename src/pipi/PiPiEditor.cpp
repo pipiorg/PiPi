@@ -1,9 +1,10 @@
 #include "PiPiEditor.h"
 
 namespace PiPi {
-	PiPiEditor::PiPiEditor(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver) {
+	PiPiEditor::PiPiEditor(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiAppearanceManager* appearanceManager, PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver) {
         this->document = document;
         this->fontManager = fontManager;
+        this->appearanceManager = appearanceManager;
         this->fieldObserver = fieldObserver;
         this->annotObserver = annotObserver;
 	}
@@ -14,6 +15,7 @@ namespace PiPi {
 
     PiPiEditor* PiPiEditor::flatten() {
         PdfMemDocument* document = this->document;
+        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         PiPiFieldObserver* fieldObserver = this->fieldObserver;
         PiPiAnnotationObserver* annotObserver = this->annotObserver;
         
@@ -34,11 +36,14 @@ namespace PiPi {
         
         PiPiFieldUtil::RemoveAllField(fieldObserver, annotObserver, document);
 
+        appearanceManager->ClearNeedAppearance();
+
         return this;
     }
 
 	PiPiEditor* PiPiEditor::flatten(std::string fieldName) {
 		PdfMemDocument* document = this->document;
+        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         PiPiFieldObserver* fieldObserver = this->fieldObserver;
         PiPiAnnotationObserver* annotObserver = this->annotObserver;
 
@@ -55,45 +60,79 @@ namespace PiPi {
 
 		PiPiFieldUtil::RemoveField(fieldObserver, annotObserver, document, fieldName);
 
+        appearanceManager->UnMarkNeedAppearance(fieldName);
+
 		return this;
 	}
 
     PiPiEditor* PiPiEditor::addField(std::string fieldName, PiPiFieldType type, unsigned int page, double x, double y, double width, double height) {
+        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+        appearanceManager->MarkNeedAppearance(fieldName);
         return this;
     }
 
 	PiPiEditor* PiPiEditor::removeField(std::string fieldName) {
 		PdfMemDocument* document = this->document;
+        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         PiPiFieldObserver* fieldObserver = this->fieldObserver;
         PiPiAnnotationObserver* annotObserver = this->annotObserver;
         
 		PiPiFieldUtil::RemoveField(fieldObserver, annotObserver, document, fieldName);
+
+        appearanceManager->UnMarkNeedAppearance(fieldName);
+
 		return this;
 	}
 
 	PiPiEditor* PiPiEditor::renameField(std::string oldFieldName, std::string newFieldName) {
 		PdfMemDocument* document = this->document;
+        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+
+        appearanceManager->UnMarkNeedAppearance(oldFieldName);
+        appearanceManager->MarkNeedAppearance(newFieldName);
+
 		return this;
 	}
 
     PiPiEditor* PiPiEditor::setFieldColor(std::string fieldName, int red, int green, int blue) {
+        PdfMemDocument* document = this->document;
+        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+
+        appearanceManager->MarkNeedAppearance(fieldName);
+
         return this;
     }
 
     PiPiEditor* PiPiEditor::setFieldBorderColor(std::string fieldName, int red, int green, int blue) {
+        PdfMemDocument* document = this->document;
+        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+
+        appearanceManager->MarkNeedAppearance(fieldName);
+        
         return this;
     }
 
     PiPiEditor* PiPiEditor::setFieldBackgroundColor(std::string fieldName, int red, int green, int blue) {
+        PdfMemDocument* document = this->document;
+        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+
+        appearanceManager->MarkNeedAppearance(fieldName);
+        
         return this;
     }
 
     PiPiEditor* PiPiEditor::setFieldTextHorizontalAlignment(std::string fieldName, PiPiTextHorizontalAlignment alignment) {
+        PdfMemDocument* document = this->document;
+        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+
+        appearanceManager->MarkNeedAppearance(fieldName);
+        
         return this;
     }
 
     PiPiEditor* PiPiEditor::setFieldMultiline(std::string fieldName, bool multiline) {
         PdfMemDocument* document = this->document;
+        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         PiPiFieldObserver* fieldObserver = this->fieldObserver;
         
         std::vector<PdfField*>* fields = PiPiFieldUtil::SearchField(fieldObserver, document, fieldName);
@@ -112,6 +151,8 @@ namespace PiPi {
         }
         
         delete fields;
+
+        appearanceManager->MarkNeedAppearance(fieldName);
         
         return this;
     }
@@ -119,6 +160,7 @@ namespace PiPi {
     PiPiEditor* PiPiEditor::setFieldFontName(std::string fieldName, std::string fontName) {
         PdfMemDocument* document = this->document;
         PiPiFontManager* fontManager = this->fontManager;
+        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         PiPiFieldObserver* fieldObserver = this->fieldObserver;
         PiPiAnnotationObserver* annotObserver = this->annotObserver;
         
@@ -167,20 +209,17 @@ namespace PiPi {
         
         delete fields;
         
-        std::vector<PdfAnnotation*>* annots = PiPiFieldUtil::SearchFieldAnnotation(annotObserver, document, fieldName);
-        
-        for (auto iterator = annots->begin(); iterator != annots->end(); iterator.operator++()) {
-            PdfAnnotation* annot = *iterator;
-            
-            PiPiAppearanceUtil::GenerateAppearance(fontManager, annot);
-        }
-        
-        delete annots;
+        appearanceManager->MarkNeedAppearance(fieldName);
         
         return this;
     }
 
     PiPiEditor* PiPiEditor::setFieldFontSize(std::string fieldName, float fontSize) {
+        PdfMemDocument* document = this->document;
+        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+
+        appearanceManager->MarkNeedAppearance(fieldName);
+
         return this;
     }
 }

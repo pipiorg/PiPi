@@ -3,7 +3,7 @@
 #include <iostream>
 #include "podofo/podofo.h"
 #include "PiPiFieldUtil.h"
-#include "PiPiAppearanceUtil.h"
+#include "PiPiAppearanceManager.h"
 #include "PiPiCommon.h"
 #include "PiPiFontManager.h"
 #include "PiPiFieldObserver.h"
@@ -15,7 +15,7 @@ using namespace PoDoFo;
 namespace PiPi {
 	class PiPiEditor {
 		public:
-			PiPiEditor(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver);
+			PiPiEditor(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiAppearanceManager* appearanceManager, PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver);
 
             PiPiEditor* flatten();
 			PiPiEditor* flatten(std::string fieldName);
@@ -41,6 +41,7 @@ namespace PiPi {
 			PdfMemDocument* document;
         
             PiPiFontManager* fontManager;
+            PiPiAppearanceManager* appearanceManager;
             PiPiFieldObserver* fieldObserver;
             PiPiAnnotationObserver* annotObserver;
 	};
