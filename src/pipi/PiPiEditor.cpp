@@ -15,6 +15,7 @@ namespace PiPi {
 
     PiPiEditor* PiPiEditor::flatten() {
         PdfMemDocument* document = this->document;
+        PiPiFontManager* fontManager = this->fontManager;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         PiPiFieldObserver* fieldObserver = this->fieldObserver;
         PiPiAnnotationObserver* annotObserver = this->annotObserver;
@@ -28,6 +29,7 @@ namespace PiPi {
             for (auto annotIterator = annots->begin(); annotIterator != annots->end(); annotIterator.operator++()) {
                 PdfAnnotation* annotation = *annotIterator;
 
+                PiPiAppearanceUtil::GenerateAppearance(fontManager, annotation);
                 PiPiFieldUtil::FlattenAnnotation(annotation);
             }
         }
