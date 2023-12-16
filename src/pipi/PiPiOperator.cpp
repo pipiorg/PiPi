@@ -6,6 +6,11 @@ namespace PiPi {
 	}
 
     PiPiOperator::~PiPiOperator() {
+		if (this->appearanceManager != nullptr) {
+			delete this->appearanceManager;
+			this->appearanceManager = nullptr;
+		}
+
         if (this->annotObserver != nullptr) {
             delete this->annotObserver;
             this->annotObserver = nullptr;
@@ -53,6 +58,9 @@ namespace PiPi {
 		document->LoadFromDevice(input);
 		
 		this->document = document;
+
+		PiPiFontManager* fontManager = new PiPiFontManager(document);
+		this->fontManager = fontManager;
         
         PiPiAnnotationObserver* annotObserver = new PiPiAnnotationObserver();
         this->annotObserver = annotObserver;
@@ -60,11 +68,17 @@ namespace PiPi {
         PiPiFieldObserver* fieldObserver = new PiPiFieldObserver();
         this->fieldObserver = fieldObserver;
 
+		PiPiAppearanceManager* appearanceManager = new PiPiAppearanceManager(document, fontManager, annotObserver);
+		this->appearanceManager = appearanceManager;
+
 		this->pager = nullptr;
 		this->editor = nullptr;
 		this->filler = nullptr;
 		this->extractor = nullptr;
-		this->fontManager = nullptr;
+	}
+
+	PiPiFontManager* PiPiOperator::getFontManager() {
+		return this->fontManager;
 	}
 
 	PiPiFiller* PiPiOperator::getFiller() {
@@ -75,8 +89,7 @@ namespace PiPi {
 		PdfMemDocument* document = this->document;
         PiPiFieldObserver* fieldObserver = this->fieldObserver;
         PiPiAnnotationObserver* annotObserver = this->annotObserver;
-        
-		PiPiFontManager* fontManager = getFontManager();
+		PiPiFontManager* fontManager = this->fontManager;
 		
         PiPiFiller* filler = new PiPiFiller(document, fontManager, fieldObserver, annotObserver);
 
@@ -106,8 +119,7 @@ namespace PiPi {
 		PdfMemDocument* document = this->document;
         PiPiFieldObserver* fieldObserver = this->fieldObserver;
         PiPiAnnotationObserver* annotObserver = this->annotObserver;
-        
-        PiPiFontManager* fontManager = getFontManager();
+        PiPiFontManager* fontManager = this->fontManager;
         
 		PiPiEditor* editor = new PiPiEditor(document, fontManager, fieldObserver, annotObserver);
 
@@ -131,19 +143,6 @@ namespace PiPi {
 		return this->extractor;
 	}
 
-	PiPiFontManager* PiPiOperator::getFontManager() {
-		if (this->fontManager != nullptr) {
-			return this->fontManager;
-		}
-		
-		PdfMemDocument* document = this->document;
-		PiPiFontManager* fontManager = new PiPiFontManager(document);
-
-		this->fontManager = fontManager;
-		
-		return this->fontManager;
-	}
-
 	bool PiPiOperator::isOperable() {
 		return this->document != nullptr;
 	}
@@ -152,10 +151,11 @@ namespace PiPi {
 		vector<char> outputVector;
 		PoDoFo::VectorStreamDevice outputStreamDevice(outputVector);
         
-        
         PiPiFontManager* fontManager = this->getFontManager();
-        PdfMemDocument* document = this->document;
+		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PdfMemDocument* document = this->document;
 		
+		appearanceManager->GenerateAppearance();
         fontManager->embedFonts();
         document->Save(outputStreamDevice);
 

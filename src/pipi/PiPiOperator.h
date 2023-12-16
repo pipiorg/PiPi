@@ -8,6 +8,7 @@
 #include "PiPiPager.h"
 #include "PiPiExtractor.h"
 #include "PiPiFontManager.h"
+#include "PiPiAppearanceManager.h"
 #include "PiPiFieldObserver.h"
 #include "PiPiAnnotationObserver.h"
 
@@ -37,6 +38,7 @@ namespace PiPi {
 			PiPiPager* pager;
 			PiPiExtractor* extractor;
 			PiPiFontManager* fontManager;
+			PiPiAppearanceManager* appearanceManager;
             PiPiFieldObserver* fieldObserver;
             PiPiAnnotationObserver* annotObserver;
 

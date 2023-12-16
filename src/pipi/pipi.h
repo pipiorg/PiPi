@@ -7,3 +7,5 @@
 #include "PiPiExtractor.h"
 #include "PiPiFieldType.h"
 #include "PiPiFontManager.h"
+#include "PiPiAppearanceManager.h"
+#include "PiPiMultiOperator.h"
