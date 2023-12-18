@@ -472,12 +472,6 @@ namespace PiPi {
                     lastFieldDict->RemoveKey(SpecialHierarchicalFieldKey);
                 }
             }
-            
-            std::string lastFieldName = std::to_string(cFieldSize + 1);
-            lastFieldDict->AddKey(PdfName("T"), PdfString(lastFieldName));
-        } else {
-            std::string lastFieldName = (*splits)[splits->size() - 1];
-            lastFieldDict->AddKey(PdfName("T"), PdfString(lastFieldName));
         }
         
         switch (type) {
@@ -661,9 +655,6 @@ namespace PiPi {
             expandFieldDict->AddKey(SpecialHierarchicalFieldKey, *fieldValueObj);
             fieldDict->RemoveKey(SpecialHierarchicalFieldKey);
         }
-        
-        // 新增部分屬性
-        fieldDict->AddKey(PdfName("T"), PdfString("1"));
         
         // 從爸爸加上擴展層
         if (parentFieldObj == nullptr) {
