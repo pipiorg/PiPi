@@ -20,7 +20,7 @@ namespace PiPi {
         PiPiFieldObserver* fieldObserver = this->fieldObserver;
         PiPiAnnotationObserver* annotObserver = this->annotObserver;
 
-		std::vector<PdfField*>* fields = PiPiFieldUtil::SearchField(fieldObserver, document, name);
+		std::set<PdfField*>* fields = PiPiFieldUtil::SearchField(fieldObserver, document, name);
 
 		for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
             PdfField* field = *iterator;
@@ -60,7 +60,7 @@ namespace PiPi {
         PiPiAnnotationObserver* annotObserver = this->annotObserver;
         
         if (ellipsis) {
-            std::vector<PdfAnnotation*>* annots =  PiPiFieldUtil::SearchFieldAnnotation(annotObserver, document, fieldName);
+            std::set<PdfAnnotation*>* annots =  PiPiFieldUtil::SearchFieldAnnotation(annotObserver, document, fieldName);
             
             if (annots->size() > 0) {
                 PdfAnnotation* minAnnot = nullptr;
@@ -116,7 +116,7 @@ namespace PiPi {
         PiPiAnnotationObserver* annotObserver = this->annotObserver;
         PiPiFieldObserver* fieldObserver = this->fieldObserver;
 		
-		std::vector<PdfAnnotation*>* annotations = PiPiFieldUtil::SearchFieldAnnotation(annotObserver, document, fieldName);
+		std::set<PdfAnnotation*>* annotations = PiPiFieldUtil::SearchFieldAnnotation(annotObserver, document, fieldName);
 		for (auto iterator = annotations->begin(); iterator != annotations->end(); ++iterator) {
 			PdfAnnotation* annotation = *iterator;
 

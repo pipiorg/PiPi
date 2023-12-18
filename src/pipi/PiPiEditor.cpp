@@ -20,12 +20,12 @@ namespace PiPi {
         PiPiFieldObserver* fieldObserver = this->fieldObserver;
         PiPiAnnotationObserver* annotObserver = this->annotObserver;
         
-        std::map<const std::string, std::vector<PdfAnnotation*>*>* annotMap = PiPiFieldUtil::SerachAllFieldAnnotation(annotObserver, document);
+        std::map<const std::string, std::set<PdfAnnotation*>*>* annotMap = PiPiFieldUtil::SerachAllFieldAnnotation(annotObserver, document);
         
         for (auto mapIterator = annotMap->begin(); mapIterator != annotMap->end(); mapIterator.operator++()) {
-            std::pair<const std::string, std::vector<PdfAnnotation*>*> pair = *mapIterator;
+            std::pair<const std::string, std::set<PdfAnnotation*>*> pair = *mapIterator;
             
-            std::vector<PdfAnnotation*>* annots = pair.second;
+            std::set<PdfAnnotation*>* annots = pair.second;
             for (auto annotIterator = annots->begin(); annotIterator != annots->end(); annotIterator.operator++()) {
                 PdfAnnotation* annotation = *annotIterator;
 
@@ -50,7 +50,7 @@ namespace PiPi {
         PiPiFieldObserver* fieldObserver = this->fieldObserver;
         PiPiAnnotationObserver* annotObserver = this->annotObserver;
 
-		std::vector<PdfAnnotation*>* annotations = PiPiFieldUtil::SearchFieldAnnotation(annotObserver, document, fieldName);
+		std::set<PdfAnnotation*>* annotations = PiPiFieldUtil::SearchFieldAnnotation(annotObserver, document, fieldName);
 		
 		for (auto iterator = annotations->begin(); iterator != annotations->end(); ++iterator) {
 			const PdfAnnotation* constAnnotation = *iterator;
@@ -70,8 +70,15 @@ namespace PiPi {
 	}
 
     PiPiEditor* PiPiEditor::addField(std::string fieldName, PiPiFieldType type, unsigned int page, double x, double y, double width, double height) {
+        PdfMemDocument* document = this->document;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+        PiPiFieldObserver* fieldObserver = this->fieldObserver;
+        PiPiAnnotationObserver* annotObserver = this->annotObserver;
+        
+        PiPiFieldUtil::CreateField(fieldObserver, annotObserver, document, fieldName, type, page, x, y, width, height);
+        
         appearanceManager->MarkNeedAppearance(fieldName);
+        
         return this;
     }
 
@@ -91,6 +98,8 @@ namespace PiPi {
 	PiPiEditor* PiPiEditor::renameField(std::string oldFieldName, std::string newFieldName) {
 		PdfMemDocument* document = this->document;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+        
+        // TODO: rename field feature
 
         appearanceManager->UnMarkNeedAppearance(oldFieldName);
         appearanceManager->MarkNeedAppearance(newFieldName);
@@ -102,6 +111,8 @@ namespace PiPi {
         PdfMemDocument* document = this->document;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
 
+        // TODO: set field color feature
+        
         appearanceManager->MarkNeedAppearance(fieldName);
 
         return this;
@@ -110,6 +121,8 @@ namespace PiPi {
     PiPiEditor* PiPiEditor::setFieldBorderColor(std::string fieldName, int red, int green, int blue) {
         PdfMemDocument* document = this->document;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+        
+        // TODO: set field border color feature
 
         appearanceManager->MarkNeedAppearance(fieldName);
         
@@ -120,6 +133,8 @@ namespace PiPi {
         PdfMemDocument* document = this->document;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
 
+        // TODO: set background color feature
+        
         appearanceManager->MarkNeedAppearance(fieldName);
         
         return this;
@@ -128,6 +143,8 @@ namespace PiPi {
     PiPiEditor* PiPiEditor::setFieldTextHorizontalAlignment(std::string fieldName, PiPiTextHorizontalAlignment alignment) {
         PdfMemDocument* document = this->document;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+        
+        // TODO: set field text horizontal alignment feature
 
         appearanceManager->MarkNeedAppearance(fieldName);
         
@@ -139,7 +156,7 @@ namespace PiPi {
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         PiPiFieldObserver* fieldObserver = this->fieldObserver;
         
-        std::vector<PdfField*>* fields = PiPiFieldUtil::SearchField(fieldObserver, document, fieldName);
+        std::set<PdfField*>* fields = PiPiFieldUtil::SearchField(fieldObserver, document, fieldName);
         
         for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
             PdfField* field = *iterator;
@@ -173,7 +190,7 @@ namespace PiPi {
             return this;
         }
         
-        std::vector<PdfField*>* fields = PiPiFieldUtil::SearchField(fieldObserver, document, fieldName);
+        std::set<PdfField*>* fields = PiPiFieldUtil::SearchField(fieldObserver, document, fieldName);
         
         for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
             PdfField* field = *iterator;
@@ -221,6 +238,8 @@ namespace PiPi {
     PiPiEditor* PiPiEditor::setFieldFontSize(std::string fieldName, float fontSize) {
         PdfMemDocument* document = this->document;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+        
+        // TODO: set field font size feature
 
         appearanceManager->MarkNeedAppearance(fieldName);
 

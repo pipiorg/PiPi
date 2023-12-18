@@ -3,7 +3,7 @@
 namespace PiPi {
     PiPiFieldObserver::PiPiFieldObserver() {
         this->observed = false;
-        this->fieldMap = new std::map<const std::string, std::vector<PdfField*>*>();
+        this->fieldMap = new std::map<const std::string, std::set<PdfField*>*>();
     }
 
     PiPiFieldObserver::~PiPiFieldObserver() {
@@ -31,99 +31,103 @@ namespace PiPi {
         }
     }
 
-    void PiPiFieldObserver::observeAll(const std::map<const std::string, std::vector<PdfField *> *> *observedMap) {
+    void PiPiFieldObserver::observeAll(const std::map<const std::string, std::set<PdfField *> *> *observedMap) {
         if (this->observed) {
             return;
         }
         
-        std::map<const std::string, std::vector<PdfField*>*>* fieldMap = this->fieldMap;
+        std::map<const std::string, std::set<PdfField*>*>* fieldMap = this->fieldMap;
         
         for (auto mapIterator = observedMap->begin(); mapIterator != observedMap->end(); mapIterator.operator++()) {
             const std::string fieldName = mapIterator->first;
-            std::vector<PdfField*>* observedFields = mapIterator->second;
+            std::set<PdfField*>* observedFields = mapIterator->second;
             
-            std::vector<PdfField*>* fields = new std::vector<PdfField*>();
-            fields->assign(observedFields->begin(), observedFields->end());
+            std::set<PdfField*>* fields = nullptr;
             
-            fieldMap->insert(std::pair<const std::string, std::vector<PdfField*>*>(fieldName, fields));
+            auto findIterator = fieldMap->find(fieldName);
+            if (findIterator == fieldMap->end()) {
+                fields = new std::set<PdfField*>();
+                fieldMap->insert(std::pair<const std::string, std::set<PdfField*>*>(fieldName, fields));
+            } else {
+                fields = findIterator->second;
+            }
+            
+            fields->insert(observedFields->begin(), observedFields->end());
         }
         
         this->observed = true;
     }
 
-    bool PiPiFieldObserver::access(const std::string fieldName, std::vector<PdfField *>** fieldsPtr) {
+    bool PiPiFieldObserver::access(const std::string fieldName, std::set<PdfField *>** fieldsPtr) {
         if (!this->observed) {
             return false;
         }
         
-        std::map<const std::string, std::vector<PdfField*>*>* fieldMap = this->fieldMap;
+        std::map<const std::string, std::set<PdfField*>*>* fieldMap = this->fieldMap;
         
-        *fieldsPtr = new std::vector<PdfField*>();
+        *fieldsPtr = new std::set<PdfField*>();
         
         auto findIterator = fieldMap->find(fieldName);
         if (findIterator == fieldMap->end()){
             return true;
         }
         
-        std::vector<PdfField*>* fields = findIterator->second;
-        (*fieldsPtr)->assign(fields->begin(), fields->end());
+        std::set<PdfField*>* fields = findIterator->second;
+        (*fieldsPtr)->insert(fields->begin(), fields->end());
         
         return true;
     }
 
-    bool PiPiFieldObserver::accessAll(std::map<const std::string, std::vector<PdfField *> *>** fieldMapPtr) {
+    bool PiPiFieldObserver::accessAll(std::map<const std::string, std::set<PdfField *> *>** fieldMapPtr) {
         if (!this->observed) {
             return false;
         }
         
-        std::map<const std::string, std::vector<PdfField*>*>* fieldMap = this->fieldMap;
+        std::map<const std::string, std::set<PdfField*>*>* fieldMap = this->fieldMap;
         
-        *fieldMapPtr = new std::map<const std::string, std::vector<PdfField*>*>();
+        *fieldMapPtr = new std::map<const std::string, std::set<PdfField*>*>();
         
         for (auto mapIterator = fieldMap->begin(); mapIterator != fieldMap->end(); mapIterator.operator++()) {
             const std::string fieldName = mapIterator->first;
-            std::vector<PdfField*>* fields = mapIterator->second;
+            std::set<PdfField*>* fields = mapIterator->second;
             
-            std::vector<PdfField*>* outFields = new std::vector<PdfField*>();
-            outFields->assign(fields->begin(), fields->end());
+            std::set<PdfField*>* outFields = new std::set<PdfField*>();
+            outFields->insert(fields->begin(), fields->end());
             
-            (*fieldMapPtr)->insert(std::pair<const std::string, std::vector<PdfField*>*>(fieldName, outFields));
+            (*fieldMapPtr)->insert(std::pair<const std::string, std::set<PdfField*>*>(fieldName, outFields));
         }
         
         return true;
     }
 
     void PiPiFieldObserver::observeAdd(const std::string fieldName, PdfField *field) {
-        std::map<const std::string, std::vector<PdfField*>*>* fieldMap = this->fieldMap;
+        std::map<const std::string, std::set<PdfField*>*>* fieldMap = this->fieldMap;
         
-        std::vector<PdfField*>* fields = nullptr;
+        std::set<PdfField*>* fields = nullptr;
         
         auto mapFindIterator = fieldMap->find(fieldName);
         if (mapFindIterator == fieldMap->end()) {
-            fields = new std::vector<PdfField*>();
+            fields = new std::set<PdfField*>();
             
-            std::pair<const std::string, std::vector<PdfField*>*> fieldPair(fieldName, fields);
+            std::pair<const std::string, std::set<PdfField*>*> fieldPair(fieldName, fields);
             fieldMap->insert(fieldPair);
         } else {
             fields = mapFindIterator->second;
         }
         
-        auto findIterator = std::find(fields->begin(), fields->end(), field);
-        if (findIterator == fields->end()) {
-            fields->push_back(field);
-        }
+        fields->insert(field);
     }
 
     void PiPiFieldObserver::observeRemove(const std::string fieldName, PdfField *field) {
-        std::map<const std::string, std::vector<PdfField*>*>* fieldMap = this->fieldMap;
+        std::map<const std::string, std::set<PdfField*>*>* fieldMap = this->fieldMap;
         
         auto mapFindIterator = fieldMap->find(fieldName);
         if (mapFindIterator == fieldMap->end()) {
             return;
         }
         
-        std::vector<PdfField*>* fields = mapFindIterator->second;
+        std::set<PdfField*>* fields = mapFindIterator->second;
         
-        fields->erase(std::remove(fields->begin(), fields->end(), field), fields->end());
+        fields->erase(field);
     }
 }
