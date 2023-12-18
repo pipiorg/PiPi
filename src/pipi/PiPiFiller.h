@@ -4,6 +4,7 @@
 #include "utf8.h"
 #include "PiPiFontManager.h"
 #include "PiPiFieldUtil.h"
+#include "PiPiAnnotationUtil.h"
 #include "PiPiAppearanceManager.h"
 #include "PiPiAnnotationObserver.h"
 #include "PiPiFieldObserver.h"

@@ -36,18 +36,18 @@ namespace PiPi {
 		std::vector<const PiPiField*>* fields = new std::vector<const PiPiField*>();
 
 		PdfMemDocument* document = this->document;
-		std::map<const std::string, std::vector<PdfAnnotation*>*>* annotMap = PiPiFieldUtil::SerachAllFieldAnnotation(annotObserver, document);
+		std::map<const std::string, std::set<PdfAnnotation*>*>* annotMap = PiPiAnnotationUtil::SerachAllFieldAnnotation(annotObserver, document);
 		for (auto annotMapIterator = annotMap->begin(); annotMapIterator != annotMap->end(); annotMapIterator.operator++()) {
-			std::pair<const std::string, std::vector<PdfAnnotation*>*> pair = annotMapIterator.operator*();
+			std::pair<const std::string, std::set<PdfAnnotation*>*> pair = annotMapIterator.operator*();
 
 			std::string name = pair.first;
-			std::vector< PdfAnnotation*>* annots = pair.second;
+			std::set< PdfAnnotation*>* annots = pair.second;
 			for (auto annotIterator = annots->begin(); annotIterator != annots->end(); annotIterator.operator++()) {
 				PdfAnnotation* annot = annotIterator.operator*();
 
 				const PdfPage* constPage = annot->GetPage();
 				PdfPage* page = const_cast<PdfPage*>(constPage);
-				unsigned int pageIndex = PiPiFieldUtil::SearchPageIndex(document, page);
+				unsigned int pageIndex = PiPiPageUtil::SearchPageIndex(document, page);
 
 				double x = PiPiExtractUtil::ExtractAnnotationX(annot);
 				double y = PiPiExtractUtil::ExtractAnnotationY(annot);

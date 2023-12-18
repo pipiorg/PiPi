@@ -20,7 +20,7 @@ namespace PiPi {
         PiPiFieldObserver* fieldObserver = this->fieldObserver;
         PiPiAnnotationObserver* annotObserver = this->annotObserver;
         
-        std::map<const std::string, std::set<PdfAnnotation*>*>* annotMap = PiPiFieldUtil::SerachAllFieldAnnotation(annotObserver, document);
+        std::map<const std::string, std::set<PdfAnnotation*>*>* annotMap = PiPiAnnotationUtil::SerachAllFieldAnnotation(annotObserver, document);
         
         for (auto mapIterator = annotMap->begin(); mapIterator != annotMap->end(); mapIterator.operator++()) {
             std::pair<const std::string, std::set<PdfAnnotation*>*> pair = *mapIterator;
@@ -30,7 +30,7 @@ namespace PiPi {
                 PdfAnnotation* annotation = *annotIterator;
 
                 PiPiAppearanceUtil::GenerateAppearance(fontManager, annotation);
-                PiPiFieldUtil::FlattenAnnotation(annotation);
+                PiPiAnnotationUtil::FlattenAnnotation(annotation);
             }
         }
 
@@ -50,14 +50,14 @@ namespace PiPi {
         PiPiFieldObserver* fieldObserver = this->fieldObserver;
         PiPiAnnotationObserver* annotObserver = this->annotObserver;
 
-		std::set<PdfAnnotation*>* annotations = PiPiFieldUtil::SearchFieldAnnotation(annotObserver, document, fieldName);
+		std::set<PdfAnnotation*>* annotations = PiPiAnnotationUtil::SearchFieldAnnotation(annotObserver, document, fieldName);
 		
 		for (auto iterator = annotations->begin(); iterator != annotations->end(); ++iterator) {
 			const PdfAnnotation* constAnnotation = *iterator;
 			PdfAnnotation* annotation = const_cast<PdfAnnotation*>(constAnnotation);
 
             PiPiAppearanceUtil::GenerateAppearance(fontManager, annotation);
-            PiPiFieldUtil::FlattenAnnotation(annotation);
+            PiPiAnnotationUtil::FlattenAnnotation(annotation);
 		}
 
 		delete annotations;

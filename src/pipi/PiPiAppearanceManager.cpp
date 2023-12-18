@@ -26,7 +26,7 @@ namespace PiPi {
 		PiPiFontManager* fontManager = this->fontManager;
 		std::set<std::string>* fieldNames = this->fieldNames;
 
-		std::map<const std::string, std::set<PdfAnnotation*>*>* annotMap = PiPiFieldUtil::SerachAllFieldAnnotation(annotObserver, document);
+		std::map<const std::string, std::set<PdfAnnotation*>*>* annotMap = PiPiAnnotationUtil::SerachAllFieldAnnotation(annotObserver, document);
 
 		for (auto mapIterator = annotMap->begin(); mapIterator != annotMap->end(); mapIterator.operator++()) {
 			std::set<PdfAnnotation*>* annots = mapIterator->second;

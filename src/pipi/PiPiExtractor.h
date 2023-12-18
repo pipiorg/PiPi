@@ -3,6 +3,8 @@
 #include "podofo/podofo.h"
 #include "PiPiPage.h"
 #include "PiPiField.h"
+#include "PiPiAnnotationUtil.h"
+#include "PiPiPageUtil.h"
 #include "PiPiAnnotationObserver.h"
 #include "PiPiFieldUtil.h"
 #include "PiPiExtractUtil.h"

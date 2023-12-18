@@ -4,6 +4,7 @@
 #include <vector>
 #include <cstring>
 #include "PiPiExtractUtil.h"
+#include "PiPiAnnotationUtil.h"
 #include "PiPiFieldObserver.h"
 #include "PiPiAnnotationObserver.h"
 #include "PiPiFieldType.h"
@@ -17,19 +18,8 @@ namespace PiPi {
 			static std::map<const std::string, std::set<PdfField*>*>* SearchAllField(PiPiFieldObserver* fieldObserver, PdfMemDocument* document);
 			static std::map<const std::string, std::set<PdfField*>*>* SearchAllField(PiPiFieldObserver* fieldObserver, PdfAcroForm* acroform);
 
-			static std::map<const std::string, std::set<PdfAnnotation*>*>* SerachAllFieldAnnotation(PiPiAnnotationObserver* annotObserver, PdfMemDocument* document);
-			static std::map<const std::string, std::set<PdfAnnotation*>*>* SerachAllFieldAnnotation(PiPiAnnotationObserver* annotObserver, PdfPageCollection* pages);
-
 			static std::set<PdfField*>* SearchField(PiPiFieldObserver* fieldObserver, PdfMemDocument* document, std::string fieldName);
 			static std::set<PdfField*>* SearchField(PiPiFieldObserver* fieldObserver, PdfAcroForm* acroform, std::string fieldName);
-
-			static std::set<PdfAnnotation*>* SearchFieldAnnotation(PiPiAnnotationObserver* annotObserver, PdfMemDocument* document, std::string fieldName);
-			static std::set<PdfAnnotation*>* SearchFieldAnnotation(PiPiAnnotationObserver* annotObserver, PdfPageCollection* pages, std::string fieldName);
-
-			static int SearchPageIndex(PdfMemDocument* document, PdfPage* page);
-			static int SearchPageIndex(PdfPageCollection* pages, PdfPage* page);
-        
-            static void FlattenAnnotation(PdfAnnotation* annotation);
 
             static void RemoveAllField(PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver, PdfMemDocument* document);
 			static void RemoveField(PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver, PdfMemDocument* document, std::string fieldName);
@@ -46,7 +36,9 @@ namespace PiPi {
 			static void RemovePageField(PiPiAnnotationObserver* annotObserver, PdfPageCollection* pages, std::string fieldName);
         
             static void CreateNonHierarchicalField(PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver, PdfMemDocument* document, std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height);
-            
             static void CreateHierarchicalField(PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver, PdfMemDocument* document, std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height);
+        
+            static void ExpandHierarchicalField();
+            static void RestrictHierarchicalField();
 	};
 }

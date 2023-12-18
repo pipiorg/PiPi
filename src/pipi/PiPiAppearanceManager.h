@@ -3,6 +3,7 @@
 #include <podofo/podofo.h>
 #include "PiPiAnnotationObserver.h"
 #include "PiPiAppearanceUtil.h"
+#include "PiPiAnnotationUtil.h"
 #include "PiPiFieldUtil.h"
 
 using namespace PoDoFo;

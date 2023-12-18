@@ -3,6 +3,7 @@
 #include <iostream>
 #include "podofo/podofo.h"
 #include "PiPiFieldUtil.h"
+#include "PiPiAnnotationUtil.h"
 #include "PiPiAppearanceManager.h"
 #include "PiPiCommon.h"
 #include "PiPiFontManager.h"
