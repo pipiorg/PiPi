@@ -180,6 +180,17 @@ namespace PiPi {
 
     PiPiEditor* PiPiEditor::setFieldFontName(std::string fieldName, std::string fontName) {
         PdfMemDocument* document = this->document;
+        PdfAcroForm* acroform = document->GetAcroForm();
+        
+        PdfDictionary& acroformDictRef = acroform->GetDictionary();
+        PdfDictionary* acroformDict = &acroformDictRef;
+        
+        PdfObject* acroformDAObj = acroformDict->FindKey(PdfName("DA"));
+        const PdfString& acroformDARef = acroformDAObj->GetString();
+        const PdfString* acroformDA = &acroformDARef;
+        
+        std::string dDa = acroformDA->GetString();
+        
         PiPiFontManager* fontManager = this->fontManager;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         PiPiFieldObserver* fieldObserver = this->fieldObserver;
@@ -198,13 +209,16 @@ namespace PiPi {
             PdfDictionary& dictRef = field->GetDictionary();
             PdfDictionary* dict = &dictRef;
             
+            PdfDictionary* parentDict = dict->FindKeyAs<PdfDictionary*>(PdfName("Parent"));
             PdfObject* daObj = dict->FindKey(PdfName("DA"));
-            if (daObj == nullptr) {
-                continue;
+            while (daObj == nullptr && parentDict != nullptr) {
+                daObj = parentDict->FindKey(PdfName("DA"));
+                parentDict = parentDict->FindKeyAs<PdfDictionary*>(PdfName("Parent"));
             }
             
-            PdfString da = daObj->GetString();
-            std::string daString = da.GetString();
+            std::string daString = daObj == nullptr
+                ? dDa
+                : daObj->GetString().GetString();
             
             std::vector<std::string>* daStringSplits = PiPiCommon::split(daString, " ");
             std::vector<std::string>* newDaStringSplits = new std::vector<std::string>();
