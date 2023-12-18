@@ -1,7 +1,7 @@
 #include "PiPiFiller.h"
 
 namespace PiPi {
-	PiPiFiller::PiPiFiller(PdfMemDocument* document, PiPiFontManager* fontManage, PiPiAppearanceManager* appearanceManager, PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver) {
+	PiPiFiller::PiPiFiller(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiAppearanceManager* appearanceManager, PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver) {
         this->document = document;
         this->appearanceManager = appearanceManager;
         this->fontManager = fontManager;
