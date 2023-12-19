@@ -271,7 +271,7 @@ namespace PiPi {
         double lineHieght = leading;
         size_t availableLineCount = 0;
         size_t lineCount = lines->size();
-        while(lineCount--) {
+        for (size_t lineIndex = 0; lineIndex < lineCount; lineIndex++) {
             if (lineHieght + signalLineHeight > height) {
                 break;
             }
