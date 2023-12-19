@@ -482,7 +482,8 @@ namespace PiPi {
                         break;
                 }
                 
-                painter->DrawTextAligned(sText, borderWidth, borderWidth, width - borderWidth * 2, pHorizontalAlignment);
+                // FIXME: 疑似 PoDoFo Bugs 畫單行文字會向下偏移約 1px
+                painter->DrawTextAligned(sText, borderWidth, borderWidth + 1, width - borderWidth * 2, pHorizontalAlignment);
             }
 		}
         
