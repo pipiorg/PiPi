@@ -18,8 +18,8 @@ namespace PiPi {
 			static std::map<const std::string, std::set<PdfField*>*>* SearchAllField(PiPiFieldObserver* fieldObserver, PdfMemDocument* document);
 			static std::map<const std::string, std::set<PdfField*>*>* SearchAllField(PiPiFieldObserver* fieldObserver, PdfAcroForm* acroform);
 
-            static void RemoveAllField(PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver, PdfMemDocument* document);
-            static void RemoveField(PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver, PdfMemDocument* document, std::string fieldName);
+            static void RemoveAllField(PiPiFieldObserver* fieldObserver, PdfMemDocument* document);
+            static void RemoveField(PiPiFieldObserver* fieldObserver, PdfMemDocument* document, std::string fieldName);
         
 			static std::set<PdfField*>* SearchField(PiPiFieldObserver* fieldObserver, PdfMemDocument* document, std::string fieldName);
 			static std::set<PdfField*>* SearchField(PiPiFieldObserver* fieldObserver, PdfAcroForm* acroform, std::string fieldName);
@@ -34,9 +34,6 @@ namespace PiPi {
 			static void RemoveAcroformField(PiPiFieldObserver* fieldObserver, PdfAcroForm* acroform, std::string fieldName);
 			static void RemoveAcroformChildrenField(PiPiFieldObserver* fieldObserver, PdfField* field, std::string fieldName);
 
-            static void RemoveAllPageField(PiPiAnnotationObserver* annotObserver, PdfPageCollection* pages);
-			static void RemovePageField(PiPiAnnotationObserver* annotObserver, PdfPageCollection* pages, std::string fieldName);
-        
             static void CreateNonHierarchicalField(PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver, PdfMemDocument* document, std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height);
             static void CreateHierarchicalField(PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver, PdfMemDocument* document, std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height);
         

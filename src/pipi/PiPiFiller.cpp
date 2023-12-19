@@ -166,7 +166,8 @@ namespace PiPi {
 
 		delete annotations;
 
-		PiPiFieldUtil::RemoveField(fieldObserver, annotObserver, document, fieldName);
+		PiPiFieldUtil::RemoveField(fieldObserver, document, fieldName);
+        PiPiAnnotationUtil::RemoveFieldAnnotation(annotObserver, document, fieldName);
 
 		return this;
 	}

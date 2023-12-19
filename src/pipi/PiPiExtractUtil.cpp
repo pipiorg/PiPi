@@ -62,7 +62,13 @@ namespace PiPi {
         PdfDictionary& dictRef = annotation->GetDictionary();
         PdfDictionary* dict = &dictRef;
 
-        PdfObject* daObj = dict->FindKey("DA");
+        PdfObject* daObj = dict->FindKey(PdfName("DA"));
+        PdfDictionary* parentDict = dict->FindKeyAs<PdfDictionary*>(PdfName("Parent"));
+        
+        while (daObj == nullptr && parentDict != nullptr) {
+            daObj = parentDict->FindKey(PdfName("DA"));
+            parentDict = parentDict->FindKeyAs<PdfDictionary*>(PdfName("Parent"));
+        }
 
         if (daObj == nullptr) {
             return "";
@@ -85,6 +91,7 @@ namespace PiPi {
         }
 
         delete splitted;
+        
         return "";
     }
 
@@ -92,16 +99,14 @@ namespace PiPi {
         PdfDictionary& dictRef = annotation->GetDictionary();
         PdfDictionary* dict = &dictRef;
 
-        PdfObject* daObj = dict->FindKey("DA");
-
-        if (daObj == nullptr) {
-            return 0;
+        PdfObject* daObj = dict->FindKey(PdfName("DA"));
+        PdfDictionary* parentDict = dict->FindKeyAs<PdfDictionary*>(PdfName("Parent"));
+        
+        while (daObj == nullptr && parentDict != nullptr) {
+            daObj = parentDict->FindKey(PdfName("DA"));
+            parentDict = parentDict->FindKeyAs<PdfDictionary*>(PdfName("Parent"));
         }
-
-        if (!daObj->IsString()) {
-            return 0;
-        }
-
+        
         PdfString da = daObj->GetString();
         std::string daValue = da.GetString();
 

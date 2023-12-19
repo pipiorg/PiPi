@@ -36,7 +36,8 @@ namespace PiPi {
 
         delete annotMap;
         
-        PiPiFieldUtil::RemoveAllField(fieldObserver, annotObserver, document);
+        PiPiAnnotationUtil::RemoveAllFieldAnnotation(annotObserver, document);
+        PiPiFieldUtil::RemoveAllField(fieldObserver, document);
 
         appearanceManager->ClearNeedAppearance();
 
@@ -62,20 +63,21 @@ namespace PiPi {
 
 		delete annotations;
 
-		PiPiFieldUtil::RemoveField(fieldObserver, annotObserver, document, fieldName);
+		PiPiFieldUtil::RemoveField(fieldObserver, document, fieldName);
+        PiPiAnnotationUtil::RemoveFieldAnnotation(annotObserver, document, fieldName);
 
         appearanceManager->UnMarkNeedAppearance(fieldName);
 
 		return this;
 	}
 
-    PiPiEditor* PiPiEditor::addField(std::string fieldName, PiPiFieldType type, unsigned int page, double x, double y, double width, double height) {
+    PiPiEditor* PiPiEditor::addField(std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height) {
         PdfMemDocument* document = this->document;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         PiPiFieldObserver* fieldObserver = this->fieldObserver;
         PiPiAnnotationObserver* annotObserver = this->annotObserver;
         
-        PiPiFieldUtil::CreateField(fieldObserver, annotObserver, document, fieldName, type, page, x, y, width, height);
+        PiPiFieldUtil::CreateField(fieldObserver, annotObserver, document, fieldName, type, pageIndex, x, y, width, height);
         
         appearanceManager->MarkNeedAppearance(fieldName);
         
@@ -88,12 +90,17 @@ namespace PiPi {
         PiPiFieldObserver* fieldObserver = this->fieldObserver;
         PiPiAnnotationObserver* annotObserver = this->annotObserver;
         
-		PiPiFieldUtil::RemoveField(fieldObserver, annotObserver, document, fieldName);
-
+		PiPiFieldUtil::RemoveField(fieldObserver, document, fieldName);
+        PiPiAnnotationUtil::RemoveFieldAnnotation(annotObserver, document, fieldName);
+        
         appearanceManager->UnMarkNeedAppearance(fieldName);
 
 		return this;
 	}
+
+    PiPiEditor* PiPiEditor::removeField(std::string fieldName, unsigned int pageIndex, double x, double y, double width, double height) {
+        
+    }
 
 	PiPiEditor* PiPiEditor::renameField(std::string oldFieldName, std::string newFieldName) {
 		PdfMemDocument* document = this->document;

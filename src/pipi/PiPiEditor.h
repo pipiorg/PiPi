@@ -21,8 +21,11 @@ namespace PiPi {
             PiPiEditor* flatten();
 			PiPiEditor* flatten(std::string fieldName);
         
-            PiPiEditor* addField(std::string fieldName, PiPiFieldType type, unsigned int page, double x, double y, double width, double height);
-			PiPiEditor* removeField(std::string fieldName);
+            PiPiEditor* addField(std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height);
+			
+            PiPiEditor* removeField(std::string fieldName);
+            PiPiEditor* removeField(std::string fieldName, unsigned int pageIndex, double x, double y, double width, double height);
+        
 			PiPiEditor* renameField(std::string oldFieldName, std::string newFieldName);
 
             PiPiEditor* setFieldFontName(std::string fieldName, std::string fontName);
