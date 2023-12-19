@@ -70,9 +70,6 @@ namespace PiPi {
 
     void PiPiFieldUtil::RemoveAllField(PiPiFieldObserver* fieldObserver, PdfMemDocument* document) {
         PdfAcroForm* acroform = document->GetAcroForm();
-
-        PdfPageCollection& pagesRef = document->GetPages();
-        PdfPageCollection* pages = &pagesRef;
         
         RemoveAllAcroformField(fieldObserver, acroform);
         
@@ -81,9 +78,6 @@ namespace PiPi {
 
     void PiPiFieldUtil::RemoveField(PiPiFieldObserver* fieldObserver, PdfMemDocument* document, std::string fieldName) {
         PdfAcroForm* acroform = document->GetAcroForm();
-
-        PdfPageCollection& pagesRef = document->GetPages();
-        PdfPageCollection* pages = &pagesRef;
 
         RemoveAcroformField(fieldObserver, acroform, fieldName);
 
