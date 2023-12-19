@@ -81,9 +81,9 @@ namespace PiPi {
         PdfArray& acroformFieldsRef = acroformFieldsObj->GetArray();
         PdfArray* acroformFields = &acroformFieldsRef;
         
-        unsigned int acroformFieldsCount = (unsigned int) acroformFields->size();
-        for (unsigned int i = acroformFieldsCount - 1; i >= 0 ; i--) {
-            acroformFields->RemoveAt(i);
+        long acroformFieldsCount = acroformFields->size();
+        for (long i = acroformFieldsCount - 1; i >= 0 ; i--) {
+            acroformFields->RemoveAt((unsigned int)i);
         }
         
         fieldObserver->observeClear();

@@ -285,6 +285,7 @@ namespace PiPi {
         for (size_t i = 0; i < availableLineCount; i++) {
             if (i == availableLineCount - 1) {
                 // 做 ...
+                bool added = false;
                 std::string lastLine = (*lines)[i];
                 std::string newLastLine = "";
                 std::string postNewLastLine = "";
@@ -299,6 +300,7 @@ namespace PiPi {
                     double lastLineWidth = font->GetStringLength(postNewLastLineWithEllipsis, textState);
                     if (lastLineWidth > width) {
                         newLastLine += "...";
+                        added = true;
                         break;
                     }
                     
@@ -306,6 +308,11 @@ namespace PiPi {
                 }
                 
                 value += newLastLine;
+                
+                if (availableLineCount < lineCount && !added) {
+                    value += "...";
+                }
+                
                 break;
             }
             

@@ -107,6 +107,14 @@ namespace PiPi {
             parentDict = parentDict->FindKeyAs<PdfDictionary*>(PdfName("Parent"));
         }
         
+        if (daObj == nullptr) {
+            return 0.0;
+        }
+
+        if (!daObj->IsString()) {
+            return 0.0;
+        }
+        
         PdfString da = daObj->GetString();
         std::string daValue = da.GetString();
 
@@ -121,7 +129,7 @@ namespace PiPi {
         }
 
         delete splitted;
-        return 0;
+        return 0.0;
     }
 
     double PiPiExtractUtil::ExtractAnnotationWidth(PdfAnnotation* annotation) {
