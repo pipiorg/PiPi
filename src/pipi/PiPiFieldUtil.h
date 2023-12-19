@@ -30,6 +30,8 @@ namespace PiPi {
             static void RemoveField(PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver, PdfMemDocument* document, std::string fieldName, long pageIndex, double x, double y, double width, double height);
         
 			static void CreateField(PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver, PdfMemDocument* document, std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height);
+        
+            static void RenameField(PiPiFieldObserver* fieldObserver, PdfMemDocument* document, std::string oldFieldName, std::string newFieldName);
 		private:
             static const std::vector<PdfName> SpecialHierarchicalFieldKeys;
         

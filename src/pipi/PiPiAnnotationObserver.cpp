@@ -20,20 +20,6 @@ namespace PiPi {
         return this->observed;
     }
 
-    void PiPiAnnotationObserver::observe(PiPiAnnotationObserveType observeType, const std::string fieldName, PdfAnnotation *annot) {
-        switch (observeType) {
-            case PiPiAnnotationObserveType::Add:
-                this->observeAdd(fieldName, annot);
-                return;
-            case PiPiAnnotationObserveType::Remove:
-                this->observeRemove(fieldName, annot);
-                return;
-            case PiPiAnnotationObserveType::Clear:
-                this->observeClear();
-                return;
-        }
-    }
-
     void PiPiAnnotationObserver::observeAll(const std::map<const std::string, std::set<PdfAnnotation *> *> * observedAnnotMap) {
         if (observed) {
             return;
@@ -132,6 +118,22 @@ namespace PiPi {
         }
 
         annots->insert(annot);
+    }
+
+    void PiPiAnnotationObserver::observeRename(const std::string oldFieldName, const std::string newFieldName) {
+        std::map<const std::string, std::set<PdfAnnotation*>*>* annotMap = this->annotMap;
+        
+        auto findIterator = annotMap->find(oldFieldName);
+        if (findIterator == annotMap->end()) {
+            return;
+        }
+        
+        std::set<PdfAnnotation*>* annots = new std::set<PdfAnnotation*>();
+        annots->insert(findIterator->second->begin(), findIterator->second->end());
+        
+        annotMap->erase(findIterator);
+        
+        annotMap->insert(std::pair<const std::string, std::set<PdfAnnotation*>*>(newFieldName, annots));
     }
 
     void PiPiAnnotationObserver::observeClear() {

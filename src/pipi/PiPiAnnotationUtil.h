@@ -23,6 +23,8 @@ namespace PiPi {
             static void RemoveFieldAnnotation(PiPiAnnotationObserver* annotObserver, PdfMemDocument* document, std::string fieldName, long pageIndex, double x, double y);
             static void RemoveFieldAnnotation(PiPiAnnotationObserver* annotObserver, PdfMemDocument* document, std::string fieldName, long pageIndex, double x, double y, double width, double height);
             
+            static void RenameFieldAnnotation(PiPiAnnotationObserver* annotObserver, std::string oldFieldName, std::string newFieldName);
+        
             static void FlattenAnnotation(PdfAnnotation* annotation);
         };
 }

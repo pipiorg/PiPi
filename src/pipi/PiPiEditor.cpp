@@ -112,9 +112,15 @@ namespace PiPi {
 
 	PiPiEditor* PiPiEditor::renameField(std::string oldFieldName, std::string newFieldName) {
 		PdfMemDocument* document = this->document;
+        PiPiFieldObserver* fieldObserver = this->fieldObserver;
+        PiPiAnnotationObserver* annotObserver = this->annotObserver;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         
-        // TODO: rename field feature
+        PiPiFieldUtil::SearchAllField(fieldObserver, document);
+        PiPiAnnotationUtil::SerachAllFieldAnnotation(annotObserver, document);
+        
+        PiPiFieldUtil::RenameField(fieldObserver, document, oldFieldName, newFieldName);
+        PiPiAnnotationUtil::RenameFieldAnnotation(annotObserver, oldFieldName, newFieldName);
 
         appearanceManager->UnMarkNeedAppearance(oldFieldName);
         appearanceManager->MarkNeedAppearance(newFieldName);
@@ -266,12 +272,66 @@ namespace PiPi {
 
     PiPiEditor* PiPiEditor::setFieldFontSize(std::string fieldName, float fontSize) {
         PdfMemDocument* document = this->document;
-        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+        PdfAcroForm* acroform = document->GetAcroForm();
         
-        // TODO: set field font size feature
-
+        PdfDictionary& acroformDictRef = acroform->GetDictionary();
+        PdfDictionary* acroformDict = &acroformDictRef;
+        
+        PdfObject* acroformDAObj = acroformDict->FindKey(PdfName("DA"));
+        const PdfString& acroformDARef = acroformDAObj->GetString();
+        const PdfString* acroformDA = &acroformDARef;
+        
+        std::string dDa = acroformDA->GetString();
+        
+        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+        PiPiFieldObserver* fieldObserver = this->fieldObserver;
+        PiPiAnnotationObserver* annotObserver = this->annotObserver;
+        
+        std::set<PdfField*>* fields = PiPiFieldUtil::SearchField(fieldObserver, document, fieldName);
+        
+        for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
+            PdfField* field = *iterator;
+            
+            PdfDictionary& dictRef = field->GetDictionary();
+            PdfDictionary* dict = &dictRef;
+            
+            PdfDictionary* parentDict = dict->FindKeyAs<PdfDictionary*>(PdfName("Parent"));
+            PdfObject* daObj = dict->FindKey(PdfName("DA"));
+            while (daObj == nullptr && parentDict != nullptr) {
+                daObj = parentDict->FindKey(PdfName("DA"));
+                parentDict = parentDict->FindKeyAs<PdfDictionary*>(PdfName("Parent"));
+            }
+            
+            std::string daString = daObj == nullptr
+                ? dDa
+                : daObj->GetString().GetString();
+            
+            std::vector<std::string>* daStringSplits = PiPiCommon::split(daString, " ");
+            std::vector<std::string>* newDaStringSplits = new std::vector<std::string>();
+            
+            for (int i = 0; i < daStringSplits->size(); i++) {
+                if (i == 1) {
+                    newDaStringSplits->push_back(std::to_string(fontSize));
+                    continue;
+                }
+                
+                std::string daStringSplit = (*daStringSplits)[i];
+                newDaStringSplits->push_back(daStringSplit);
+            }
+            
+            std::string newDaString = PiPiCommon::join(newDaStringSplits, " ");
+            
+            dict->RemoveKey(PdfName("DA"));
+            dict->AddKey(PdfName("DA"), PdfString(newDaString));
+            
+            delete newDaStringSplits;
+            delete daStringSplits;
+        }
+        
+        delete fields;
+        
         appearanceManager->MarkNeedAppearance(fieldName);
-
+        
         return this;
     }
 }

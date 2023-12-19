@@ -7,18 +7,16 @@ using namespace PoDoFo;
 namespace PiPi {
     class PiPiFieldObserver {
         public:
-            enum PiPiFieldObserveType {
-                Add,
-                Remove,
-                Clear
-            };
-        
             PiPiFieldObserver();
             ~PiPiFieldObserver();
         
             bool isObserved();
         
-            void observe(PiPiFieldObserveType observeType, const std::string fieldName, PdfField* field);
+            void observeAdd(const std::string fieldName, PdfField* field);
+            void observeRemove(const std::string fieldName, PdfField* field);
+            void observeRename(const std::string oldFieldName, const std::string newFieldName);
+            void observeClear();
+        
             void observeAll(const std::map<const std::string, std::set<PdfField*>*>* observedMap);
             
             bool access(const std::string fieldName, std::set<PdfField*>** fieldsPtr);
@@ -28,9 +26,5 @@ namespace PiPi {
             std::map<const std::string, std::set<PdfField*>*>* fieldMap;
         
             bool observed;
-        
-            void observeAdd(const std::string fieldName, PdfField* field);
-            void observeRemove(const std::string fieldName, PdfField* field);
-            void observeClear();
     };
 }

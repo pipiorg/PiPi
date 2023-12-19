@@ -20,20 +20,6 @@ namespace PiPi {
         return this->observed;
     }
 
-    void PiPiFieldObserver::observe(PiPiFieldObserveType observeType, const std::string fieldName, PdfField *field) {
-        switch (observeType) {
-            case PiPiFieldObserveType::Add:
-                this->observeAdd(fieldName, field);
-                return;
-            case PiPiFieldObserveType::Remove:
-                this->observeRemove(fieldName, field);
-                return;
-            case PiPiFieldObserveType::Clear:
-                this->observeClear();
-                return;
-        }
-    }
-
     void PiPiFieldObserver::observeAll(const std::map<const std::string, std::set<PdfField *> *> *observedMap) {
         if (this->observed) {
             return;
@@ -132,6 +118,22 @@ namespace PiPi {
         std::set<PdfField*>* fields = mapFindIterator->second;
         
         fields->erase(field);
+    }
+
+    void PiPiFieldObserver::observeRename(const std::string oldFieldName, const std::string newFieldName) {
+        std::map<const std::string, std::set<PdfField*>*>* fieldMap = this->fieldMap;
+        
+        auto findIterator = fieldMap->find(oldFieldName);
+        if (findIterator == fieldMap->end()) {
+            return;
+        }
+        
+        std::set<PdfField*>* fields = new std::set<PdfField*>();
+        fields->insert(findIterator->second->begin(), findIterator->second->end());
+        
+        fieldMap->erase(findIterator);
+        
+        fieldMap->insert(std::pair<const std::string, std::set<PdfField*>*>(newFieldName, fields));
     }
 
     void PiPiFieldObserver::observeClear() {

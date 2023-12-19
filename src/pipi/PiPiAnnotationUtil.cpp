@@ -110,7 +110,7 @@ namespace PiPi {
             }
         }
         
-        annotObserver->observe(PiPiAnnotationObserver::PiPiAnnotationObserveType::Clear, nullptr, nullptr);
+        annotObserver->observeClear();
     }
 
     void PiPiAnnotationUtil::RemoveFieldAnnotation(PiPiAnnotationObserver *annotObserver, PdfMemDocument *document, std::string fieldName) {
@@ -180,7 +180,7 @@ namespace PiPi {
                 PdfAnnotation* annot = &annotRef;
                 
                 std::string fieldName = PiPiExtractUtil::ExtractAnnotationName(annot);
-                annotObserver->observe(PiPiAnnotationObserver::PiPiAnnotationObserveType::Remove, fieldName, annot);
+                annotObserver->observeRemove(fieldName, annot);
                 
                 annots->RemoveAnnotAt(removeAnnotIndex);
                 removeAnnotIndexs->pop_back();
@@ -191,6 +191,10 @@ namespace PiPi {
 
         delete matchTarAnnots;
         delete tarAnnots;
+    }
+
+    void PiPiAnnotationUtil::RenameFieldAnnotation(PiPiAnnotationObserver *annotObserver, std::string oldFieldName, std::string newFieldName) {
+        annotObserver->observeRename(oldFieldName, newFieldName);
     }
 
     void PiPiAnnotationUtil::FlattenAnnotation(PdfAnnotation *annotation) {
