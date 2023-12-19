@@ -110,15 +110,11 @@ namespace PiPi {
             
             unsigned int annotCount = annots->GetCount();
             for (unsigned int annotIndex = annotCount; annotIndex > 0; annotIndex--) {
-                PdfAnnotation& annotRef = annots->GetAnnotAt(annotIndex - 1);
-                PdfAnnotation* annot = &annotRef;
-                
-                std::string fieldName = PiPiExtractUtil::ExtractAnnotationName(annot);
-                annotObserver->observe(PiPiAnnotationObserver::PiPiAnnotationObserveType::Remove, fieldName, annot);
-                
                 annots->RemoveAnnotAt(annotIndex - 1);
             }
         }
+        
+        annotObserver->observe(PiPiAnnotationObserver::PiPiAnnotationObserveType::Clear, nullptr, nullptr);
     }
 
     void PiPiAnnotationUtil::RemoveFieldAnnotation(PiPiAnnotationObserver *annotObserver, PdfMemDocument *document, std::string fieldName) {

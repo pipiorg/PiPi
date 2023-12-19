@@ -29,10 +29,8 @@ namespace PiPi {
             static const std::vector<PdfName> SpecialHierarchicalFieldKeys;
         
 			static void SearchAllChildrenField(PdfField* field, std::map<const std::string, std::set<PdfField*>*>* fieldMap);
-
-            static void RemoveAllAcroformField(PiPiFieldObserver* fieldObserver, PdfAcroForm* acroform);
-			static void RemoveAcroformField(PiPiFieldObserver* fieldObserver, PdfAcroForm* acroform, std::string fieldName);
-			static void RemoveAcroformChildrenField(PiPiFieldObserver* fieldObserver, PdfField* field, std::string fieldName);
+        
+			static void RemoveChildrenField(PiPiFieldObserver* fieldObserver, PdfField* field, std::string fieldName);
 
             static void CreateNonHierarchicalField(PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver, PdfMemDocument* document, std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height);
             static void CreateHierarchicalField(PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver, PdfMemDocument* document, std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height);

@@ -28,6 +28,9 @@ namespace PiPi {
             case PiPiFieldObserveType::Remove:
                 this->observeRemove(fieldName, field);
                 return;
+            case PiPiFieldObserveType::Clear:
+                this->observeClear();
+                return;
         }
     }
 
@@ -129,5 +132,16 @@ namespace PiPi {
         std::set<PdfField*>* fields = mapFindIterator->second;
         
         fields->erase(field);
+    }
+
+    void PiPiFieldObserver::observeClear() {
+        std::map<const std::string, std::set<PdfField*>*>* fieldMap = this->fieldMap;
+        
+        for (auto mapIterator = fieldMap->begin(); mapIterator != fieldMap->end(); mapIterator.operator++()) {
+            delete mapIterator->second;
+            mapIterator->second = nullptr;
+        }
+        
+        fieldMap->clear();
     }
 }

@@ -71,7 +71,24 @@ namespace PiPi {
     void PiPiFieldUtil::RemoveAllField(PiPiFieldObserver* fieldObserver, PdfMemDocument* document) {
         PdfAcroForm* acroform = document->GetAcroForm();
         
-        RemoveAllAcroformField(fieldObserver, acroform);
+        if (acroform == nullptr) {
+            return;
+        }
+        
+        PdfDictionary& acroformDictRef = acroform->GetDictionary();
+        PdfDictionary* acroformDict = &acroformDictRef;
+        
+        PdfObject* acroformFieldsObj = acroformDict->FindKey(PdfName("Fields"));
+        
+        PdfArray& acroformFieldsRef = acroformFieldsObj->GetArray();
+        PdfArray* acroformFields = &acroformFieldsRef;
+        
+        unsigned int acroformFieldsCount = (unsigned int) acroformFields->size();
+        for (unsigned int i = acroformFieldsCount - 1; i >= 0 ; i--) {
+            acroformFields->RemoveAt(i);
+        }
+        
+        fieldObserver->observe(PiPiFieldObserver::PiPiFieldObserveType::Clear, nullptr, nullptr);
         
         document->CollectGarbage();
     }
@@ -79,7 +96,52 @@ namespace PiPi {
     void PiPiFieldUtil::RemoveField(PiPiFieldObserver* fieldObserver, PdfMemDocument* document, std::string fieldName) {
         PdfAcroForm* acroform = document->GetAcroForm();
 
-        RemoveAcroformField(fieldObserver, acroform, fieldName);
+        if (acroform == nullptr) {
+            return;
+        }
+        
+        std::vector<unsigned int>* removeFieldIndexs = new std::vector<unsigned int>();
+
+        unsigned int fieldCount = acroform->GetFieldCount();
+        for (unsigned int fieldIndex = 0; fieldIndex < fieldCount; fieldIndex++) {
+            PdfField& fieldRef = acroform->GetFieldAt(fieldIndex);
+            PdfField* field = &fieldRef;
+
+            std::string name = field->GetFullName();
+            if (name == fieldName) {
+                removeFieldIndexs->push_back(fieldIndex);
+                continue;
+            }
+
+            PdfFieldChildrenCollectionBase& childrens = field->GetChildren();
+            unsigned int childrenCount = childrens.GetCount();
+
+            if (childrenCount != 0) {
+                RemoveChildrenField(fieldObserver, field, fieldName);
+
+                childrenCount = childrens.GetCount();
+                if (childrenCount == 0) {
+                    removeFieldIndexs->push_back(fieldIndex);
+                    continue;
+                }
+            }
+        }
+
+        while (removeFieldIndexs->size()) {
+            unsigned int removeFieldIndex = removeFieldIndexs->back();
+            
+            PdfField& fieldRef = acroform->GetFieldAt(removeFieldIndex);
+            PdfField* field = &fieldRef;
+            
+            std::string fieldName = field->GetFullName();
+            
+            fieldObserver->observe(PiPiFieldObserver::PiPiFieldObserveType::Remove, fieldName, field);
+            
+            acroform->RemoveFieldAt(removeFieldIndex);
+            removeFieldIndexs->pop_back();
+        }
+
+        delete removeFieldIndexs;
 
         document->CollectGarbage();
     }
@@ -123,74 +185,7 @@ namespace PiPi {
         }
     }
 
-    void PiPiFieldUtil::RemoveAllAcroformField(PiPiFieldObserver* fieldObserver, PdfAcroForm *acroform) {
-        if (acroform == nullptr) {
-            return;
-        }
-        
-        unsigned int fieldCount = acroform->GetFieldCount();
-        for (unsigned int fieldIndex = fieldCount; fieldIndex > 0; fieldIndex--) {
-            PdfField& fieldRef = acroform->GetFieldAt(fieldIndex);
-            PdfField* field = &fieldRef;
-            
-            std::string fieldName = field->GetFullName();
-            
-            fieldObserver->observe(PiPiFieldObserver::PiPiFieldObserveType::Remove, fieldName, field);
-            
-            acroform->RemoveFieldAt(fieldIndex - 1);
-        }
-    }
-
-    void PiPiFieldUtil::RemoveAcroformField(PiPiFieldObserver* fieldObserver, PdfAcroForm* acroform, std::string fieldName) {
-        if (acroform == nullptr) {
-            return;
-        }
-        
-        std::vector<unsigned int>* removeFieldIndexs = new std::vector<unsigned int>();
-
-        unsigned int fieldCount = acroform->GetFieldCount();
-        for (unsigned int fieldIndex = 0; fieldIndex < fieldCount; fieldIndex++) {
-            PdfField& fieldRef = acroform->GetFieldAt(fieldIndex);
-            PdfField* field = &fieldRef;
-
-            std::string name = field->GetFullName();
-            if (name == fieldName) {
-                removeFieldIndexs->push_back(fieldIndex);
-                continue;
-            }
-
-            PdfFieldChildrenCollectionBase& childrens = field->GetChildren();
-            unsigned int childrenCount = childrens.GetCount();
-
-            if (childrenCount != 0) {
-                RemoveAcroformChildrenField(fieldObserver, field, fieldName);
-
-                childrenCount = childrens.GetCount();
-                if (childrenCount == 0) {
-                    removeFieldIndexs->push_back(fieldIndex);
-                    continue;
-                }
-            }
-        }
-
-        while (removeFieldIndexs->size()) {
-            unsigned int removeFieldIndex = removeFieldIndexs->back();
-            
-            PdfField& fieldRef = acroform->GetFieldAt(removeFieldIndex);
-            PdfField* field = &fieldRef;
-            
-            std::string fieldName = field->GetFullName();
-            
-            fieldObserver->observe(PiPiFieldObserver::PiPiFieldObserveType::Remove, fieldName, field);
-            
-            acroform->RemoveFieldAt(removeFieldIndex);
-            removeFieldIndexs->pop_back();
-        }
-
-        delete removeFieldIndexs;
-    }
-
-    void PiPiFieldUtil::RemoveAcroformChildrenField(PiPiFieldObserver* fieldObserver, PdfField* field, std::string fieldName) {
+    void PiPiFieldUtil::RemoveChildrenField(PiPiFieldObserver* fieldObserver, PdfField* field, std::string fieldName) {
         PdfFieldChildrenCollectionBase& childrensRef = field->GetChildren();
         PdfFieldChildrenCollectionBase* childrens = &childrensRef;
 
@@ -215,7 +210,7 @@ namespace PiPi {
             }
 
             if (guardsonCount != 0) {
-                RemoveAcroformChildrenField(fieldObserver, childrenField, fieldName);
+                RemoveChildrenField(fieldObserver, childrenField, fieldName);
 
                 guardsonCount = guardsones->GetCount();
                 if (guardsonCount == 0) {

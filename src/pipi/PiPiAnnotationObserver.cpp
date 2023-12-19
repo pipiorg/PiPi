@@ -28,6 +28,9 @@ namespace PiPi {
             case PiPiAnnotationObserveType::Remove:
                 this->observeRemove(fieldName, annot);
                 return;
+            case PiPiAnnotationObserveType::Clear:
+                this->observeClear();
+                return;
         }
     }
 
@@ -129,5 +132,16 @@ namespace PiPi {
         }
 
         annots->insert(annot);
+    }
+
+    void PiPiAnnotationObserver::observeClear() {
+        std::map<const std::string, std::set<PdfAnnotation*>*>* annotMap = this->annotMap;
+        
+        for (auto mapIterator = annotMap->begin(); mapIterator != annotMap->end(); mapIterator.operator++()) {
+            delete mapIterator->second;
+            mapIterator->second = nullptr;
+        }
+        
+        annotMap->clear();
     }
 }

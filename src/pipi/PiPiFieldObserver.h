@@ -9,7 +9,8 @@ namespace PiPi {
         public:
             enum PiPiFieldObserveType {
                 Add,
-                Remove
+                Remove,
+                Clear
             };
         
             PiPiFieldObserver();
@@ -30,5 +31,6 @@ namespace PiPi {
         
             void observeAdd(const std::string fieldName, PdfField* field);
             void observeRemove(const std::string fieldName, PdfField* field);
+            void observeClear();
     };
 }
