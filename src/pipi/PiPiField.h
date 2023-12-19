@@ -6,13 +6,13 @@
 namespace PiPi {
 	class PiPiField {
 		public:
-			PiPiField(std::string name, PiPiFieldType type, unsigned int page, double x, double y, double width, double height, std::string font, float fontSize);
+			PiPiField(std::string name, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height, std::string font, float fontSize);
 
 			std::string name;
 
 			PiPiFieldType type;
 
-			unsigned int page;
+			unsigned int pageIndex;
 			
 			double x;
 			double y;

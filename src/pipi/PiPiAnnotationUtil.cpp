@@ -96,10 +96,6 @@ namespace PiPi {
         PdfPageCollection& pagesRef = document->GetPages();
         PdfPageCollection* pages = &pagesRef;
         
-        RemoveAllFieldAnnotation(annotObserver, pages);
-    }
-
-    void PiPiAnnotationUtil::RemoveAllFieldAnnotation(PiPiAnnotationObserver* annotObserver, PdfPageCollection* pages) {
         unsigned int pageCount = pages->GetCount();
         for (unsigned int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
             PdfPage& pageRef = pages->GetPageAt(pageIndex);
@@ -118,15 +114,44 @@ namespace PiPi {
     }
 
     void PiPiAnnotationUtil::RemoveFieldAnnotation(PiPiAnnotationObserver *annotObserver, PdfMemDocument *document, std::string fieldName) {
+        RemoveFieldAnnotation(annotObserver, document, fieldName, -1);
+    }
+
+    void PiPiAnnotationUtil::RemoveFieldAnnotation(PiPiAnnotationObserver *annotObserver, PdfMemDocument *document, std::string fieldName, long pageIndex) {
+        RemoveFieldAnnotation(annotObserver, document, fieldName, pageIndex, -1, -1);
+    }
+
+    void PiPiAnnotationUtil::RemoveFieldAnnotation(PiPiAnnotationObserver *annotObserver, PdfMemDocument *document, std::string fieldName, long pageIndex, double x, double y) {
+        RemoveFieldAnnotation(annotObserver, document, fieldName, pageIndex, x, y, -1, -1);
+    }
+
+    void PiPiAnnotationUtil::RemoveFieldAnnotation(PiPiAnnotationObserver *annotObserver, PdfMemDocument *document, std::string fieldName, long pageIndex, double x, double y, double width, double height) {
         PdfPageCollection& pagesRef = document->GetPages();
         PdfPageCollection* pages = &pagesRef;
         
-        RemoveFieldAnnotation(annotObserver, pages, fieldName);
-    }
-
-    void PiPiAnnotationUtil::RemoveFieldAnnotation(PiPiAnnotationObserver* annotObserver, PdfPageCollection* pages, std::string fieldName) {
         std::set<PdfAnnotation*>* tarAnnots = PiPiAnnotationUtil::SearchFieldAnnotation(annotObserver, pages, fieldName);
 
+        std::set<PdfAnnotation*>* matchTarAnnots = new std::set<PdfAnnotation*>();
+        for (auto iterator = tarAnnots->begin(); iterator != tarAnnots->end(); iterator.operator++()) {
+            PdfAnnotation* annot = *iterator;
+            
+            unsigned int aPageIndex = PiPiPageUtil::SearchPageIndex(document, annot->GetPage());
+            double ax = PiPiExtractUtil::ExtractAnnotationX(annot);
+            double ay = PiPiExtractUtil::ExtractAnnotationY(annot);
+            double aWidth = PiPiExtractUtil::ExtractAnnotationWidth(annot);
+            double aHeight = PiPiExtractUtil::ExtractAnnotationHeight(annot);
+            
+            bool matched = (pageIndex == aPageIndex || pageIndex == -1) &&
+                (x == ax || x == -1) &&
+                (y == ay || y == -1) &&
+                (width == aWidth || width == -1) &&
+                (height == aHeight || height == -1);
+            
+            if (matched) {
+                matchTarAnnots->insert(annot);
+            }
+        }
+        
         unsigned int pageCount = pages->GetCount();
         for (unsigned int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
             PdfPage& pageRef = pages->GetPageAt(pageIndex);
@@ -142,7 +167,7 @@ namespace PiPi {
                 PdfAnnotation& annotRef = annots->GetAnnotAt(annotIndex);
                 PdfAnnotation* annot = &annotRef;
 
-                bool found = std::find(tarAnnots->begin(), tarAnnots->end(), annot) != tarAnnots->end();
+                bool found = std::find(matchTarAnnots->begin(), matchTarAnnots->end(), annot) != matchTarAnnots->end();
                 if (found) {
                     removeAnnotIndexs->push_back(annotIndex);
                 }
@@ -164,6 +189,7 @@ namespace PiPi {
             delete removeAnnotIndexs;
         }
 
+        delete matchTarAnnots;
         delete tarAnnots;
     }
 

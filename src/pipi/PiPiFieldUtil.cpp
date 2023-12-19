@@ -93,56 +93,64 @@ namespace PiPi {
         document->CollectGarbage();
     }
 
-    void PiPiFieldUtil::RemoveField(PiPiFieldObserver* fieldObserver, PdfMemDocument* document, std::string fieldName) {
+    void PiPiFieldUtil::RemoveField(PiPiFieldObserver *fieldObserver, PiPiAnnotationObserver* annotObserver, PdfMemDocument *document, std::string fieldName) {
+        RemoveField(fieldObserver, annotObserver, document, fieldName, -1);
+    }
+
+    void PiPiFieldUtil::RemoveField(PiPiFieldObserver *fieldObserver, PiPiAnnotationObserver *annotObserver, PdfMemDocument *document, std::string fieldName, long pageIndex) {
+        RemoveField(fieldObserver, annotObserver, document, fieldName, pageIndex, -1, -1);
+    }
+
+    void PiPiFieldUtil::RemoveField(PiPiFieldObserver *fieldObserver, PiPiAnnotationObserver* annotObserver, PdfMemDocument *document, std::string fieldName, long pageIndex, double x, double y) {
+        RemoveField(fieldObserver, annotObserver, document, fieldName, pageIndex, x, y, -1, -1);
+    }
+
+    void PiPiFieldUtil::RemoveField(PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver, PdfMemDocument* document, std::string fieldName, long pageIndex, double x, double y, double width, double height) {
         PdfAcroForm* acroform = document->GetAcroForm();
 
         if (acroform == nullptr) {
             return;
         }
         
-        std::vector<unsigned int>* removeFieldIndexs = new std::vector<unsigned int>();
-
-        unsigned int fieldCount = acroform->GetFieldCount();
-        for (unsigned int fieldIndex = 0; fieldIndex < fieldCount; fieldIndex++) {
-            PdfField& fieldRef = acroform->GetFieldAt(fieldIndex);
-            PdfField* field = &fieldRef;
-
-            std::string name = field->GetFullName();
-            if (name == fieldName) {
-                removeFieldIndexs->push_back(fieldIndex);
-                continue;
-            }
-
-            PdfFieldChildrenCollectionBase& childrens = field->GetChildren();
-            unsigned int childrenCount = childrens.GetCount();
-
-            if (childrenCount != 0) {
-                RemoveChildrenField(fieldObserver, field, fieldName);
-
-                childrenCount = childrens.GetCount();
-                if (childrenCount == 0) {
-                    removeFieldIndexs->push_back(fieldIndex);
-                    continue;
+        std::set<PdfField*>* fields = SearchField(fieldObserver, document, fieldName);
+        std::set<PdfAnnotation*>* annots = PiPiAnnotationUtil::SearchFieldAnnotation(annotObserver, document, fieldName);
+        
+        std::map<PdfField*, PdfAnnotation*>* map = new std::map<PdfField*, PdfAnnotation*>();
+        for (auto fieldIterator = fields->begin(); fieldIterator != fields->end(); fieldIterator.operator++()) {
+            for (auto annotIterator = annots->begin(); annotIterator != annots->end(); annotIterator.operator++()) {
+                PdfField* field = *fieldIterator;
+                PdfAnnotation* annot = *annotIterator;
+                if (&(field->GetObject()) == &(annot->GetObject())) {
+                    map->insert(std::pair<PdfField*, PdfAnnotation*>(field, annot));
                 }
             }
         }
-
-        while (removeFieldIndexs->size()) {
-            unsigned int removeFieldIndex = removeFieldIndexs->back();
+        
+        for (auto iterator = map->begin(); iterator != map->end(); iterator.operator++()) {
+            PdfField* field = iterator->first;
+            PdfAnnotation* annot = iterator->second;
             
-            PdfField& fieldRef = acroform->GetFieldAt(removeFieldIndex);
-            PdfField* field = &fieldRef;
+            unsigned int aPageIndex = PiPiPageUtil::SearchPageIndex(document, annot->GetPage());
+            double ax = PiPiExtractUtil::ExtractAnnotationX(annot);
+            double ay = PiPiExtractUtil::ExtractAnnotationY(annot);
+            double aWidth = PiPiExtractUtil::ExtractAnnotationWidth(annot);
+            double aHeight = PiPiExtractUtil::ExtractAnnotationHeight(annot);
             
-            std::string fieldName = field->GetFullName();
+            bool matched = (aPageIndex == pageIndex || pageIndex == -1) &&
+                (x == ax || x == -1) &&
+                (y == ay || y == -1) &&
+                (width == aWidth || width == -1) &&
+                (height == aHeight || height == -1);
             
-            fieldObserver->observe(PiPiFieldObserver::PiPiFieldObserveType::Remove, fieldName, field);
+            if (!matched) {
+                continue;
+            }
             
-            acroform->RemoveFieldAt(removeFieldIndex);
-            removeFieldIndexs->pop_back();
+            RemoveChildrenField(fieldObserver, document, field);
         }
-
-        delete removeFieldIndexs;
-
+        
+        delete map;
+        
         document->CollectGarbage();
     }
 
@@ -151,14 +159,14 @@ namespace PiPi {
         
         // 目前有一個需要擴展書籤
         if (fields->size() == 1) {
-            PiPiFieldUtil::ExpandHierarchicalField(document, fieldName);
+            ExpandChildrenField(document, fieldName);
         }
         
         bool hierarchical = PiPiCommon::includes(fieldName, ".");
         if (hierarchical) {
-            PiPiFieldUtil::CreateHierarchicalField(fieldObserver, annotObserver, document, fieldName, type, pageIndex, x, y, width, height);
+            CreateChildrenField(fieldObserver, annotObserver, document, fieldName, type, pageIndex, x, y, width, height);
         } else {
-            PiPiFieldUtil::CreateNonHierarchicalField(fieldObserver, annotObserver, document, fieldName, type, pageIndex, x, y, width, height);
+            CreateNonChildrenField(fieldObserver, annotObserver, document, fieldName, type, pageIndex, x, y, width, height);
         }
     }
 
@@ -185,59 +193,72 @@ namespace PiPi {
         }
     }
 
-    void PiPiFieldUtil::RemoveChildrenField(PiPiFieldObserver* fieldObserver, PdfField* field, std::string fieldName) {
-        PdfFieldChildrenCollectionBase& childrensRef = field->GetChildren();
-        PdfFieldChildrenCollectionBase* childrens = &childrensRef;
-
-        unsigned int childrenCount = 0;
-
-        std::vector<unsigned int>* removeFieldIndexs = new std::vector<unsigned int>();
-
-        childrenCount = childrens->GetCount();
-        for (unsigned int childrenIndex = 0; childrenIndex < childrenCount; childrenIndex++) {
-            PdfField& childrenFieldRef = childrens->GetFieldAt(childrenIndex);
-            PdfField* childrenField = &childrenFieldRef;
-
-            std::string childrenName = childrenField->GetFullName();
-
-            PdfFieldChildrenCollectionBase& guardsonesRef = childrenField->GetChildren();
-            PdfFieldChildrenCollectionBase* guardsones = &guardsonesRef;
-            unsigned int guardsonCount = guardsones->GetCount();
-
-            if (childrenName == fieldName && guardsonCount == 0) {
-                removeFieldIndexs->push_back(childrenIndex);
-                continue;
-            }
-
-            if (guardsonCount != 0) {
-                RemoveChildrenField(fieldObserver, childrenField, fieldName);
-
-                guardsonCount = guardsones->GetCount();
-                if (guardsonCount == 0) {
-                    removeFieldIndexs->push_back(childrenIndex);
-                    continue;
+    void PiPiFieldUtil::RemoveChildrenField(PiPiFieldObserver *fieldObserver, PdfDocument *document, PdfField *field) {
+        std::string fieldName = field->GetFullName();
+        
+        PdfObject& fieldObjRef = field->GetObject();
+        PdfObject* fieldObj = &fieldObjRef;
+        PdfDictionary& fieldDictRef = fieldObj->GetDictionary();
+        PdfDictionary* fieldDict = &fieldDictRef;
+        
+        PdfObject* parentFieldObj = fieldDict->FindKey(PdfName("Parent"));
+        if (parentFieldObj != nullptr) {
+            PdfObject& parentFieldObjRef = *parentFieldObj;
+            PdfDictionary& parentFieldDictRef = parentFieldObj->GetDictionary();
+            PdfDictionary* parentFieldDict = &parentFieldDictRef;
+            
+            std::unique_ptr<PdfField> parentFieldPtr;
+            PdfField::TryCreateFromObject(parentFieldObjRef, parentFieldPtr);
+            PdfField* parentField = parentFieldPtr.get();
+            
+            PdfObject* parentFieldKidsObj = parentFieldDict->FindKey(PdfName("Kids"));
+            PdfArray& parentFieldKidsRef = parentFieldKidsObj->GetArray();
+            PdfArray* parentFieldKids = &parentFieldKidsRef;
+            size_t parentFieldKidCount = parentFieldKids->size();
+            
+            unsigned int pos = 0;
+            for (unsigned int idx = 0; idx < parentFieldKidCount; idx++) {
+                if (fieldObj == &(parentFieldKids->MustFindAt(idx))) {
+                    pos = idx;
+                    break;
                 }
             }
-        }
-
-        while (removeFieldIndexs->size()) {
-            unsigned int removeFieldIndex = removeFieldIndexs->back();
             
-            PdfField& fieldRef = childrens->GetFieldAt(removeFieldIndex);
-            PdfField* field = &fieldRef;
-            
-            std::string fieldName = field->GetFullName();
+            parentFieldKids->RemoveAt(pos);
             
             fieldObserver->observe(PiPiFieldObserver::PiPiFieldObserveType::Remove, fieldName, field);
             
-            childrens->RemoveFieldAt(removeFieldIndex);
-            removeFieldIndexs->pop_back();
+            if (parentFieldKidCount - 1 == 1) {
+                RestrictChildrenField(document, fieldName);
+            }
+            
+            if (parentFieldKidCount - 1 == 0) {
+                RemoveChildrenField(fieldObserver, document, parentField);
+            }
+        } else {
+            PdfAcroForm* acroform = document->GetAcroForm();
+            PdfDictionary& acroformDictRef = acroform->GetDictionary();
+            PdfDictionary* acroformDict = &acroformDictRef;
+            
+            PdfObject* acroformFieldsObj = acroformDict->FindKey(PdfName("Fields"));
+            PdfArray& acroformFieldsRef = acroformFieldsObj->GetArray();
+            PdfArray* acroformFields = &acroformFieldsRef;
+            unsigned int acroformFieldCount = (unsigned int)acroformFields->size();
+            
+            unsigned int pos = 0;
+            for (unsigned int idx = 0; idx < acroformFieldCount; idx++) {
+                if (fieldObj == &(acroformFields->MustFindAt(idx))) {
+                    pos = idx;
+                    break;
+                }
+                
+                acroformFields->RemoveAt(idx);
+                fieldObserver->observe(PiPiFieldObserver::PiPiFieldObserveType::Remove, fieldName, field);
+            }
         }
-
-        delete removeFieldIndexs;
     }
 
-    void PiPiFieldUtil::CreateHierarchicalField(PiPiFieldObserver *fieldObserver, PiPiAnnotationObserver *annotObserver, PdfMemDocument *document, std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height) {
+    void PiPiFieldUtil::CreateChildrenField(PiPiFieldObserver *fieldObserver, PiPiAnnotationObserver *annotObserver, PdfMemDocument *document, std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height) {
         std::set<PdfField*>* fields = SearchField(fieldObserver, document, fieldName);
         size_t cFieldSize = fields->size();
         bool sameName = cFieldSize >= 1;
@@ -336,6 +357,7 @@ namespace PiPi {
                 std::string t = kidT->GetString();
                 if (t == partialFieldName) {
                     newParentFieldObj = kidObj;
+                    break;
                 }
             }
             
@@ -421,7 +443,7 @@ namespace PiPi {
         delete splits;
     }
 
-    void PiPiFieldUtil::CreateNonHierarchicalField(PiPiFieldObserver *fieldObserver, PiPiAnnotationObserver *annotObserver, PdfMemDocument *document, std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height) {
+    void PiPiFieldUtil::CreateNonChildrenField(PiPiFieldObserver *fieldObserver, PiPiAnnotationObserver *annotObserver, PdfMemDocument *document, std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height) {
         PdfPageCollection& pagesRef = document->GetPages();
         PdfPageCollection* pages = &pagesRef;
         
@@ -461,7 +483,7 @@ namespace PiPi {
         annotObserver->observe(PiPiAnnotationObserver::PiPiAnnotationObserveType::Add, fieldName, annot);
     }
 
-    void PiPiFieldUtil::ExpandHierarchicalField(PdfDocument* document, std::string fieldName) {
+    void PiPiFieldUtil::ExpandChildrenField(PdfDocument* document, std::string fieldName) {
         PdfAcroForm* acroform = document->GetAcroForm();
         
         PdfDictionary& acroformDictRef = acroform->GetDictionary();
@@ -596,7 +618,137 @@ namespace PiPi {
         expandFieldKids->AddIndirect(*fieldObj);
     }
 
-    void PiPiFieldUtil::RestrictHierarchicalField(PdfDocument* document, std::string fieldName) {
+    void PiPiFieldUtil::RestrictChildrenField(PdfDocument* document, std::string fieldName) {
+        PdfAcroForm& acroformRef = document->GetOrCreateAcroForm();
+        PdfAcroForm* acroform = &acroformRef;
         
+        PdfObject& acroformObjRef = acroform->GetObject();
+        PdfObject* acroformObj = &acroformObjRef;
+        
+        PdfDictionary& acroformDictRef = acroformObj->GetDictionary();
+        PdfDictionary* acroformDict = &acroformDictRef;
+        
+        PdfObject* acroformFieldsObj = acroformDict->FindKey(PdfName("Fields"));
+        
+        PdfArray& acroformFieldsRef = acroformFieldsObj->GetArray();
+        PdfArray* acroformFields = &acroformFieldsRef;
+        
+        std::vector<std::string>* splits = PiPiCommon::split(fieldName, ".");
+        size_t splitCount = splits->size();
+
+        PdfObject* parentFieldObj = nullptr;
+        unsigned int parentFieldIndex = 0;
+        
+        PdfObject* fieldObj = nullptr;
+        
+        // 找到根階層
+        std::string rootFieldName = (*splits)[0];
+        for (unsigned int i = 0; i < acroformFields->size(); i++) {
+            PdfObject& fieldObjRef = acroformFields->MustFindAt(i);
+            PdfObject* fieldObj = &fieldObjRef;
+            
+            PdfDictionary& fieldDictRef = fieldObj->GetDictionary();
+            PdfDictionary* fieldDict = &fieldDictRef;
+            
+            PdfObject* fieldTObj = fieldDict->FindKey(PdfName("T"));
+            
+            const PdfString& fieldTRef = fieldTObj->GetString();
+            const PdfString* fieldT = &fieldTRef;
+            
+            std::string t = fieldT->GetString();
+            if (t == rootFieldName) {
+                parentFieldIndex = i;
+                parentFieldObj = fieldObj;
+                
+                PdfObject* fieldKidsObj = fieldDict->FindKey(PdfName("Kids"));
+                fieldObj = fieldKidsObj != nullptr
+                    ? &(fieldKidsObj->GetArray().MustFindAt(0))
+                    : nullptr;
+                
+                break;
+            }
+        }
+        
+        // 建立剩餘階層
+        for (size_t i = 1; i < splitCount; i++) {
+            std::string partialFieldName = (*splits)[i];
+            
+            PdfDictionary& parentFieldDictRef = parentFieldObj->GetDictionary();
+            PdfDictionary* parentFieldDict = &parentFieldDictRef;
+            
+            PdfObject* parentFieldKidsObj = parentFieldDict->FindKey(PdfName("Kids"));
+            
+            PdfArray& parentFieldKidsRef = parentFieldKidsObj->GetArray();
+            PdfArray* parentFieldKids = &parentFieldKidsRef;
+            
+            for (unsigned int j = 0; j < parentFieldKids->size(); j++) {
+                PdfObject& kidObjRef = parentFieldKids->MustFindAt(j);
+                PdfObject* kidObj = &kidObjRef;
+                
+                PdfDictionary& kidRef = kidObj->GetDictionary();
+                PdfDictionary* kid = &kidRef;
+                
+                PdfObject* kidTObj = kid->FindKey(PdfName("T"));
+                
+                const PdfString& kidTRef = kidTObj->GetString();
+                const PdfString* kidT = &kidTRef;
+                
+                std::string t = kidT->GetString();
+                if (t == partialFieldName) {
+                    parentFieldIndex = j;
+                    parentFieldObj = kidObj;
+                    
+                    PdfObject* grandsObj = kid->FindKey(PdfName("Kids"));
+                    fieldObj = grandsObj != nullptr
+                        ? &(grandsObj->GetArray().MustFindAt(0))
+                        : nullptr;
+                    
+                    break;
+                }
+            }
+        }
+        
+        PdfObject& parentFieldObjRef = *parentFieldObj;
+        PdfDictionary& parentFieldDictRef = parentFieldObj->GetDictionary();
+        PdfDictionary* parentFieldDict = &parentFieldDictRef;
+        
+        PdfObject& fieldObjRef = *fieldObj;
+        PdfDictionary& fieldDictRef = fieldObj->GetDictionary();
+        PdfDictionary* fieldDict = &fieldDictRef;
+        
+        fieldDict->RemoveKey(PdfName("Parent"));
+        parentFieldDict->RemoveKey(PdfName("Kids"));
+        
+        for (auto iterator = parentFieldDict->begin(); iterator != parentFieldDict->end(); iterator.operator++()) {
+            const PdfName name = iterator->first;
+            const PdfObject& value = iterator->second;
+            
+            if (fieldDict->HasKey(name)) {
+                continue;
+            }
+            
+            fieldDict->AddKey(name, value);
+        }
+        
+        PdfObject* grandFieldObj = parentFieldDict->FindKey(PdfName("Parent"));
+        if (grandFieldObj == nullptr) {
+            acroformFields->RemoveAt(parentFieldIndex);
+            
+            acroformFields->AddIndirect(*fieldObj);
+            
+        } else {
+            PdfDictionary& grandFieldDictRef = grandFieldObj->GetDictionary();
+            PdfDictionary* grandFieldDict = &grandFieldDictRef;
+            
+            PdfObject* grandFieldKidsObj = grandFieldDict->FindKey(PdfName("Kids"));
+            PdfObject& grandFieldKidsObjRef = *grandFieldKidsObj;
+            
+            PdfArray& grandFieldKidsRef = grandFieldKidsObj->GetArray();
+            PdfArray* grandFieldKids = &grandFieldKidsRef;
+            
+            grandFieldKids->RemoveAt(parentFieldIndex);
+            
+            grandFieldKids->AddIndirect(*fieldObj);
+        }
     }
 }

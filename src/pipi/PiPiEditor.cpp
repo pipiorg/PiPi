@@ -63,7 +63,7 @@ namespace PiPi {
 
 		delete annotations;
 
-		PiPiFieldUtil::RemoveField(fieldObserver, document, fieldName);
+		PiPiFieldUtil::RemoveField(fieldObserver, annotObserver, document, fieldName);
         PiPiAnnotationUtil::RemoveFieldAnnotation(annotObserver, document, fieldName);
 
         appearanceManager->UnMarkNeedAppearance(fieldName);
@@ -85,21 +85,29 @@ namespace PiPi {
     }
 
 	PiPiEditor* PiPiEditor::removeField(std::string fieldName) {
-		PdfMemDocument* document = this->document;
+        return this->removeField(fieldName, -1);
+	}
+
+    PiPiEditor* PiPiEditor::removeField(std::string fieldName, unsigned int pageIndex) {
+        return this->removeField(fieldName, pageIndex, -1, -1);
+    }
+
+    PiPiEditor* PiPiEditor::removeField(std::string fieldName, unsigned int pageIndex, double x, double y) {
+        return this->removeField(fieldName, pageIndex, x, y, -1, -1);
+    }
+
+    PiPiEditor* PiPiEditor::removeField(std::string fieldName, unsigned int pageIndex, double x, double y, double width, double height) {
+        PdfMemDocument* document = this->document;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         PiPiFieldObserver* fieldObserver = this->fieldObserver;
         PiPiAnnotationObserver* annotObserver = this->annotObserver;
         
-		PiPiFieldUtil::RemoveField(fieldObserver, document, fieldName);
-        PiPiAnnotationUtil::RemoveFieldAnnotation(annotObserver, document, fieldName);
+        PiPiFieldUtil::RemoveField(fieldObserver, annotObserver, document, fieldName, pageIndex, x, y, width, height);
+        PiPiAnnotationUtil::RemoveFieldAnnotation(annotObserver, document, fieldName, pageIndex, x, y, width, height);
         
         appearanceManager->UnMarkNeedAppearance(fieldName);
 
-		return this;
-	}
-
-    PiPiEditor* PiPiEditor::removeField(std::string fieldName, unsigned int pageIndex, double x, double y, double width, double height) {
-        
+        return this;
     }
 
 	PiPiEditor* PiPiEditor::renameField(std::string oldFieldName, std::string newFieldName) {
