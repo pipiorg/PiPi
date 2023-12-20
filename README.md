@@ -20,10 +20,6 @@ cd build
 cmake ..
 ```
 
-## Known Bugs
-
-- Appearance not generate immediate after textbox form field be filled
-
 ## License
 
 PiPi Based on MIT license, licensed under [LICENSE](LICENSE)
