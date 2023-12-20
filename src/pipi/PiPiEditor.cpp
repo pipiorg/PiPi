@@ -88,15 +88,15 @@ namespace PiPi {
         return this->removeField(fieldName, -1);
 	}
 
-    PiPiEditor* PiPiEditor::removeField(std::string fieldName, unsigned int pageIndex) {
+    PiPiEditor* PiPiEditor::removeField(std::string fieldName, long pageIndex) {
         return this->removeField(fieldName, pageIndex, -1, -1);
     }
 
-    PiPiEditor* PiPiEditor::removeField(std::string fieldName, unsigned int pageIndex, double x, double y) {
+    PiPiEditor* PiPiEditor::removeField(std::string fieldName, long pageIndex, double x, double y) {
         return this->removeField(fieldName, pageIndex, x, y, -1, -1);
     }
 
-    PiPiEditor* PiPiEditor::removeField(std::string fieldName, unsigned int pageIndex, double x, double y, double width, double height) {
+    PiPiEditor* PiPiEditor::removeField(std::string fieldName, long pageIndex, double x, double y, double width, double height) {
         PdfMemDocument* document = this->document;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         PiPiFieldObserver* fieldObserver = this->fieldObserver;

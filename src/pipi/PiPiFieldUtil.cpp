@@ -655,6 +655,10 @@ namespace PiPi {
                     lastFieldDict->RemoveKey(SpecialHierarchicalFieldKey);
                 }
             }
+        } else {
+            std::string lastFieldName = (*splits)[splits->size() - 1];
+            
+            lastFieldDict->AddKey(PdfName("T"), PdfString(lastFieldName));
         }
         
         switch (type) {

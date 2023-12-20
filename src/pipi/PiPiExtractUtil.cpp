@@ -157,17 +157,22 @@ namespace PiPi {
     double PiPiExtractUtil::ExtractAnnotationX(PdfAnnotation* annotation) {
         Rect rect = annotation->GetRect();
 
-        double y = rect.GetTop();
-
-        return y;
-    }
-
-    double PiPiExtractUtil::ExtractAnnotationY(PdfAnnotation* annotation) {
-        Rect rect = annotation->GetRect();
-
         double x = rect.GetLeft();
 
         return x;
+    }
+
+    double PiPiExtractUtil::ExtractAnnotationY(PdfAnnotation* annotation) {
+        PdfPage* page = annotation->GetPage();
+        
+        Rect pageRect = page->GetRect();
+        Rect annotRect = annotation->GetRect();
+
+        double pageHeight = ExtractPageHeight(page);
+        double annotHeight = ExtractAnnotationHeight(annotation);
+        double y = pageHeight - annotRect.GetTop();
+
+        return y;
     }
 
     bool PiPiExtractUtil::ExtractAnnotationBorderExists(PdfAnnotation *annotation) {
