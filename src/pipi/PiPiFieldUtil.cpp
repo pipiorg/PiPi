@@ -622,7 +622,7 @@ namespace PiPi {
         Rect pageRect = page->GetRect();
         double pageHeight = pageRect.Height;
         
-        Rect fieldRect = Rect(x, y + pageHeight - height, width, height);
+        Rect fieldRect = Rect(x, pageHeight - y - height, width, height);
         
         PdfAnnotation& annotRef = annots->CreateAnnot(PdfAnnotationType::Widget, fieldRect);
         PdfAnnotation* annot = &annotRef;
@@ -696,7 +696,7 @@ namespace PiPi {
         Rect pageRect = page->GetRect();
         double pageHeight = pageRect.Height;
         
-        Rect fieldRect = Rect(x, y + pageHeight - height, width, height);
+        Rect fieldRect = Rect(x, pageHeight - y - height, width, height);
         
         PdfField* field = nullptr;
         switch (type) {
