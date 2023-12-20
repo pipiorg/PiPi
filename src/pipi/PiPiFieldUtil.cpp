@@ -87,8 +87,6 @@ namespace PiPi {
         }
         
         fieldObserver->observeClear();
-        
-        document->CollectGarbage();
     }
 
     void PiPiFieldUtil::RemoveField(PiPiFieldObserver *fieldObserver, PiPiAnnotationObserver* annotObserver, PdfMemDocument *document, std::string fieldName) {
@@ -148,8 +146,6 @@ namespace PiPi {
         }
         
         delete map;
-        
-        document->CollectGarbage();
     }
 
     void PiPiFieldUtil::CreateField(PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver, PdfMemDocument* document, std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height) {
@@ -434,8 +430,6 @@ namespace PiPi {
         }
         
         fieldObserver->observeRename(oldFieldName, newFieldName);
-        
-        document->CollectGarbage();
     }
 
     void PiPiFieldUtil::RemoveChildrenField(PiPiFieldObserver *fieldObserver, PdfDocument *document, PdfField *field) {
@@ -488,7 +482,7 @@ namespace PiPi {
             PdfObject* acroformFieldsObj = acroformDict->FindKey(PdfName("Fields"));
             PdfArray& acroformFieldsRef = acroformFieldsObj->GetArray();
             PdfArray* acroformFields = &acroformFieldsRef;
-            unsigned int acroformFieldCount = (unsigned int)acroformFields->size();
+            size_t acroformFieldCount = acroformFields->size();
             
             unsigned int pos = 0;
             for (unsigned int idx = 0; idx < acroformFieldCount; idx++) {
@@ -496,10 +490,10 @@ namespace PiPi {
                     pos = idx;
                     break;
                 }
-                
-                acroformFields->RemoveAt(idx);
-                fieldObserver->observeRemove(fieldName, field);
             }
+            
+            acroformFields->RemoveAt(pos);
+            fieldObserver->observeRemove(fieldName, field);
         }
     }
 
