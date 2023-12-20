@@ -68,6 +68,8 @@ namespace PiPi {
         }
         
         if (this->document != nullptr) {
+            this->document->CollectGarbage();
+            
             delete this->document;
             this->document = nullptr;
         }
