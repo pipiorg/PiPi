@@ -261,22 +261,23 @@ namespace PiPi {
             lines->push_back(line);
         }
         
-        // 計算單行高度
-        double leading = fontMetrics->GetLeading();
-        double lineSpacing = font->GetLineSpacing(textState);
-        double descent = font->GetDescent(textState);
-        double signalLineHeight = lineSpacing + leading;
-        
         // 計算可塞下幾行
-        double lineHieght = leading;
+        double lineSpacing = font->GetLineSpacing(textState);
+        double ascent = font->GetAscent(textState);
+        double descent = font->GetDescent(textState);
+        
+        double lineGap = lineSpacing - ascent + descent;
+        double lineHeight = lineSpacing;
+        
+        double totalLineHieght = -(lineHeight - ascent + lineGap / 2);
         size_t availableLineCount = 0;
         size_t lineCount = lines->size();
         for (size_t lineIndex = 0; lineIndex < lineCount; lineIndex++) {
-            if (lineHieght + signalLineHeight > height) {
+            if (totalLineHieght + lineHeight > height) {
                 break;
             }
             
-            lineHieght += signalLineHeight;
+            totalLineHieght += lineHeight;
             availableLineCount++;
         }
         
