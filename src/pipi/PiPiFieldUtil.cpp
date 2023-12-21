@@ -468,7 +468,10 @@ namespace PiPi {
             fieldObserver->observeRemove(fieldName, field);
             
             if (parentFieldKidCount - 1 == 1) {
-                RestrictChildrenField(document, fieldName);
+                // 查看剩下的那個小孩有沒有T
+                if (!parentFieldKids->MustFindAt(0).GetDictionary().HasKey(PdfName("T"))) {
+                    RestrictChildrenField(document, fieldName);
+                }
             }
             
             if (parentFieldKidCount - 1 == 0) {
