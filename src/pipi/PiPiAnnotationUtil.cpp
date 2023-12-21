@@ -251,7 +251,8 @@ namespace PiPi {
         PdfPage* page = annotation->GetPage();
         PdfPage& pageRef = *page;
 
-        PdfPainter* painter = new PdfPainter();
+        PdfPainter* painter = new PdfPainter(PdfPainterFlags::NoSaveRestorePrior);
+
         painter->SetCanvas(pageRef);
         painter->SetClipRect(rect);
         painter->DrawXObject(xObjectRef, left, bottom);
