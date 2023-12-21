@@ -32,6 +32,19 @@ namespace PiPi {
 
 			if (type == PdfFieldType::TextBox) {
 				PdfTextBox* textBoxField = (PdfTextBox*)field;
+                
+                std::string fontName = "";
+                std::set<PdfAnnotation*>* annots =  PiPiAnnotationUtil::SearchFieldAnnotation(annotObserver, document, name);
+                for (auto iterator = annots->begin(); iterator != annots->end(); iterator.operator++()) {
+                    PdfAnnotation* annot = *iterator;
+                    if (&(annot->GetObject()) == &(field->GetObject())) {
+                        fontName = PiPiExtractUtil::ExtractAnnotationFontName(annot);
+                        break;
+                    }
+                }
+                
+                value = filterValue(value, fontName);
+                
 				PdfString valueString(value);
 				textBoxField->SetText(valueString);
 			}
@@ -59,7 +72,17 @@ namespace PiPi {
         PdfMemDocument* document = this->document;
         PiPiAnnotationObserver* annotObserver = this->annotObserver;
         
-        if (ellipsis) {
+        bool isText = true;;
+        std::set<PdfField*>* fields = PiPiFieldUtil::SearchField(fieldObserver, document, fieldName);
+        for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
+            PdfField* field = *iterator;
+            if (field->GetType() != PdfFieldType::TextBox) {
+                isText = false;
+                break;
+            }
+        }
+        
+        if (ellipsis && isText) {
             std::set<PdfAnnotation*>* annots =  PiPiAnnotationUtil::SearchFieldAnnotation(annotObserver, document, fieldName);
             
             if (annots->size() > 0) {
@@ -99,6 +122,8 @@ namespace PiPi {
                 bool multiline = PiPiExtractUtil::ExtractAnnotationTextMultiine(minAnnot);
                 std::string fontName = PiPiExtractUtil::ExtractAnnotationFontName(minAnnot);
                 float fontSize = PiPiExtractUtil::ExtractAnnotationFontSize(minAnnot);
+                
+                value = this->filterValue(value, fontName);
                 
                 value = multiline
                     ? this->ellipsisValueMultiline(value, minAnnotWidthWithoutBorder, minAnnotHeightWithoutBorder, fontName, fontSize)
@@ -172,13 +197,44 @@ namespace PiPi {
 		return this;
 	}
 
+    std::string PiPiFiller::filterValue(std::string value, std::string fontName) {
+        PiPiFontManager* fontManager = this->fontManager;
+        
+        const PdfFont* font = fontManager->accessFont(fontName) == nullptr
+            ? fontManager->accessDefaultFont()
+            : fontManager->accessFont(fontName);
+        
+        std::string newValue = "";
+        
+        auto iterator = value.begin();
+        while (iterator != value.end()) {
+            utf8::utfchar32_t character = utf8::next(iterator, value.end());
+            
+            std::string characterString = "";
+            utf8::append(character, characterString);
+            
+            const PdfEncoding& encodingRef = font->GetEncoding();
+            const PdfEncoding* encoding = &encodingRef;
+            
+            charbuff encoded;
+            bool converted = encoding->TryConvertToEncoded(characterString, encoded);
+            
+            if (converted) {
+                newValue += characterString;
+            } else {
+                newValue += " ";
+            }
+        }
+        
+        return newValue;
+    }
+
     std::string PiPiFiller::ellipsisValue(std::string value, float width, float height, std::string fontName, float fontSize) {
         PiPiFontManager* fontManager = this->fontManager;
         
-        const PdfFont* font = fontManager->accessFont(fontName);
-        
-        const PdfFontMetrics& fontMetricsRef = font->GetMetrics();
-        const PdfFontMetrics* fontMetrics = &fontMetricsRef;
+        const PdfFont* font = fontManager->accessFont(fontName) == nullptr
+            ? fontManager->accessDefaultFont()
+            : fontManager->accessFont(fontName);
         
         PdfTextState textState;
         textState.Font = font;
@@ -218,10 +274,9 @@ namespace PiPi {
     std::string PiPiFiller::ellipsisValueMultiline(std::string value, float width, float height, std::string fontName, float fontSize) {
         PiPiFontManager* fontManager = this->fontManager;
         
-        const PdfFont* font = fontManager->accessFont(fontName);
-        
-        const PdfFontMetrics& fontMetricsRef = font->GetMetrics();
-        const PdfFontMetrics* fontMetrics = &fontMetricsRef;
+        const PdfFont* font = fontManager->accessFont(fontName) == nullptr
+            ? fontManager->accessDefaultFont()
+            : fontManager->accessFont(fontName);
         
         PdfTextState textState;
         textState.Font = font;
