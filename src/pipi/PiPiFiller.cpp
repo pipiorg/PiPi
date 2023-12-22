@@ -353,7 +353,10 @@ namespace PiPi {
                     
                     std::string postNewLastLineWithEllipsis = postNewLastLine + "...";
                     
-                    double lastLineWidth = font->GetStringLength(postNewLastLineWithEllipsis, textState);
+                    double lastLineWidth = iterator != lastLine.end()
+                        ? font->GetStringLength(postNewLastLineWithEllipsis, textState)
+                        : font->GetStringLength(postNewLastLine, textState);
+                    
                     if (lastLineWidth > width) {
                         newLastLine += "...";
                         added = true;
