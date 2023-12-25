@@ -365,6 +365,11 @@ namespace PiPi {
             lines->push_back(line);
         }
         
+        size_t lineCount = lines->size();
+        if (lineCount == 0) {
+            return value;
+        }
+        
         // 計算可塞下幾行
         double lineSpacing = font->GetLineSpacing(textState);
         double ascent = font->GetAscent(textState);
@@ -374,8 +379,8 @@ namespace PiPi {
         double lineHeight = lineSpacing;
         
         double totalLineHieght = -(lineHeight - ascent + lineGap / 2);
+        
         size_t availableLineCount = 0;
-        size_t lineCount = lines->size();
         for (size_t lineIndex = 0; lineIndex < lineCount; lineIndex++) {
             if (totalLineHieght + lineHeight > height) {
                 break;
@@ -427,6 +432,8 @@ namespace PiPi {
         } else {
             value += lastLine;
         }
+        
+        delete lines;
         
         return value;
     }
