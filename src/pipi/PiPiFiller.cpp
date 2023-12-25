@@ -338,44 +338,40 @@ namespace PiPi {
         
         // 開始湊完整值
         value = "";
-        for (size_t i = 0; i < availableLineCount; i++) {
-            if (i == availableLineCount - 1) {
-                // 做 ...
-                bool added = false;
-                std::string lastLine = (*lines)[i];
-                std::string newLastLine = "";
-                std::string postNewLastLine = "";
-                auto iterator = lastLine.begin();
-                while (iterator != lastLine.end()) {
-                    utf8::utfchar32_t character = utf8::next(iterator, lastLine.end());
-                    
-                    utf8::append(character, postNewLastLine);
-                    
-                    std::string postNewLastLineWithEllipsis = postNewLastLine + "...";
-                    
-                    double lastLineWidth = iterator != lastLine.end()
-                        ? font->GetStringLength(postNewLastLineWithEllipsis, textState)
-                        : font->GetStringLength(postNewLastLine, textState);
-                    
-                    if (lastLineWidth > width) {
-                        newLastLine += "...";
-                        added = true;
-                        break;
-                    }
-                    
-                    utf8::append(character, newLastLine);
+        for (size_t i = 0; i < availableLineCount - 1; i++) {
+            value += (*lines)[i];
+        }
+        
+        // 開始判斷最後一行省略狀態
+        std::string lastLine = (*lines)[availableLineCount - 1];
+        double lastLineWidth = font->GetStringLength(lastLine, textState);
+        
+        bool shouldEllipsis = lineCount > availableLineCount;
+        if (shouldEllipsis) {
+            std::string newLastLine = "";
+            std::string postNewLastLine = "";
+            
+            auto iterator = lastLine.begin();
+            while (iterator != lastLine.end()) {
+                utf8::utfchar32_t character = utf8::next(iterator, lastLine.end());
+                
+                utf8::append(character, postNewLastLine);
+                
+                std::string postNewLastLineWithEllipsis = postNewLastLine + "...";
+                
+                double postNewLastLineWithEllipsisWidth = font->GetStringLength(postNewLastLineWithEllipsis, textState);
+                
+                if (postNewLastLineWithEllipsisWidth > width) {
+                    newLastLine += "...";
+                    break;
                 }
                 
-                value += newLastLine;
-                
-                if (availableLineCount < lineCount && !added) {
-                    value += "...";
-                }
-                
-                break;
+                utf8::append(character, newLastLine);
             }
             
-            value += (*lines)[i];
+            value += newLastLine;
+        } else {
+            value += lastLine;
         }
         
         return value;
