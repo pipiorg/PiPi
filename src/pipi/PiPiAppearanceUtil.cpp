@@ -448,14 +448,16 @@ namespace PiPi {
             
             // 為了垂直置中，不管多行單行都照多行套
             // 前面套印處以過濾掉會變多行的文字
-            bool multiline = PiPiExtractUtil::ExtractAnnotationTextMultiine(annot);
-            PiPiTextHorizontalAlignment horizontalAlignment = PiPiExtractUtil::ExtractAnnotationTextHorizontalAlignment(annot);
             
             
             PdfDrawTextMultiLineParams multineParams;
             
-            multineParams.VerticalAlignment = PdfVerticalAlignment::Top;
-
+            bool multiline = PiPiExtractUtil::ExtractAnnotationTextMultiine(annot);
+            multineParams.VerticalAlignment = multiline
+                ? PdfVerticalAlignment::Top
+                : PdfVerticalAlignment::Center;
+            
+            PiPiTextHorizontalAlignment horizontalAlignment = PiPiExtractUtil::ExtractAnnotationTextHorizontalAlignment(annot);
             switch (horizontalAlignment) {
                 case PiPiTextHorizontalAlignment::Left:
                     multineParams.HorizontalAlignment = PdfHorizontalAlignment::Left;
