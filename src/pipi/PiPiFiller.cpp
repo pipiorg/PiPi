@@ -393,13 +393,13 @@ namespace PiPi {
         
         // 開始判斷最後一行省略狀態
         std::string lastLine = (*lines)[availableLineCount - 1];
-        double lastLineWidth = font->GetStringLength(lastLine, textState);
         
         bool shouldEllipsis = lineCount > availableLineCount;
         if (shouldEllipsis) {
             std::string newLastLine = "";
             std::string postNewLastLine = "";
             
+            bool added = false;
             auto iterator = lastLine.begin();
             while (iterator != lastLine.end()) {
                 utf8::utfchar32_t character = utf8::next(iterator, lastLine.end());
@@ -411,11 +411,16 @@ namespace PiPi {
                 double postNewLastLineWithEllipsisWidth = font->GetStringLength(postNewLastLineWithEllipsis, textState);
                 
                 if (postNewLastLineWithEllipsisWidth > width) {
+                    added = true;
                     newLastLine += "...";
                     break;
                 }
                 
                 utf8::append(character, newLastLine);
+            }
+            
+            if (!added) {
+                newLastLine += "...";
             }
             
             value += newLastLine;
