@@ -31,6 +31,7 @@ namespace PiPi {
             PiPiAnnotationObserver* annotObserver;
 
             std::string filterValue(std::string value, std::string fontName);
+            std::string trimValue(std::string value, float width, std::string fontName, float fontSize);
             std::string ellipsisValue(std::string value, float width, float height, std::string fontName, float fontSize);
             std::string ellipsisValueMultiline(std::string value, float width, float height, std::string fontName, float fontSize);
 	};

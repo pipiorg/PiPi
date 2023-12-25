@@ -446,45 +446,29 @@ namespace PiPi {
 
 			std::string sText = text->GetString();
             
+            // 為了垂直置中，不管多行單行都照多行套
+            // 前面套印處以過濾掉會變多行的文字
             bool multiline = PiPiExtractUtil::ExtractAnnotationTextMultiine(annot);
             PiPiTextHorizontalAlignment horizontalAlignment = PiPiExtractUtil::ExtractAnnotationTextHorizontalAlignment(annot);
             
             
-            if (multiline) {
-                PdfDrawTextMultiLineParams multineParams;
-                
-                multineParams.VerticalAlignment = PdfVerticalAlignment::Top;
+            PdfDrawTextMultiLineParams multineParams;
+            
+            multineParams.VerticalAlignment = PdfVerticalAlignment::Top;
 
-                switch (horizontalAlignment) {
-                    case PiPiTextHorizontalAlignment::Left:
-                        multineParams.HorizontalAlignment = PdfHorizontalAlignment::Left;
-                        break;
-                    case PiPiTextHorizontalAlignment::Center:
-                        multineParams.HorizontalAlignment = PdfHorizontalAlignment::Center;
-                        break;
-                    case PiPiTextHorizontalAlignment::Right:
-                        multineParams.HorizontalAlignment = PdfHorizontalAlignment::Right;
-                        break;
-                }
-                
-                painter->DrawTextMultiLine(sText, borderWidth, borderWidth, width - borderWidth * 2, height - borderWidth * 2, multineParams);
-            } else {
-                PdfHorizontalAlignment pHorizontalAlignment;
-                switch (horizontalAlignment) {
-                    case PiPiTextHorizontalAlignment::Left:
-                        pHorizontalAlignment = PdfHorizontalAlignment::Left;
-                        break;
-                    case PiPiTextHorizontalAlignment::Center:
-                        pHorizontalAlignment = PdfHorizontalAlignment::Center;
-                        break;
-                    case PiPiTextHorizontalAlignment::Right:
-                        pHorizontalAlignment = PdfHorizontalAlignment::Right;
-                        break;
-                }
-                
-                // FIXME: 疑似 PoDoFo Bugs 畫單行文字會向下偏移約 1px
-                painter->DrawTextAligned(sText, borderWidth, borderWidth + 1, width - borderWidth * 2, pHorizontalAlignment);
+            switch (horizontalAlignment) {
+                case PiPiTextHorizontalAlignment::Left:
+                    multineParams.HorizontalAlignment = PdfHorizontalAlignment::Left;
+                    break;
+                case PiPiTextHorizontalAlignment::Center:
+                    multineParams.HorizontalAlignment = PdfHorizontalAlignment::Center;
+                    break;
+                case PiPiTextHorizontalAlignment::Right:
+                    multineParams.HorizontalAlignment = PdfHorizontalAlignment::Right;
+                    break;
             }
+            
+            painter->DrawTextMultiLine(sText, borderWidth, borderWidth, width - borderWidth * 2, height - borderWidth * 2, multineParams);
 		}
         
         painter->Restore();

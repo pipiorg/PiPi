@@ -34,16 +34,27 @@ namespace PiPi {
 				PdfTextBox* textBoxField = (PdfTextBox*)field;
                 
                 std::string fontName = "";
+                float fontSize = 0.0;
+                float width = 0.0;
+                bool multiline = false;
+                
                 std::set<PdfAnnotation*>* annots =  PiPiAnnotationUtil::SearchFieldAnnotation(annotObserver, document, name);
                 for (auto iterator = annots->begin(); iterator != annots->end(); iterator.operator++()) {
                     PdfAnnotation* annot = *iterator;
                     if (&(annot->GetObject()) == &(field->GetObject())) {
                         fontName = PiPiExtractUtil::ExtractAnnotationFontName(annot);
+                        fontSize = PiPiExtractUtil::ExtractAnnotationFontSize(annot);
+                        width = PiPiExtractUtil::ExtractAnnotationWidth(annot);
+                        multiline = PiPiExtractUtil::ExtractAnnotationTextMultiine(annot);
                         break;
                     }
                 }
                 
                 value = filterValue(value, fontName);
+                
+                value = multiline
+                    ? value
+                    : this->trimValue(value, width, fontName, fontSize);
                 
 				PdfString valueString(value);
 				textBoxField->SetText(valueString);
@@ -227,6 +238,44 @@ namespace PiPi {
         }
         
         return newValue;
+    }
+
+    std::string PiPiFiller::trimValue(std::string value, float width, std::string fontName, float fontSize) {
+        PiPiFontManager* fontManager = this->fontManager;
+        
+        const PdfFont* font = fontManager->accessFont(fontName) == nullptr
+            ? fontManager->accessDefaultFont()
+            : fontManager->accessFont(fontName);
+        
+        PdfTextState textState;
+        textState.Font = font;
+        textState.FontSize = fontSize;
+        textState.FontScale = 1.0;
+        textState.RenderingMode = PdfTextRenderingMode::Fill;
+        
+        double lineWidth = font->GetStringLength(value, textState);
+        if (lineWidth < width) {
+            return value;
+        }
+        
+        std::string line = "";
+        std::string nextLine = "";
+        
+        auto iterator = value.begin();
+        while (iterator != value.end()) {
+            utf8::utfchar32_t character = utf8::next(iterator, value.end());
+            
+            utf8::append(character, nextLine);
+            
+            double lineWidth = font->GetStringLength(nextLine, textState);
+            if (lineWidth > width) {
+                break;
+            }
+            
+            utf8::append(character, line);
+        }
+        
+        return line;
     }
 
     std::string PiPiFiller::ellipsisValue(std::string value, float width, float height, std::string fontName, float fontSize) {
