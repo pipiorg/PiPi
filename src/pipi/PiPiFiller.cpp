@@ -390,6 +390,10 @@ namespace PiPi {
             availableLineCount++;
         }
         
+        if (availableLineCount == 0) {
+            return "";
+        }
+        
         // 開始湊完整值
         value = "";
         for (size_t i = 0; i < availableLineCount - 1; i++) {
