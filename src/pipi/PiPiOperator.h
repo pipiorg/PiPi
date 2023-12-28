@@ -9,8 +9,7 @@
 #include "PiPiExtractor.h"
 #include "PiPiFontManager.h"
 #include "PiPiAppearanceManager.h"
-#include "PiPiFieldObserver.h"
-#include "PiPiAnnotationObserver.h"
+#include "PiPiFieldManager.h"
 
 using namespace std;
 
@@ -39,7 +38,6 @@ namespace PiPi {
 			PiPiExtractor* extractor;
 			PiPiFontManager* fontManager;
 			PiPiAppearanceManager* appearanceManager;
-            PiPiFieldObserver* fieldObserver;
-            PiPiAnnotationObserver* annotObserver;
+            PiPiFieldManager* fieldManager;
 	};
 }

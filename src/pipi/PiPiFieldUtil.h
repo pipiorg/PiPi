@@ -16,9 +16,6 @@ using namespace PoDoFo;
 namespace PiPi {
 	class PiPiFieldUtil {
 		public:
-			static std::map<const std::string, std::set<PdfField*>*>* SearchAllField(PiPiFieldObserver* fieldObserver, PdfMemDocument* document);
-			static std::map<const std::string, std::set<PdfField*>*>* SearchAllField(PiPiFieldObserver* fieldObserver, PdfAcroForm* acroform);
-        
             static std::set<PdfField*>* SearchField(PiPiFieldObserver* fieldObserver, PdfMemDocument* document, std::string fieldName);
             static std::set<PdfField*>* SearchField(PiPiFieldObserver* fieldObserver, PdfAcroForm* acroform, std::string fieldName);
 

@@ -10,12 +10,9 @@ namespace PiPi {
 
 		PiPiFontManager* fontManager = new PiPiFontManager(document);
 		this->fontManager = fontManager;
-
-		PiPiAnnotationObserver* annotObserver = new PiPiAnnotationObserver();
-		this->annotObserver = annotObserver;
-
-		PiPiFieldObserver* fieldObserver = new PiPiFieldObserver();
-		this->fieldObserver = fieldObserver;
+        
+        PiPiFieldManager* fieldManager = new PiPiFieldManager(document);
+        this->fieldManager = fieldManager;
 
 		PiPiAppearanceManager* appearanceManager = new PiPiAppearanceManager(document, fontManager, annotObserver);
 		this->appearanceManager = appearanceManager;
@@ -32,14 +29,9 @@ namespace PiPi {
 			this->appearanceManager = nullptr;
 		}
 
-        if (this->annotObserver != nullptr) {
-            delete this->annotObserver;
-            this->annotObserver = nullptr;
-        }
-        
-        if (this->fieldObserver != nullptr) {
-            delete this->fieldObserver;
-            this->fieldObserver = nullptr;
+        if (this->fieldManager != nullptr) {
+            delete this->fieldManager;
+            this->fieldManager = nullptr;
         }
         
         if (this->fontManager != nullptr) {
