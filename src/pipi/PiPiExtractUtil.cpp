@@ -39,12 +39,12 @@ namespace PiPi {
         return y;
     }
 
+    // FIXME: there
     std::string PiPiExtractUtil::ExtractAnnotationName(PdfAnnotation *annotation) {
-        PdfObject& objRef = annotation->GetObject();
-        PdfObject* obj = &objRef;
+        PdfObject* obj = &(annotation->GetObject());
         
         std::unique_ptr<PdfField> fieldPtr;
-        bool created = PdfField::TryCreateFromObject(objRef, fieldPtr);
+        bool created = PdfField::TryCreateFromObject(*obj, fieldPtr);
         if (!created) {
             return "";
         }
@@ -59,8 +59,7 @@ namespace PiPi {
     }
 
     std::string PiPiExtractUtil::ExtractAnnotationFontName(PdfAnnotation* annotation) {
-        PdfDictionary& dictRef = annotation->GetDictionary();
-        PdfDictionary* dict = &dictRef;
+        PdfDictionary* dict = &(annotation->GetDictionary());
 
         PdfObject* daObj = dict->FindKey(PdfName("DA"));
         PdfDictionary* parentDict = dict->FindKeyAs<PdfDictionary*>(PdfName("Parent"));
@@ -96,8 +95,7 @@ namespace PiPi {
     }
 
     float PiPiExtractUtil::ExtractAnnotationFontSize(PdfAnnotation* annotation) {
-        PdfDictionary& dictRef = annotation->GetDictionary();
-        PdfDictionary* dict = &dictRef;
+        PdfDictionary* dict = &(annotation->GetDictionary());
 
         PdfObject* daObj = dict->FindKey(PdfName("DA"));
         PdfDictionary* parentDict = dict->FindKeyAs<PdfDictionary*>(PdfName("Parent"));
@@ -176,8 +174,7 @@ namespace PiPi {
     }
 
     bool PiPiExtractUtil::ExtractAnnotationBorderExists(PdfAnnotation *annotation) {
-        PdfDictionary& dictRef = annotation->GetDictionary();
-        PdfDictionary* dict = &dictRef;
+        PdfDictionary* dict = &(annotation->GetDictionary());
         
         PdfObject* mkObj = dict->GetKey(PdfName("MK"));
         if (mkObj == nullptr) {
@@ -188,8 +185,7 @@ namespace PiPi {
             return false;
         }
         
-        PdfDictionary& mkRef = mkObj->GetDictionary();
-        PdfDictionary* mk = &mkRef;
+        PdfDictionary* mk = &(mkObj->GetDictionary());
         
         PdfObject* bcObj = mk->GetKey(PdfName("BC"));
         if (bcObj == nullptr) {
@@ -204,16 +200,14 @@ namespace PiPi {
     }
 
     double PiPiExtractUtil::ExtractAnnotationBorderWidth(PdfAnnotation *annotation) {
-        PdfDictionary& dictRef = annotation->GetDictionary();
-        PdfDictionary* dict = &dictRef;
+        PdfDictionary* dict = &(annotation->GetDictionary());
         
         PdfObject* bsObj = dict->FindKey(PdfName("BS"));
         if (bsObj == nullptr) {
             return 0;
         }
         
-        PdfDictionary& bsRef = bsObj->GetDictionary();
-        PdfDictionary* bs = &bsRef;
+        PdfDictionary* bs = &(bsObj->GetDictionary());
         
         PdfObject* w = bs->FindKey(PdfName("W"));
         if (w == nullptr) {
@@ -230,8 +224,7 @@ namespace PiPi {
         *green = 0;
         *blue = 0;
         
-        PdfDictionary& dictRef = annotation->GetDictionary();
-        PdfDictionary* dict = &dictRef;
+        PdfDictionary* dict = &(annotation->GetDictionary());
         
         PdfObject* mkObj = dict->GetKey(PdfName("MK"));
         if (mkObj == nullptr) {
@@ -242,8 +235,7 @@ namespace PiPi {
             return;
         }
         
-        PdfDictionary& mkRef = mkObj->GetDictionary();
-        PdfDictionary* mk = &mkRef;
+        PdfDictionary* mk = &(mkObj->GetDictionary());
         
         PdfObject* bcObj = mk->GetKey(PdfName("BC"));
         if (bcObj == nullptr) {
@@ -254,8 +246,7 @@ namespace PiPi {
             return;
         }
         
-        PdfArray& bcRef = bcObj->GetArray();
-        PdfArray* bc = &bcRef;
+        PdfArray* bc = &(bcObj->GetArray());
         
         PiPiColorConverter::ConvertPoDoFoArrayToRGB(bc, red, green, blue);
     }
@@ -265,8 +256,7 @@ namespace PiPi {
         *green = 0;
         *blue = 0;
         
-        PdfDictionary& dictRef = annotation->GetDictionary();
-        PdfDictionary* dict = &dictRef;
+        PdfDictionary* dict = &(annotation->GetDictionary());
 
         PdfObject* daObj = dict->FindKey("DA");
 
@@ -316,8 +306,7 @@ namespace PiPi {
     }
 
     bool PiPiExtractUtil::ExtractAnnotationBackgroundExists(PdfAnnotation *annotation) {
-        PdfDictionary& dictRef = annotation->GetDictionary();
-        PdfDictionary* dict = &dictRef;
+        PdfDictionary* dict = &(annotation->GetDictionary());
         
         PdfObject* mkObj = dict->GetKey(PdfName("MK"));
         if (mkObj == nullptr) {
@@ -328,8 +317,7 @@ namespace PiPi {
             return false;
         }
         
-        PdfDictionary& mkRef = mkObj->GetDictionary();
-        PdfDictionary* mk = &mkRef;
+        PdfDictionary* mk = &(mkObj->GetDictionary());
         
         PdfObject* bcObj = mk->GetKey(PdfName("BG"));
         if (bcObj == nullptr) {
@@ -348,8 +336,7 @@ namespace PiPi {
         *green = 0;
         *blue = 0;
         
-        PdfDictionary& dictRef = annotation->GetDictionary();
-        PdfDictionary* dict = &dictRef;
+        PdfDictionary* dict = &(annotation->GetDictionary());
         
         PdfObject* mkObj = dict->GetKey(PdfName("MK"));
         if (mkObj == nullptr) {
@@ -360,8 +347,7 @@ namespace PiPi {
             return;
         }
         
-        PdfDictionary& mkRef = mkObj->GetDictionary();
-        PdfDictionary* mk = &mkRef;
+        PdfDictionary* mk = &(mkObj->GetDictionary());
         
         PdfObject* bcObj = mk->GetKey(PdfName("BG"));
         if (bcObj == nullptr) {
@@ -372,8 +358,7 @@ namespace PiPi {
             return;
         }
         
-        PdfArray& bcRef = bcObj->GetArray();
-        PdfArray* bc = &bcRef;
+        PdfArray* bc = &(bcObj->GetArray());
         
         PiPiColorConverter::ConvertPoDoFoArrayToRGB(bc, red, green, blue);
     }
@@ -429,11 +414,9 @@ namespace PiPi {
     }
 
     PiPiTextHorizontalAlignment PiPiExtractUtil::ExtractAnnotationTextHorizontalAlignment(PdfAnnotation *annotation) {
-        PdfObject& objRef = annotation->GetObject();
-        PdfObject* obj = &objRef;
+        PdfObject* obj = &(annotation->GetObject());
         
-        PdfDictionary& dictRef = obj->GetDictionary();
-        PdfDictionary* dict = &dictRef;
+        PdfDictionary* dict = &(obj->GetDictionary());
         
         PdfObject* qObj = dict->FindKey(PdfName("Q"));
         if (qObj == nullptr) {
@@ -450,5 +433,20 @@ namespace PiPi {
             default:
                 return PiPiTextHorizontalAlignment::Left;
         }
+    }
+
+    std::string PiPiExtractUtil::ExtractAnnotationValue(PdfAnnotation *annotation) {
+        PdfObject* obj = &(annotation->GetObject());
+        
+        PdfDictionary* dict = &(obj->GetDictionary());
+        
+        PdfObject* vObj = dict->FindKey(PdfName("V"));
+        if (vObj == nullptr) {
+            return "";
+        }
+        
+        const PdfString* v = &(vObj->GetString());
+        
+        return v->GetString();
     }
 }

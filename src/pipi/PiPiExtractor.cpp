@@ -1,19 +1,20 @@
 #include "PiPiExtractor.h"
 
 namespace PiPi {
-	PiPiExtractor::PiPiExtractor(PdfMemDocument* document, PiPiAnnotationObserver* annotObserver) {
+	PiPiExtractor::PiPiExtractor(PdfMemDocument* document, PiPiFieldManager* fieldManager) {
         this->document = document;
-        this->annotObserver = annotObserver;
+        this->fieldManager = fieldManager;
 	}
 
-	bool PiPiExtractor::isOperable() {
+	bool PiPiExtractor::IsOperable() {
 		return this->document != nullptr;
 	}
 
-	std::vector<const PiPiPage*>* PiPiExtractor::extractPage() {
+	std::vector<const PiPiPage*>* PiPiExtractor::ExtractPage() {
+        PdfMemDocument* document = this->document;
+        
 		std::vector<const PiPiPage*>* pages = new std::vector<const PiPiPage*>();
 
-		PdfMemDocument* document = this->document;
 		PdfPageCollection& pdfPages = document->GetPages();
 		unsigned int pdfPageCount = pdfPages.GetCount();
 		for (unsigned int pdfPageIndex = 0; pdfPageIndex < pdfPageCount; pdfPageIndex++) {
@@ -30,20 +31,20 @@ namespace PiPi {
 		return pages;
 	}
 
-	std::vector<const PiPiField*>* PiPiExtractor::extractField() {
-        PiPiAnnotationObserver* annotObserver = this->annotObserver;
+	std::vector<const PiPiField*>* PiPiExtractor::ExtractField() {
+        PdfMemDocument* document = this->document;
+        PiPiFieldManager* fieldManager = this->fieldManager;
         
-		std::vector<const PiPiField*>* fields = new std::vector<const PiPiField*>();
+		std::vector<const PiPiField*>* tFields = new std::vector<const PiPiField*>();
 
-		PdfMemDocument* document = this->document;
-		std::map<const std::string, std::set<PdfAnnotation*>*>* annotMap = PiPiAnnotationUtil::SerachAllFieldAnnotation(annotObserver, document);
-		for (auto annotMapIterator = annotMap->begin(); annotMapIterator != annotMap->end(); annotMapIterator.operator++()) {
-			std::pair<const std::string, std::set<PdfAnnotation*>*> pair = annotMapIterator.operator*();
+        std::map<const std::string, std::set<PdfField*>*>* fieldMap = fieldManager->SearchAllField();
+		for (auto fieldMapIterator = fieldMap->begin(); fieldMapIterator != fieldMap->end(); fieldMapIterator.operator++()) {
 
-			std::string name = pair.first;
-			std::set< PdfAnnotation*>* annots = pair.second;
-			for (auto annotIterator = annots->begin(); annotIterator != annots->end(); annotIterator.operator++()) {
-				PdfAnnotation* annot = annotIterator.operator*();
+			std::string name = fieldMapIterator->first;
+			std::set<PdfField*>* fields = fieldMapIterator->second;
+			for (auto fieldIterator = fields->begin(); fieldIterator != fields->end(); fieldIterator.operator++()) {
+                PdfField* field = *fieldIterator;
+                PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
 
 				const PdfPage* constPage = annot->GetPage();
 				PdfPage* page = const_cast<PdfPage*>(constPage);
@@ -59,12 +60,12 @@ namespace PiPi {
 
 				PiPiFieldType type = PiPiExtractUtil::ExtractAnnotationType(annot);
 
-				PiPiField* field = new PiPiField(name, type, pageIndex, x, y, width, height, fontName, fontSize);
+				PiPiField* tField = new PiPiField(name, type, pageIndex, x, y, width, height, fontName, fontSize);
 
-				fields->push_back(field);
+                tFields->push_back(tField);
 			}
 		}
 
-		return fields;
+		return tFields;
 	}
 }

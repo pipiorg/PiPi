@@ -1,214 +1,211 @@
 #include "PiPiFiller.h"
 
 namespace PiPi {
-	PiPiFiller::PiPiFiller(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiAppearanceManager* appearanceManager, PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver) {
+	PiPiFiller::PiPiFiller(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiAppearanceManager* appearanceManager, PiPiFieldManager* fieldManager) {
         this->document = document;
         this->appearanceManager = appearanceManager;
         this->fontManager = fontManager;
-        this->fieldObserver = fieldObserver;
-        this->annotObserver = annotObserver;
+        this->fieldManager = fieldManager;
 	}
 
-	bool PiPiFiller::isOperable() {
+	bool PiPiFiller::IsOperable() {
 		return this->document != nullptr;
 	}
 
-	PiPiFiller* PiPiFiller::fillValue(std::string name, std::string value) {
+	PiPiFiller* PiPiFiller::FillValue(std::string name, std::string value) {
 		PdfMemDocument* document = this->document;
-		PiPiFontManager* fontManager = this->fontManager;
-        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-        PiPiFieldObserver* fieldObserver = this->fieldObserver;
-        PiPiAnnotationObserver* annotObserver = this->annotObserver;
+        PiPiFieldManager* fieldManager = this->fieldManager;
 
-		std::set<PdfField*>* fields = PiPiFieldUtil::SearchField(fieldObserver, document, name);
-
+        std::set<PdfField*>* fields = fieldManager->SearchField(name);
+        
+        float minArea = -1;
+        PdfAnnotation* minAnnot = nullptr;
+        
 		for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
             PdfField* field = *iterator;
-
-			PdfFieldType type = field->GetType();
-			if (type != PdfFieldType::CheckBox && type != PdfFieldType::TextBox) {
-				return this;
-			}
-
-			if (type == PdfFieldType::TextBox) {
-				PdfTextBox* textBoxField = (PdfTextBox*)field;
-                
-                std::string fontName = "";
-                float fontSize = 0.0;
-                float width = 0.0;
-                bool multiline = false;
-                
-                std::set<PdfAnnotation*>* annots =  PiPiAnnotationUtil::SearchFieldAnnotation(annotObserver, document, name);
-                for (auto iterator = annots->begin(); iterator != annots->end(); iterator.operator++()) {
-                    PdfAnnotation* annot = *iterator;
-                    if (&(annot->GetObject()) == &(field->GetObject())) {
-                        fontName = PiPiExtractUtil::ExtractAnnotationFontName(annot);
-                        fontSize = PiPiExtractUtil::ExtractAnnotationFontSize(annot);
-                        width = PiPiExtractUtil::ExtractAnnotationWidth(annot);
-                        multiline = PiPiExtractUtil::ExtractAnnotationTextMultiine(annot);
-                        break;
-                    }
-                }
-                
-                value = filterValue(value, fontName);
-                
-                value = multiline
-                    ? value
-                    : this->trimValue(value, width, fontName, fontSize);
-                
-				PdfString valueString(value);
-				textBoxField->SetText(valueString);
-			}
-			else if (type == PdfFieldType::CheckBox) {
-				PdfCheckBox* checkBoxField = (PdfCheckBox*)field;
-
-				bool isCheckBox = checkBoxField->IsCheckBox();
-				if (!isCheckBox) {
-					continue;
-				}
-
-				bool checked = value == "Yes" || value == "On";
-				checkBoxField->SetChecked(checked);
-			}
+            PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
+            
+            float width = PiPiExtractUtil::ExtractAnnotationWidth(annot);
+            float height = PiPiExtractUtil::ExtractAnnotationHeight(annot);
+            float area = width * height;
+            
+            if (minArea == -1 || area < minArea) {
+                minAnnot = annot;
+                minArea = area;
+                continue;
+            }
 		}
 
 		delete fields;
-
-        appearanceManager->MarkNeedAppearance(name);
+        
+        if (minAnnot == nullptr) {
+            return this;
+        }
+        
+        bool minMultiline = PiPiExtractUtil::ExtractAnnotationTextMultiine(minAnnot);
+        
+        std::string minFontName = PiPiExtractUtil::ExtractAnnotationFontName(minAnnot);
+        float minFontSize = PiPiExtractUtil::ExtractAnnotationFontSize(minAnnot);
+        
+        float minWidth = PiPiExtractUtil::ExtractAnnotationWidth(minAnnot);
+        
+        value = this->FilterValue(value, minFontName);
+        
+        value = !minMultiline
+            ? this->TrimValue(value, minWidth, minFontName, minFontSize)
+            : value;
+        
+        this->DirectFillValue(name, value);
 
 		return this;
 	}
 
-    PiPiFiller* PiPiFiller::fillValue(std::string fieldName, std::string value, bool ellipsis) {
+    PiPiFiller* PiPiFiller::FillValue(std::string fieldName, std::string value, bool ellipsis) {
         PdfMemDocument* document = this->document;
-        PiPiAnnotationObserver* annotObserver = this->annotObserver;
+        PiPiFieldManager* fieldManager = this->fieldManager;
         
-        bool isText = true;;
-        std::set<PdfField*>* fields = PiPiFieldUtil::SearchField(fieldObserver, document, fieldName);
+        PdfAnnotation* minAnnot = nullptr;
+        float minArea = -1;
+        
+        std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
         for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
             PdfField* field = *iterator;
-            if (field->GetType() != PdfFieldType::TextBox) {
-                isText = false;
-                break;
+            PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
+            
+            float width = PiPiExtractUtil::ExtractAnnotationWidth(annot);
+            float height = PiPiExtractUtil::ExtractAnnotationHeight(annot);
+            float area = width * height;
+            
+            if (minArea == -1 || area < minArea) {
+                minAnnot = annot;
+                minArea = area;
+                continue;
             }
         }
         
-        if (ellipsis && isText) {
-            std::set<PdfAnnotation*>* annots =  PiPiAnnotationUtil::SearchFieldAnnotation(annotObserver, document, fieldName);
-            
-            if (annots->size() > 0) {
-                PdfAnnotation* minAnnot = nullptr;
-                float minAnnotWidthWithoutBorder = 0;
-                float minAnnotHeightWithoutBorder = 0;
-                
-                for (auto iterator = annots->begin(); iterator != annots->end(); iterator.operator++()) {
-                    PdfAnnotation* annot = *iterator;
-                    
-                    float annotWidth = PiPiExtractUtil::ExtractAnnotationWidth(annot);
-                    float annotHeight = PiPiExtractUtil::ExtractAnnotationHeight(annot);
-                    
-                    float annotBorderWidth = PiPiExtractUtil::ExtractAnnotationBorderExists(annot)
-                        ? PiPiExtractUtil::ExtractAnnotationBorderWidth(annot)
-                        : 0;
-                    
-                    float annotWidthWithoutBorder = annotWidth - annotBorderWidth * 2;
-                    float annotHeightWithoutBorder = annotHeight - annotBorderWidth * 2;
-                    
-                    float annotArea = annotWidthWithoutBorder * annotHeightWithoutBorder;
-                    
-                    if (minAnnot == nullptr) {
-                        minAnnot = annot;
-                        minAnnotWidthWithoutBorder = annotWidthWithoutBorder;
-                        minAnnotHeightWithoutBorder = annotHeightWithoutBorder;
-                        continue;
-                    }
-                    
-                    float minAnnotArea = minAnnotWidthWithoutBorder * minAnnotHeightWithoutBorder;
-                    
-                    if (minAnnotArea > annotArea) {
-                        minAnnot = annot;
-                    }
-                }
-                
-                bool multiline = PiPiExtractUtil::ExtractAnnotationTextMultiine(minAnnot);
-                std::string fontName = PiPiExtractUtil::ExtractAnnotationFontName(minAnnot);
-                float fontSize = PiPiExtractUtil::ExtractAnnotationFontSize(minAnnot);
-                
-                value = this->filterValue(value, fontName);
-                
-                value = multiline
-                    ? this->ellipsisValueMultiline(value, minAnnotWidthWithoutBorder, minAnnotHeightWithoutBorder, fontName, fontSize)
-                    : this->ellipsisValue(value, minAnnotWidthWithoutBorder, minAnnotHeightWithoutBorder, fontName, fontSize);
-            }
-            
-            delete annots;
+        delete fields;
+        
+        if (minAnnot == nullptr) {
+            return this;
         }
         
-        return this->fillValue(fieldName, value);
+        PiPiFieldType minType = PiPiExtractUtil::ExtractAnnotationType(minAnnot);
+        
+        std::string minFontName = PiPiExtractUtil::ExtractAnnotationFontName(minAnnot);
+        
+        
+        value = this->FilterValue(value, minFontName);
+        
+        if (ellipsis) {
+            if (minType == PiPiFieldType::TextBox) {
+                bool minMultiline = PiPiExtractUtil::ExtractAnnotationTextMultiine(minAnnot);
+                
+                float minFontSize = PiPiExtractUtil::ExtractAnnotationFontSize(minAnnot);
+                
+                float minWidth = PiPiExtractUtil::ExtractAnnotationWidth(minAnnot);
+                float minHeight = PiPiExtractUtil::ExtractAnnotationHeight(minAnnot);
+                
+                value = minMultiline
+                    ? this->EllipsisValueMultiline(value, minWidth, minHeight, minFontName, minFontSize)
+                    : this->EllipsisValue(value, minWidth, minHeight, minFontName, minFontSize);
+            }
+        }
+        
+        this->DirectFillValue(fieldName, value);
+        
+        return this;
     }
 
-	PiPiFiller* PiPiFiller::fillImage(std::string fieldName, char* imageBytes, size_t imageSize) {
+	PiPiFiller* PiPiFiller::FillImage(std::string fieldName, char* imageBytes, size_t imageSize) {
 		PdfMemDocument* document = this->document;
-        PiPiAnnotationObserver* annotObserver = this->annotObserver;
-        PiPiFieldObserver* fieldObserver = this->fieldObserver;
+        PiPiFieldManager* fieldManager = this->fieldManager;
+        
+        std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
+        for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
+            PdfField* field = *iterator;
+            PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
+            
+            PdfPage* page = annot->GetPage();
+            
+            Rect annotRect = annot->GetRect();
+
+            double annotBottom = annotRect.GetBottom();
+            double annotTop = annotRect.GetTop();
+            double annotLeft = annotRect.GetLeft();
+            double annotRight = annotRect.GetRight();
+
+            double annotWidth = annotRight - annotLeft;
+            double annotHeight = annotTop - annotBottom;
+            
+            std::unique_ptr<PdfImage> imageUniquePtr = document->CreateImage();
+            PdfImage* image = imageUniquePtr.get();
+            image->LoadFromBuffer(bufferview(imageBytes, imageSize));
+            
+            Rect imageRect = image->GetRect();
+            
+            double imageBottom = imageRect.GetBottom();
+            double imageTop = imageRect.GetTop();
+            double imageLeft = imageRect.GetLeft();
+            double imageRight = imageRect.GetRight();
+
+            double imageWidth = imageRight - imageLeft;
+            double imageHeight = imageTop - imageBottom;
+
+            double scale = std::min(annotWidth / imageWidth, annotHeight / imageHeight);
+
+            double scaledImageWidth = imageWidth * scale;
+            double scaledImageHeight = imageHeight * scale;
+
+            double left = annotLeft + annotWidth / 2 - scaledImageWidth / 2;
+            double bottom = annotBottom + annotHeight / 2 - scaledImageHeight / 2;
+
+            PdfPainter* painter = new PdfPainter();
+            painter->SetCanvas(*page);
+            painter->DrawImage(*image, left, bottom, scale, scale);
+            painter->FinishDrawing();
+            
+            delete painter;
+        }
+        
+        delete fields;
 		
-		std::set<PdfAnnotation*>* annotations = PiPiAnnotationUtil::SearchFieldAnnotation(annotObserver, document, fieldName);
-		for (auto iterator = annotations->begin(); iterator != annotations->end(); ++iterator) {
-			PdfAnnotation* annotation = *iterator;
-
-			PdfPage* page = annotation->GetPage();
-			PdfPage& pageRef = *page;
-
-			Rect annotRect = annotation->GetRect();
-
-			double annotBottom = annotRect.GetBottom();
-			double annotTop = annotRect.GetTop();
-			double annotLeft = annotRect.GetLeft();
-			double annotRight = annotRect.GetRight();
-
-			double annotWidth = annotRight - annotLeft;
-			double annotHeight = annotTop - annotBottom;
-
-			std::unique_ptr<PdfImage> imageUniquePtr = document->CreateImage();
-			PdfImage* image = imageUniquePtr.get();
-			image->LoadFromBuffer(bufferview(imageBytes, imageSize));
-			PdfImage& imageRef = *image;
-
-			Rect imageRect = image->GetRect();
-
-			double imageBottom = imageRect.GetBottom();
-			double imageTop = imageRect.GetTop();
-			double imageLeft = imageRect.GetLeft();
-			double imageRight = imageRect.GetRight();
-
-			double imageWidth = imageRight - imageLeft;
-			double imageHeight = imageTop - imageBottom;
-
-			double scale = std::min(annotWidth / imageWidth, annotHeight / imageHeight);
-
-			double scaledImageWidth = imageWidth * scale;
-			double scaledImageHeight = imageHeight * scale;
-
-			double left = annotLeft + annotWidth / 2 - scaledImageWidth / 2;
-			double bottom = annotBottom + annotHeight / 2 - scaledImageHeight / 2;
-
-			PdfPainter* painter = new PdfPainter();
-			painter->SetCanvas(pageRef);
-			painter->DrawImage(imageRef, left, bottom, scale, scale);
-			painter->FinishDrawing();
-			
-			delete painter;
-		}
-
-		delete annotations;
-
-		PiPiFieldUtil::RemoveField(fieldObserver, annotObserver, document, fieldName);
-        PiPiAnnotationUtil::RemoveFieldAnnotation(annotObserver, document, fieldName);
+        fieldManager->RemoveField(fieldName);
 
 		return this;
 	}
 
-    std::string PiPiFiller::filterValue(std::string value, std::string fontName) {
+    void PiPiFiller::DirectFillValue(std::string fieldName, std::string value) {
+        PiPiFieldManager* fieldManager = this->fieldManager;
+        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+        
+        std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
+        for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
+            PdfField* field = *iterator;
+            
+            PdfFieldType type = field->GetType();
+            
+            if (type == PdfFieldType::TextBox) {
+                PdfTextBox* textBoxField = (PdfTextBox*)field;
+                
+                PdfString valueString(value);
+                textBoxField->SetText(valueString);
+            }
+            else if (type == PdfFieldType::CheckBox) {
+                PdfCheckBox* checkBoxField = (PdfCheckBox*)field;
+
+                bool checked = value == "Yes" || value == "On";
+                checkBoxField->SetChecked(checked);
+            } else {
+                throw PiPiFillFieldException(PiPiFillFieldException::PiPiFillFieldExceptionCode::UnsupportedPdfFieldType);
+            }
+        }
+        
+        delete fields;
+        
+        appearanceManager->MarkNeedAppearance(fieldName);
+    }
+
+    std::string PiPiFiller::FilterValue(std::string value, std::string fontName) {
         PiPiFontManager* fontManager = this->fontManager;
         
         const PdfFont* font = fontManager->accessFont(fontName) == nullptr
@@ -230,17 +227,13 @@ namespace PiPi {
             charbuff encoded;
             bool converted = encoding->TryConvertToEncoded(characterString, encoded);
             
-            if (converted) {
-                newValue += characterString;
-            } else {
-                newValue += " ";
-            }
+            newValue += converted ? characterString : " ";
         }
         
         return newValue;
     }
 
-    std::string PiPiFiller::trimValue(std::string value, float width, std::string fontName, float fontSize) {
+    std::string PiPiFiller::TrimValue(std::string value, float width, std::string fontName, float fontSize) {
         PiPiFontManager* fontManager = this->fontManager;
         
         const PdfFont* font = fontManager->accessFont(fontName) == nullptr
@@ -278,7 +271,7 @@ namespace PiPi {
         return line;
     }
 
-    std::string PiPiFiller::ellipsisValue(std::string value, float width, float height, std::string fontName, float fontSize) {
+    std::string PiPiFiller::EllipsisValue(std::string value, float width, float height, std::string fontName, float fontSize) {
         PiPiFontManager* fontManager = this->fontManager;
         
         const PdfFont* font = fontManager->accessFont(fontName) == nullptr
@@ -295,7 +288,6 @@ namespace PiPi {
         if (fLineWidth < width) {
             return value;
         }
-        
         
         std::string line = "";
         std::string nextLine = "";
@@ -320,7 +312,7 @@ namespace PiPi {
         return line;
     }
 
-    std::string PiPiFiller::ellipsisValueMultiline(std::string value, float width, float height, std::string fontName, float fontSize) {
+    std::string PiPiFiller::EllipsisValueMultiline(std::string value, float width, float height, std::string fontName, float fontSize) {
         PiPiFontManager* fontManager = this->fontManager;
         
         const PdfFont* font = fontManager->accessFont(fontName) == nullptr
@@ -365,9 +357,9 @@ namespace PiPi {
             lines->push_back(line);
         }
         
-        size_t lineCount = lines->size();
+        long lineCount = lines->size();
         if (lineCount == 0) {
-            return value;
+            return "";
         }
         
         // 計算可塞下幾行
@@ -380,8 +372,8 @@ namespace PiPi {
         
         double totalLineHieght = -(lineHeight - ascent + lineGap / 2);
         
-        size_t availableLineCount = 0;
-        for (size_t lineIndex = 0; lineIndex < lineCount; lineIndex++) {
+        long availableLineCount = 0;
+        for (long lineIndex = 0; lineIndex < lineCount; lineIndex++) {
             if (totalLineHieght + lineHeight > height) {
                 break;
             }
@@ -396,7 +388,7 @@ namespace PiPi {
         
         // 開始湊完整值
         value = "";
-        for (size_t i = 0; i < availableLineCount - 1; i++) {
+        for (long i = 0; i < availableLineCount - 1; i++) {
             value += (*lines)[i];
         }
         

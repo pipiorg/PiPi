@@ -1,17 +1,16 @@
 #pragma once
 
 #include <podofo/podofo.h>
-#include "PiPiAnnotationObserver.h"
+#include "PiPiFontManager.h"
+#include "PiPiFieldManager.h"
 #include "PiPiAppearanceUtil.h"
-#include "PiPiAnnotationUtil.h"
-#include "PiPiFieldUtil.h"
 
 using namespace PoDoFo;
 
 namespace PiPi {
 	class PiPiAppearanceManager {
 		public:
-			PiPiAppearanceManager(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiAnnotationObserver* annotObserver);
+			PiPiAppearanceManager(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiFieldManager* fieldManager);
 			~PiPiAppearanceManager();
 
 			bool IsOperable();
@@ -24,8 +23,8 @@ namespace PiPi {
 	
 		private:
 			PdfMemDocument* document;
-			PiPiAnnotationObserver* annotObserver;
 			PiPiFontManager* fontManager;
+            PiPiFieldManager* fieldManager;
 
 			std::set<std::string>* fieldNames;
 	};

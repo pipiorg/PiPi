@@ -8,6 +8,5 @@ namespace PiPi {
     class PiPiPageUtil {
         public:
             static int SearchPageIndex(PdfMemDocument* document, PdfPage* page);
-            static int SearchPageIndex(PdfPageCollection* pages, PdfPage* page);
     };
 }

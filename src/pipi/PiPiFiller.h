@@ -3,36 +3,35 @@
 #include "podofo/podofo.h"
 #include "utf8.h"
 #include "PiPiFontManager.h"
-#include "PiPiFieldUtil.h"
-#include "PiPiAnnotationUtil.h"
 #include "PiPiAppearanceManager.h"
-#include "PiPiAnnotationObserver.h"
-#include "PiPiFieldObserver.h"
+#include "PiPiFieldManager.h"
+#include "PiPiFillFieldException.h"
 
 using namespace PoDoFo;
 
 namespace PiPi {
 	class PiPiFiller {
 		public:
-			PiPiFiller(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiAppearanceManager* appearanceManager, PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver);
+			PiPiFiller(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiAppearanceManager* appearanceManager, PiPiFieldManager* fieldManager);
 
-			PiPiFiller* fillValue(std::string fieldName, std::string value);
-            PiPiFiller* fillValue(std::string fieldName, std::string value, bool ellipsis);
-			PiPiFiller* fillImage(std::string fieldName, char* imageBytes, size_t imageSize);
+			PiPiFiller* FillValue(std::string fieldName, std::string value);
+            PiPiFiller* FillValue(std::string fieldName, std::string value, bool ellipsis);
+			PiPiFiller* FillImage(std::string fieldName, char* imageBytes, size_t imageSize);
 
-			bool isOperable();
+			bool IsOperable();
 
 		private:
 			PdfMemDocument* document;
 			
 			PiPiFontManager* fontManager;
 			PiPiAppearanceManager* appearanceManager;
-            PiPiFieldObserver* fieldObserver;
-            PiPiAnnotationObserver* annotObserver;
+            PiPiFieldManager* fieldManager;
+        
+            void DirectFillValue(std::string fieldName, std::string value);
 
-            std::string filterValue(std::string value, std::string fontName);
-            std::string trimValue(std::string value, float width, std::string fontName, float fontSize);
-            std::string ellipsisValue(std::string value, float width, float height, std::string fontName, float fontSize);
-            std::string ellipsisValueMultiline(std::string value, float width, float height, std::string fontName, float fontSize);
+            std::string FilterValue(std::string value, std::string fontName);
+            std::string TrimValue(std::string value, float width, std::string fontName, float fontSize);
+            std::string EllipsisValue(std::string value, float width, float height, std::string fontName, float fontSize);
+            std::string EllipsisValueMultiline(std::string value, float width, float height, std::string fontName, float fontSize);
 	};
 }

@@ -1,62 +1,114 @@
 #include "PiPiAppearanceUtil.h"
 
 namespace PiPi {
-	void PiPiAppearanceUtil::GenerateAppearance(PiPiFontManager* fontManager, PdfAnnotation* annot) {
-		PdfObject& annotObjRef = annot->GetObject();
+    void PiPiAppearanceUtil::FlattenAppearance(PiPiFontManager *fontManager, PiPiFieldManager* fieldManager, PdfAnnotation *annot) {
+        GenerateAppearance(fontManager, fieldManager, annot);
+        
+        PdfDictionary& dictionary = annot->GetDictionary();
 
-		std::unique_ptr<PdfField> fieldPtr;
-		bool created = PdfField::TryCreateFromObject(annotObjRef, fieldPtr);
-		if (!created) {
-			return;
-		}
+        std::vector<PdfAppearanceIdentity> apperanceStreams;
+        annot->GetAppearanceStreams(apperanceStreams);
 
-		PdfField* field = fieldPtr.get();
+        PdfObject* apperanceStream = nullptr;
 
-		PdfFieldType type = field->GetType();
+        size_t apperanceStreamCount = apperanceStreams.size();
+        if (apperanceStreamCount == 1) {
+            apperanceStream = const_cast<PdfObject*>(apperanceStreams[0].Object);
+        }
+        else {
+            PdfName as = dictionary.HasKey(PdfName("AS")) ? dictionary.FindKeyAsSafe<PdfName>(PdfName("AS")) : PdfName("Off");
+            
+            unsigned int normalCount = 0;
+            for (auto iterator = apperanceStreams.begin(); iterator != apperanceStreams.end(); iterator.operator++()) {
+                PdfAppearanceIdentity& apperanceIdentity = iterator.operator*();
+                if (apperanceIdentity.Type == PdfAppearanceType::Normal) {
+                    normalCount++;
+                }
+            }
+            
+            for (auto iterator = apperanceStreams.begin(); iterator != apperanceStreams.end(); iterator.operator++()) {
+                PdfAppearanceIdentity& apperanceIdentity = iterator.operator*();
+                
+                if (apperanceIdentity.Type == PdfAppearanceType::Normal && apperanceIdentity.State == as) {
+                    apperanceStream = const_cast<PdfObject*>(apperanceIdentity.Object);
+                }
+            }
+        }
+
+        if (apperanceStream == nullptr) {
+            throw PiPiAppearanceException(PiPiAppearanceException::PiPiAppearanceExceptionCode::NoAppearanceExistsForFlatten);
+        }
+
+        PdfObject& apperanceStreanRef = *apperanceStream;
+
+        std::unique_ptr<PdfXObjectForm> xObjectUniquePtr;
+        bool xObjectCreated = PdfXObjectForm::TryCreateFromObject(apperanceStreanRef, xObjectUniquePtr);
+        if (!xObjectCreated) {
+            throw PiPiAppearanceException(PiPiAppearanceException::PiPiAppearanceExceptionCode::CreateFormObjectFromAppearanceFail);
+        }
+
+        PdfXObjectForm* xObject = xObjectUniquePtr.get();
+
+        Rect rect = annot->GetRect();
+        double left = rect.GetLeft();
+        double bottom = rect.GetBottom();
+
+        PdfPage* page = annot->GetPage();
+
+        PdfPainter* painter = new PdfPainter(PdfPainterFlags::NoSaveRestorePrior);
+
+        painter->SetCanvas(*page);
+        painter->SetClipRect(rect);
+        painter->DrawXObject(*xObject, left, bottom);
+        painter->FinishDrawing();
+
+        delete painter;
+    }
+
+	void PiPiAppearanceUtil::GenerateAppearance(PiPiFontManager* fontManager, PiPiFieldManager* fieldManager, PdfAnnotation* annot) {
+        PiPiFieldType type = PiPiExtractUtil::ExtractAnnotationType(annot);
 
 		switch (type) {
-			case PdfFieldType::CheckBox:
-				ClearCheckBoxAppearance(annot, (PdfCheckBox*)field);
-				GenerateCheckBoxAppearance(annot, (PdfCheckBox*)field);
+            case PiPiFieldType::TextBox:
+				ClearCheckBoxAppearance(annot);
+				GenerateCheckBoxAppearance(annot);
 				break;
-			case PdfFieldType::TextBox:
-				GenerateTextBoxAppearance(fontManager, annot, (PdfTextBox*)field);
+            case PiPiFieldType::CheckBox:
+				GenerateTextBoxAppearance(fontManager, annot);
 				break;
+            case PiPiFieldType::Unknown:
+            default:
+                throw PiPiAppearanceException(PiPiAppearanceException::PiPiAppearanceExceptionCode::UnsupportedFieldType);
 		}
 	}
 
-	void PiPiAppearanceUtil::ClearCheckBoxAppearance(PdfAnnotation* annot, PdfCheckBox* field) {
-		PdfDictionary& dictRef = annot->GetDictionary();
-		PdfDictionary* dict = &dictRef;
+	void PiPiAppearanceUtil::ClearCheckBoxAppearance(PdfAnnotation* annot) {
+		PdfDictionary* dict = &(annot->GetDictionary());
 
 		PdfObject* apObj = dict->FindKey(PdfName("AP"));
-		PdfDictionary& apRef = apObj->GetDictionary();
-		PdfDictionary* ap = &apRef;
+		PdfDictionary* ap = &(apObj->GetDictionary());
 		
 		PdfObject* nObj = ap->FindKey(PdfName("N"));
 		if (nObj != nullptr) {
-			PdfDictionary& nRef = nObj->GetDictionary();
-			PdfDictionary* n = &nRef;
+			PdfDictionary* n = &(nObj->GetDictionary());
 			n->Clear();
 		}
 
 		PdfObject* dObj = ap->FindKey(PdfName("D"));
 		if (nObj != nullptr) {
-			PdfDictionary& dRef = dObj->GetDictionary();
-			PdfDictionary* d = &dRef;
+			PdfDictionary* d = &(dObj->GetDictionary());
 			d->Clear();
 		}
 	}
 
-	void PiPiAppearanceUtil::GenerateCheckBoxAppearance(PdfAnnotation* annot, PdfCheckBox* field) {
-		PiPiAppearanceUtil::GenerateCheckBoxDownCheckAppearance(annot, field);
-		PiPiAppearanceUtil::GenerateCheckBoxDownUnCheckAppearance(annot, field);
-		PiPiAppearanceUtil::GenerateCheckBoxNormalCheckAppearance(annot, field);
+	void PiPiAppearanceUtil::GenerateCheckBoxAppearance(PdfAnnotation* annot) {
+		PiPiAppearanceUtil::GenerateCheckBoxDownCheckAppearance(annot);
+		PiPiAppearanceUtil::GenerateCheckBoxDownUnCheckAppearance(annot);
+		PiPiAppearanceUtil::GenerateCheckBoxNormalCheckAppearance(annot);
 	}
 
-	void PiPiAppearanceUtil::GenerateCheckBoxNormalCheckAppearance(PdfAnnotation* annot, PdfCheckBox* field) {
-		PdfDocument& documentRef = annot->GetDocument();
-		PdfDocument* document = &documentRef;
+	void PiPiAppearanceUtil::GenerateCheckBoxNormalCheckAppearance(PdfAnnotation* annot) {
+		PdfDocument* document = &(annot->GetDocument());
 
 		Rect annotRect = annot->GetRect();
 
@@ -67,14 +119,12 @@ namespace PiPi {
 
 		std::unique_ptr<PdfXObjectForm> xObjectPtr = document->CreateXObjectForm(xObjectRect);
 		PdfXObjectForm* xObject = xObjectPtr.get();
-		PdfXObjectForm& xObjectRef = *xObject;
 
 		PdfPainter* painter = new PdfPainter();
         
-        PdfGraphicsStateWrapper& graphicsStateRef = painter->GraphicsState;
-        PdfGraphicsStateWrapper* graphicsState = &graphicsStateRef;
+        PdfGraphicsStateWrapper* graphicsState = &(painter->GraphicsState);
 
-		painter->SetCanvas(xObjectRef);
+		painter->SetCanvas(*xObject);
 		painter->SetClipRect(xObjectRect);
         
         // 畫邊框
@@ -157,12 +207,11 @@ namespace PiPi {
 
 		delete painter;
 
-		annot->SetAppearanceStream(xObjectRef, PdfAppearanceType::Normal, PdfName("Yes"));
+		annot->SetAppearanceStream(*xObject, PdfAppearanceType::Normal, PdfName("Yes"));
 	}
 
-	void PiPiAppearanceUtil::GenerateCheckBoxDownCheckAppearance(PdfAnnotation* annot, PdfCheckBox* field) {
-		PdfDocument& documentRef = annot->GetDocument();
-		PdfDocument* document = &documentRef;
+	void PiPiAppearanceUtil::GenerateCheckBoxDownCheckAppearance(PdfAnnotation* annot) {
+		PdfDocument* document = &(annot->GetDocument());
 
 		Rect annotRect = annot->GetRect();
 
@@ -173,14 +222,12 @@ namespace PiPi {
 
 		std::unique_ptr<PdfXObjectForm> xObjectPtr = document->CreateXObjectForm(xObjectRect);
 		PdfXObjectForm* xObject = xObjectPtr.get();
-		PdfXObjectForm& xObjectRef = *xObject;
 
 		PdfPainter* painter = new PdfPainter();
         
-        PdfGraphicsStateWrapper& graphicsStateRef = painter->GraphicsState;
-        PdfGraphicsStateWrapper* graphicsState = &graphicsStateRef;
+        PdfGraphicsStateWrapper* graphicsState = &(painter->GraphicsState);
 
-		painter->SetCanvas(xObjectRef);
+		painter->SetCanvas(*xObject);
 		painter->SetClipRect(xObjectRect);
 
         // 畫邊框
@@ -271,12 +318,11 @@ namespace PiPi {
 
 		delete painter;
 
-		annot->SetAppearanceStream(xObjectRef, PdfAppearanceType::Down, PdfName("Yes"));
+		annot->SetAppearanceStream(*xObject, PdfAppearanceType::Down, PdfName("Yes"));
 	}
 
-	void PiPiAppearanceUtil::GenerateCheckBoxDownUnCheckAppearance(PdfAnnotation* annot, PdfCheckBox* field) {
-		PdfDocument& documentRef = annot->GetDocument();
-		PdfDocument* document = &documentRef;
+	void PiPiAppearanceUtil::GenerateCheckBoxDownUnCheckAppearance(PdfAnnotation* annot) {
+		PdfDocument* document = &(annot->GetDocument());
 
 		Rect annotRect = annot->GetRect();
 
@@ -287,14 +333,12 @@ namespace PiPi {
 
 		std::unique_ptr<PdfXObjectForm> xObjectPtr = document->CreateXObjectForm(xObjectRect);
 		PdfXObjectForm* xObject = xObjectPtr.get();
-		PdfXObjectForm& xObjectRef = *xObject;
 
 		PdfPainter* painter = new PdfPainter();
         
-        PdfGraphicsStateWrapper& graphicsStateRef = painter->GraphicsState;
-        PdfGraphicsStateWrapper* graphicsState = &graphicsStateRef;
+        PdfGraphicsStateWrapper* graphicsState = &(painter->GraphicsState);
 
-		painter->SetCanvas(xObjectRef);
+		painter->SetCanvas(*xObject);
 		painter->SetClipRect(xObjectRect);
 
         // 畫邊框
@@ -347,12 +391,11 @@ namespace PiPi {
 
 		delete painter;
 
-		annot->SetAppearanceStream(xObjectRef, PdfAppearanceType::Down, PdfName("Off"));
+		annot->SetAppearanceStream(*xObject, PdfAppearanceType::Down, PdfName("Off"));
 	}
 
-	void PiPiAppearanceUtil::GenerateTextBoxAppearance(PiPiFontManager* fontManager, PdfAnnotation* annot, PdfTextBox* field) {
-		PdfDocument& documentRef = annot->GetDocument();
-		PdfDocument* document = &documentRef;
+	void PiPiAppearanceUtil::GenerateTextBoxAppearance(PiPiFontManager* fontManager, PdfAnnotation* annot) {
+		PdfDocument* document = &(annot->GetDocument());
         
 		Rect annotRect = annot->GetRect();
 
@@ -363,18 +406,15 @@ namespace PiPi {
 
 		std::unique_ptr<PdfXObjectForm> xObjectPtr = document->CreateXObjectForm(xObjectRect);
 		PdfXObjectForm* xObject = xObjectPtr.get();
-		PdfXObjectForm& xObjectRef = *xObject;
         
 		PdfPainter* painter = new PdfPainter();
         
-		painter->SetCanvas(xObjectRef);
+		painter->SetCanvas(*xObject);
 		painter->SetClipRect(xObjectRect);
         
-        PdfGraphicsStateWrapper& graphicsStateRef = painter->GraphicsState;
-        PdfGraphicsStateWrapper* graphicsState = &graphicsStateRef;
+        PdfGraphicsStateWrapper* graphicsState = &(painter->GraphicsState);
         
-        PdfTextStateWrapper& textStateRef = painter->TextState;
-        PdfTextStateWrapper* textState = &textStateRef;
+        PdfTextStateWrapper* textState = &(painter->TextState);
         
         // 畫邊框
         double borderWidth = 0;
@@ -439,39 +479,31 @@ namespace PiPi {
 		
 		textState->SetFont(fontRef, fontSize);
 
-		nullable<const PdfString&> nullalbleTextRef = field->GetText();
-		if (nullalbleTextRef.has_value()) {
-			const PdfString& textRef = nullalbleTextRef.value();
-			const PdfString* text = &textRef;
-
-			std::string sText = text->GetString();
-            
-            // 為了垂直置中，不管多行單行都照多行套
-            // 前面套印處以過濾掉會變多行的文字
-            
-            
-            PdfDrawTextMultiLineParams multineParams;
-            
-            bool multiline = PiPiExtractUtil::ExtractAnnotationTextMultiine(annot);
-            multineParams.VerticalAlignment = multiline
-                ? PdfVerticalAlignment::Top
-                : PdfVerticalAlignment::Center;
-            
-            PiPiTextHorizontalAlignment horizontalAlignment = PiPiExtractUtil::ExtractAnnotationTextHorizontalAlignment(annot);
-            switch (horizontalAlignment) {
-                case PiPiTextHorizontalAlignment::Left:
-                    multineParams.HorizontalAlignment = PdfHorizontalAlignment::Left;
-                    break;
-                case PiPiTextHorizontalAlignment::Center:
-                    multineParams.HorizontalAlignment = PdfHorizontalAlignment::Center;
-                    break;
-                case PiPiTextHorizontalAlignment::Right:
-                    multineParams.HorizontalAlignment = PdfHorizontalAlignment::Right;
-                    break;
-            }
-            
-            painter->DrawTextMultiLine(sText, borderWidth, borderWidth, width - borderWidth * 2, height - borderWidth * 2, multineParams);
-		}
+        std::string sText = PiPiExtractUtil::ExtractAnnotationValue(annot);
+        
+        // 為了垂直置中，不管多行單行都照多行套
+        // 前面套印處以過濾掉會變多行的文字
+        PdfDrawTextMultiLineParams multineParams;
+        
+        bool multiline = PiPiExtractUtil::ExtractAnnotationTextMultiine(annot);
+        multineParams.VerticalAlignment = multiline
+            ? PdfVerticalAlignment::Top
+            : PdfVerticalAlignment::Center;
+        
+        PiPiTextHorizontalAlignment horizontalAlignment = PiPiExtractUtil::ExtractAnnotationTextHorizontalAlignment(annot);
+        switch (horizontalAlignment) {
+            case PiPiTextHorizontalAlignment::Left:
+                multineParams.HorizontalAlignment = PdfHorizontalAlignment::Left;
+                break;
+            case PiPiTextHorizontalAlignment::Center:
+                multineParams.HorizontalAlignment = PdfHorizontalAlignment::Center;
+                break;
+            case PiPiTextHorizontalAlignment::Right:
+                multineParams.HorizontalAlignment = PdfHorizontalAlignment::Right;
+                break;
+        }
+        
+        painter->DrawTextMultiLine(sText, borderWidth, borderWidth, width - borderWidth * 2, height - borderWidth * 2, multineParams);
         
         painter->Restore();
 
@@ -479,6 +511,6 @@ namespace PiPi {
 
 		delete painter;
 
-		annot->SetAppearanceStream(xObjectRef);
+		annot->SetAppearanceStream(*xObject);
 	}
 }

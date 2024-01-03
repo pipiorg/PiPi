@@ -10,14 +10,11 @@ namespace PiPi {
 
 		PiPiFontManager* fontManager = new PiPiFontManager(document);
 		this->fontManager = fontManager;
+        
+        PiPiFieldManager* fieldManager = new PiPiFieldManager(document);
+        this->fieldManager = fieldManager;
 
-		PiPiAnnotationObserver* annotObserver = new PiPiAnnotationObserver();
-		this->annotObserver = annotObserver;
-
-		PiPiFieldObserver* fieldObserver = new PiPiFieldObserver();
-		this->fieldObserver = fieldObserver;
-
-		PiPiAppearanceManager* appearanceManager = new PiPiAppearanceManager(document, fontManager, annotObserver);
+		PiPiAppearanceManager* appearanceManager = new PiPiAppearanceManager(document, fontManager, fieldManager);
 		this->appearanceManager = appearanceManager;
 
 		this->pager = nullptr;
@@ -32,14 +29,9 @@ namespace PiPi {
 			this->appearanceManager = nullptr;
 		}
 
-        if (this->annotObserver != nullptr) {
-            delete this->annotObserver;
-            this->annotObserver = nullptr;
-        }
-        
-        if (this->fieldObserver != nullptr) {
-            delete this->fieldObserver;
-            this->fieldObserver = nullptr;
+        if (this->fieldManager != nullptr) {
+            delete this->fieldManager;
+            this->fieldManager = nullptr;
         }
         
         if (this->fontManager != nullptr) {
@@ -75,29 +67,28 @@ namespace PiPi {
         }
     }
 
-	PiPiFontManager* PiPiOperator::getFontManager() {
+	PiPiFontManager* PiPiOperator::GetFontManager() {
 		return this->fontManager;
 	}
 
-	PiPiFiller* PiPiOperator::getFiller() {
+	PiPiFiller* PiPiOperator::GetFiller() {
 		if (this->filler != nullptr) {
 			return this->filler;
 		}
 
 		PdfMemDocument* document = this->document;
-        PiPiFieldObserver* fieldObserver = this->fieldObserver;
-        PiPiAnnotationObserver* annotObserver = this->annotObserver;
 		PiPiFontManager* fontManager = this->fontManager;
 		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+        PiPiFieldManager* fieldManager = this->fieldManager;
 		
-        PiPiFiller* filler = new PiPiFiller(document, fontManager, appearanceManager, fieldObserver, annotObserver);
+        PiPiFiller* filler = new PiPiFiller(document, fontManager, appearanceManager, fieldManager);
 
 		this->filler = filler;
 
 		return this->filler;
 	}
 
-	PiPiPager* PiPiOperator::getPager() {
+	PiPiPager* PiPiOperator::GetPager() {
 		if (this->pager != nullptr) {
 			return this->pager;
 		}
@@ -110,50 +101,49 @@ namespace PiPi {
 		return this->pager;
 	}
 
-	PiPiEditor* PiPiOperator::getEditor() {
+	PiPiEditor* PiPiOperator::GetEditor() {
 		if (this->editor != nullptr) {
 			return this->editor;
 		}
 
 		PdfMemDocument* document = this->document;
-        PiPiFieldObserver* fieldObserver = this->fieldObserver;
-        PiPiAnnotationObserver* annotObserver = this->annotObserver;
         PiPiFontManager* fontManager = this->fontManager;
 		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+        PiPiFieldManager* fieldManager = this->fieldManager;
         
-		PiPiEditor* editor = new PiPiEditor(document, fontManager, appearanceManager, fieldObserver, annotObserver);
+		PiPiEditor* editor = new PiPiEditor(document, fontManager, appearanceManager, fieldManager);
 
 		this->editor = editor;
 
 		return this->editor;
 	}
 
-	PiPiExtractor* PiPiOperator::getExtractor() {
+	PiPiExtractor* PiPiOperator::GetExtractor() {
 		if (this->extractor != nullptr) {
 			return this->extractor;
 		}
 
 		PdfMemDocument* document = this->document;
-        PiPiAnnotationObserver* annotObserver = this->annotObserver;
+        PiPiFieldManager* fieldManager = this->fieldManager;
         
-		PiPiExtractor* extractor = new PiPiExtractor(document, annotObserver);
+		PiPiExtractor* extractor = new PiPiExtractor(document, fieldManager);
 
 		this->extractor = extractor;
 
 		return this->extractor;
 	}
 
-	bool PiPiOperator::isOperable() {
+	bool PiPiOperator::IsOperable() {
 		return this->document != nullptr;
 	}
 
-	void PiPiOperator::finalize(char** newPdfBytes, size_t* newPdfSize) {
+	void PiPiOperator::Finalize(char** newPdfBytes, size_t* newPdfSize) {
 		vector<char> outputVector;
 		PoDoFo::VectorStreamDevice outputStreamDevice(outputVector);
         
-        PiPiFontManager* fontManager = this->getFontManager();
+        PdfMemDocument* document = this->document;
+        PiPiFontManager* fontManager = this->fontManager;
 		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-		PdfMemDocument* document = this->document;
 		
 		appearanceManager->GenerateAppearance();
         fontManager->embedFonts();

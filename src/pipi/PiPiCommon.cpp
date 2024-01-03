@@ -42,4 +42,8 @@ namespace PiPi {
     bool PiPiCommon::includes(const std::string &str, const std::string &substr) {
         return str.find(substr) != std::string::npos;
     }
+
+    bool PiPiCommon::startsWith(const std::string &str1, const std::string &str2) {
+        return str1.rfind(str2, 0) == 0;
+    }
 }

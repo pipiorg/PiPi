@@ -1,10 +1,10 @@
 #include "PiPiAppearanceManager.h"
 
 namespace PiPi {
-	PiPiAppearanceManager::PiPiAppearanceManager(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiAnnotationObserver* annotObserver) {
+	PiPiAppearanceManager::PiPiAppearanceManager(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiFieldManager* fieldManager) {
 		this->document = document;
 		this->fontManager = fontManager;
-		this->annotObserver = annotObserver;
+        this->fieldManager = fieldManager;
 
 		this->fieldNames = new std::set<std::string>();
 	}
@@ -22,41 +22,26 @@ namespace PiPi {
 
 	void PiPiAppearanceManager::GenerateAppearance() {
 		PdfMemDocument* document = this->document;
-		PiPiAnnotationObserver* annotObserver = this->annotObserver;
 		PiPiFontManager* fontManager = this->fontManager;
+        PiPiFieldManager* fieldManager = this->fieldManager;
 		std::set<std::string>* fieldNames = this->fieldNames;
-
-		std::map<const std::string, std::set<PdfAnnotation*>*>* annotMap = PiPiAnnotationUtil::SerachAllFieldAnnotation(annotObserver, document);
-
-		for (auto mapIterator = annotMap->begin(); mapIterator != annotMap->end(); mapIterator.operator++()) {
-			std::set<PdfAnnotation*>* annots = mapIterator->second;
-
-			for (auto annotIterator = annots->begin(); annotIterator != annots->end(); annotIterator.operator++()) {
-				PdfAnnotation* annot = *annotIterator;
-
-				PdfObject& objRef = annot->GetObject();
-				PdfObject* obj = &objRef;
-
-				std::unique_ptr<PdfField> fieldPtr;
-				bool created = PdfField::TryCreateFromObject(objRef, fieldPtr);
-				if (!created) {
-					continue;
-				}
-
-				PdfField* field = fieldPtr.get();
-
-				PdfFieldType type = field->GetType();
-				if (type == PdfFieldType::CheckBox) {
-					PiPiAppearanceUtil::GenerateAppearance(fontManager, annot);
-					continue;
-				}
-
-				std::string fieldName = field->GetFullName();
-				if (fieldNames->find(fieldName) != fieldNames->end()) {
-					PiPiAppearanceUtil::GenerateAppearance(fontManager, annot);
-				}
-			}
-		}
+        
+        std::map<const std::string, std::set<PdfField*>*>* fieldMap = fieldManager->SearchAllField();
+        for (auto mapIterator = fieldMap->begin(); mapIterator != fieldMap->end(); mapIterator.operator++()) {
+            std::set<PdfField*>* fields = mapIterator->second;
+            
+            for (auto fieldIterator = fields->begin(); fieldIterator != fields->end(); fieldIterator.operator++()) {
+                PdfField* field = *fieldIterator;
+                PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
+                
+                PdfFieldType type = field->GetType();
+                std::string fieldName = field->GetFullName();
+                
+                if (type == PdfFieldType::CheckBox || fieldNames->find(fieldName) != fieldNames->end()) {
+                    PiPiAppearanceUtil::GenerateAppearance(fontManager, fieldManager, annot);
+                }
+            }
+        }
 	}
 
 	void PiPiAppearanceManager::MarkNeedAppearance(std::string fieldName) {

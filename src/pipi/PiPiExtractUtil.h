@@ -3,6 +3,7 @@
 #include <podofo/podofo.h>
 #include "PiPiCommon.h"
 #include "PiPiColorConverter.h"
+#include "PiPiFieldManager.h"
 #include "PiPiFieldType.h"
 #include "PiPiTextHorizontalAlignment.h"
 
@@ -42,5 +43,7 @@ namespace PiPi {
             static bool ExtractAnnotationTextMultiine(PdfAnnotation* annotation);
             
             static PiPiTextHorizontalAlignment ExtractAnnotationTextHorizontalAlignment(PdfAnnotation* annotation);
+        
+            static std::string ExtractAnnotationValue(PdfAnnotation* annotation);
 	};
 }

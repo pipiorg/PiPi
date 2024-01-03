@@ -9,3 +9,7 @@
 #include "PiPiFontManager.h"
 #include "PiPiAppearanceManager.h"
 #include "PiPiMultiOperator.h"
+#include "PiPiManageFieldException.h"
+#include "PiPiFillFieldException.h"
+#include "PiPiEditFieldException.h"
+#include "PiPiAppearanceException.h"

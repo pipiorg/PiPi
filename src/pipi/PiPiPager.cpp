@@ -2,14 +2,10 @@
 
 namespace PiPi {
 	PiPiPager::PiPiPager(PdfMemDocument* document) {
-		this->init(document);
+        this->document = document;
 	}
 
-	void PiPiPager::init(PdfMemDocument* document) {
-		this->document = document;
-	}
-
-	bool PiPiPager::isOperable() {
+	bool PiPiPager::IsOperable() {
 		return this->document != nullptr;
 	}
 }

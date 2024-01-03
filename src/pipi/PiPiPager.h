@@ -9,11 +9,9 @@ namespace PiPi {
 		public:
 			PiPiPager(PdfMemDocument* document);
 
-			bool isOperable();
+			bool IsOperable();
 
 		private:
 			PdfMemDocument* document;
-
-			void init(PdfMemDocument* document);
 	};
 }

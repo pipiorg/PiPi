@@ -1,126 +1,107 @@
 #include "PiPiEditor.h"
 
 namespace PiPi {
-	PiPiEditor::PiPiEditor(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiAppearanceManager* appearanceManager, PiPiFieldObserver* fieldObserver, PiPiAnnotationObserver* annotObserver) {
+	PiPiEditor::PiPiEditor(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiAppearanceManager* appearanceManager, PiPiFieldManager* fieldManager) {
         this->document = document;
         this->fontManager = fontManager;
         this->appearanceManager = appearanceManager;
-        this->fieldObserver = fieldObserver;
-        this->annotObserver = annotObserver;
+        this->fieldManager = fieldManager;
 	}
 
-	bool PiPiEditor::isOperable() {
+	bool PiPiEditor::IsOperable() {
 		return this->document != nullptr;
 	}
 
-    PiPiEditor* PiPiEditor::flatten() {
+    PiPiEditor* PiPiEditor::Flatten() {
         PdfMemDocument* document = this->document;
         PiPiFontManager* fontManager = this->fontManager;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-        PiPiFieldObserver* fieldObserver = this->fieldObserver;
-        PiPiAnnotationObserver* annotObserver = this->annotObserver;
+        PiPiFieldManager* fieldManager = this->fieldManager;
         
-        std::map<const std::string, std::set<PdfAnnotation*>*>* annotMap = PiPiAnnotationUtil::SerachAllFieldAnnotation(annotObserver, document);
+        std::map<const std::string, std::set<PdfField*>*>* fieldMap = fieldManager->SearchAllField();
         
-        for (auto mapIterator = annotMap->begin(); mapIterator != annotMap->end(); mapIterator.operator++()) {
-            std::pair<const std::string, std::set<PdfAnnotation*>*> pair = *mapIterator;
+        for (auto mapIterator = fieldMap->begin(); mapIterator != fieldMap->end(); mapIterator.operator++()) {
+            std::set<PdfField*>* fields = mapIterator->second;
             
-            std::set<PdfAnnotation*>* annots = pair.second;
-            for (auto annotIterator = annots->begin(); annotIterator != annots->end(); annotIterator.operator++()) {
-                PdfAnnotation* annotation = *annotIterator;
-
-                PiPiAppearanceUtil::GenerateAppearance(fontManager, annotation);
-                PiPiAnnotationUtil::FlattenAnnotation(annotation);
+            for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
+                PdfField* field = *iterator;
+                PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
+                
+                PiPiAppearanceUtil::FlattenAppearance(fontManager, fieldManager, annot);
             }
         }
-
-        delete annotMap;
         
-        PiPiAnnotationUtil::RemoveAllFieldAnnotation(annotObserver, document);
-        PiPiFieldUtil::RemoveAllField(fieldObserver, document);
-
+        delete fieldMap;
+        
+        fieldManager->RemoveAllField();
         appearanceManager->ClearNeedAppearance();
 
         return this;
     }
 
-	PiPiEditor* PiPiEditor::flatten(std::string fieldName) {
+	PiPiEditor* PiPiEditor::Flatten(std::string fieldName) {
 		PdfMemDocument* document = this->document;
         PiPiFontManager* fontManager = this->fontManager;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-        PiPiFieldObserver* fieldObserver = this->fieldObserver;
-        PiPiAnnotationObserver* annotObserver = this->annotObserver;
-
-		std::set<PdfAnnotation*>* annotations = PiPiAnnotationUtil::SearchFieldAnnotation(annotObserver, document, fieldName);
+        PiPiFieldManager* fieldManager = this->fieldManager;
+        
+        std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
 		
-		for (auto iterator = annotations->begin(); iterator != annotations->end(); ++iterator) {
-			const PdfAnnotation* constAnnotation = *iterator;
-			PdfAnnotation* annotation = const_cast<PdfAnnotation*>(constAnnotation);
-
-            PiPiAppearanceUtil::GenerateAppearance(fontManager, annotation);
-            PiPiAnnotationUtil::FlattenAnnotation(annotation);
+		for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
+            PdfField* field = *iterator;
+            PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
+            
+            PiPiAppearanceUtil::FlattenAppearance(fontManager, fieldManager, annot);
 		}
 
-		delete annotations;
+		delete fields;
 
-		PiPiFieldUtil::RemoveField(fieldObserver, annotObserver, document, fieldName);
-        PiPiAnnotationUtil::RemoveFieldAnnotation(annotObserver, document, fieldName);
-
+        fieldManager->RemoveField(fieldName);
         appearanceManager->UnMarkNeedAppearance(fieldName);
 
 		return this;
 	}
 
-    PiPiEditor* PiPiEditor::addField(std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height) {
+    PiPiEditor* PiPiEditor::AddField(std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height) {
         PdfMemDocument* document = this->document;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-        PiPiFieldObserver* fieldObserver = this->fieldObserver;
-        PiPiAnnotationObserver* annotObserver = this->annotObserver;
+        PiPiFieldManager* fieldManager = this->fieldManager;
         
-        PiPiFieldUtil::CreateField(fieldObserver, annotObserver, document, fieldName, type, pageIndex, x, y, width, height);
-        
+        fieldManager->CreateField(fieldName, type, pageIndex, x, y, width, height);
         appearanceManager->MarkNeedAppearance(fieldName);
         
         return this;
     }
 
-	PiPiEditor* PiPiEditor::removeField(std::string fieldName) {
-        return this->removeField(fieldName, -1);
+	PiPiEditor* PiPiEditor::RemoveField(std::string fieldName) {
+        return this->RemoveField(fieldName, -1);
 	}
 
-    PiPiEditor* PiPiEditor::removeField(std::string fieldName, long pageIndex) {
-        return this->removeField(fieldName, pageIndex, -1, -1);
+    PiPiEditor* PiPiEditor::RemoveField(std::string fieldName, long pageIndex) {
+        return this->RemoveField(fieldName, pageIndex, -1, -1);
     }
 
-    PiPiEditor* PiPiEditor::removeField(std::string fieldName, long pageIndex, double x, double y) {
-        return this->removeField(fieldName, pageIndex, x, y, -1, -1);
+    PiPiEditor* PiPiEditor::RemoveField(std::string fieldName, long pageIndex, double x, double y) {
+        return this->RemoveField(fieldName, pageIndex, x, y, -1, -1);
     }
 
-    PiPiEditor* PiPiEditor::removeField(std::string fieldName, long pageIndex, double x, double y, double width, double height) {
+    PiPiEditor* PiPiEditor::RemoveField(std::string fieldName, long pageIndex, double x, double y, double width, double height) {
         PdfMemDocument* document = this->document;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-        PiPiFieldObserver* fieldObserver = this->fieldObserver;
-        PiPiAnnotationObserver* annotObserver = this->annotObserver;
+        PiPiFieldManager* fieldManager = this->fieldManager;
         
-        PiPiFieldUtil::RemoveField(fieldObserver, annotObserver, document, fieldName, pageIndex, x, y, width, height);
-        PiPiAnnotationUtil::RemoveFieldAnnotation(annotObserver, document, fieldName, pageIndex, x, y, width, height);
-        
+        fieldManager->RemoveField(fieldName, pageIndex, x, y, width, height);
         appearanceManager->UnMarkNeedAppearance(fieldName);
 
         return this;
     }
 
-	PiPiEditor* PiPiEditor::renameField(std::string oldFieldName, std::string newFieldName) {
+	PiPiEditor* PiPiEditor::RenameField(std::string oldFieldName, std::string newFieldName) {
 		PdfMemDocument* document = this->document;
-        PiPiFieldObserver* fieldObserver = this->fieldObserver;
-        PiPiAnnotationObserver* annotObserver = this->annotObserver;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+        PiPiFieldManager* fieldManager = this->fieldManager;
         
-        PiPiFieldUtil::SearchAllField(fieldObserver, document);
-        PiPiAnnotationUtil::SerachAllFieldAnnotation(annotObserver, document);
-        
-        PiPiFieldUtil::RenameField(fieldObserver, document, oldFieldName, newFieldName);
-        PiPiAnnotationUtil::RenameFieldAnnotation(annotObserver, oldFieldName, newFieldName);
+        fieldManager->RenameField(oldFieldName, newFieldName);
 
         appearanceManager->UnMarkNeedAppearance(oldFieldName);
         appearanceManager->MarkNeedAppearance(newFieldName);
@@ -128,67 +109,38 @@ namespace PiPi {
 		return this;
 	}
 
-    PiPiEditor* PiPiEditor::setFieldColor(std::string fieldName, int red, int green, int blue) {
-        PdfMemDocument* document = this->document;
-        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-
-        // TODO: set field color feature
-        
-        appearanceManager->MarkNeedAppearance(fieldName);
-
-        return this;
+    PiPiEditor* PiPiEditor::SetFieldColor(std::string fieldName, int red, int green, int blue) {
+        throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::NotImplementate);
     }
 
-    PiPiEditor* PiPiEditor::setFieldBorderColor(std::string fieldName, int red, int green, int blue) {
-        PdfMemDocument* document = this->document;
-        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-        
-        // TODO: set field border color feature
-
-        appearanceManager->MarkNeedAppearance(fieldName);
-        
-        return this;
+    PiPiEditor* PiPiEditor::SetFieldBorderColor(std::string fieldName, int red, int green, int blue) {
+        throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::NotImplementate);
     }
 
-    PiPiEditor* PiPiEditor::setFieldBackgroundColor(std::string fieldName, int red, int green, int blue) {
-        PdfMemDocument* document = this->document;
-        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-
-        // TODO: set background color feature
-        
-        appearanceManager->MarkNeedAppearance(fieldName);
-        
-        return this;
+    PiPiEditor* PiPiEditor::SetFieldBackgroundColor(std::string fieldName, int red, int green, int blue) {
+        throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::NotImplementate);
     }
 
-    PiPiEditor* PiPiEditor::setFieldTextHorizontalAlignment(std::string fieldName, PiPiTextHorizontalAlignment alignment) {
-        PdfMemDocument* document = this->document;
-        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-        
-        // TODO: set field text horizontal alignment feature
-
-        appearanceManager->MarkNeedAppearance(fieldName);
-        
-        return this;
+    PiPiEditor* PiPiEditor::SetFieldTextHorizontalAlignment(std::string fieldName, PiPiTextHorizontalAlignment alignment) {
+        throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::NotImplementate);
     }
 
-    PiPiEditor* PiPiEditor::setFieldMultiline(std::string fieldName, bool multiline) {
+    PiPiEditor* PiPiEditor::SetFieldMultiline(std::string fieldName, bool multiline) {
         PdfMemDocument* document = this->document;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-        PiPiFieldObserver* fieldObserver = this->fieldObserver;
+        PiPiFieldManager* fieldManager = this->fieldManager;
         
-        std::set<PdfField*>* fields = PiPiFieldUtil::SearchField(fieldObserver, document, fieldName);
+        std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
         
         for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
             PdfField* field = *iterator;
             
             PdfFieldType type = field->GetType();
             if (type != PdfFieldType::TextBox) {
-                continue;
+                throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::MultilineNotSupported);
             }
             
             PdfTextBox* textbox = (PdfTextBox*) field;
-
             textbox->SetMultiLine(multiline);
         }
         
@@ -199,36 +151,24 @@ namespace PiPi {
         return this;
     }
 
-    PiPiEditor* PiPiEditor::setFieldFontName(std::string fieldName, std::string fontName) {
+    PiPiEditor* PiPiEditor::SetFieldFontName(std::string fieldName, std::string fontName) {
         PdfMemDocument* document = this->document;
-        PdfAcroForm* acroform = document->GetAcroForm();
-        
-        PdfDictionary& acroformDictRef = acroform->GetDictionary();
-        PdfDictionary* acroformDict = &acroformDictRef;
-        
-        PdfObject* acroformDAObj = acroformDict->FindKey(PdfName("DA"));
-        const PdfString& acroformDARef = acroformDAObj->GetString();
-        const PdfString* acroformDA = &acroformDARef;
-        
-        std::string dDa = acroformDA->GetString();
-        
         PiPiFontManager* fontManager = this->fontManager;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-        PiPiFieldObserver* fieldObserver = this->fieldObserver;
-        PiPiAnnotationObserver* annotObserver = this->annotObserver;
         
         const PdfFont* font = fontManager->accessFont(fontName);
         if (font == nullptr) {
-            return this;
+            throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::NotRegisterFont);
         }
         
-        std::set<PdfField*>* fields = PiPiFieldUtil::SearchField(fieldObserver, document, fieldName);
+        const PdfString* defaultDA = this->GetDefaultDA();
+        std::string defaultDAString = defaultDA->GetString();
         
+        std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
         for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
             PdfField* field = *iterator;
             
-            PdfDictionary& dictRef = field->GetDictionary();
-            PdfDictionary* dict = &dictRef;
+            PdfDictionary* dict = &(field->GetDictionary());
             
             PdfDictionary* parentDict = dict->FindKeyAs<PdfDictionary*>(PdfName("Parent"));
             PdfObject* daObj = dict->FindKey(PdfName("DA"));
@@ -238,7 +178,7 @@ namespace PiPi {
             }
             
             std::string daString = daObj == nullptr
-                ? dDa
+                ? defaultDAString
                 : daObj->GetString().GetString();
             
             std::vector<std::string>* daStringSplits = PiPiCommon::split(daString, " ");
@@ -270,30 +210,20 @@ namespace PiPi {
         return this;
     }
 
-    PiPiEditor* PiPiEditor::setFieldFontSize(std::string fieldName, float fontSize) {
+    PiPiEditor* PiPiEditor::SetFieldFontSize(std::string fieldName, float fontSize) {
         PdfMemDocument* document = this->document;
-        PdfAcroForm* acroform = document->GetAcroForm();
-        
-        PdfDictionary& acroformDictRef = acroform->GetDictionary();
-        PdfDictionary* acroformDict = &acroformDictRef;
-        
-        PdfObject* acroformDAObj = acroformDict->FindKey(PdfName("DA"));
-        const PdfString& acroformDARef = acroformDAObj->GetString();
-        const PdfString* acroformDA = &acroformDARef;
-        
-        std::string dDa = acroformDA->GetString();
-        
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-        PiPiFieldObserver* fieldObserver = this->fieldObserver;
-        PiPiAnnotationObserver* annotObserver = this->annotObserver;
+        PiPiFieldManager* fieldManager = this->fieldManager;
         
-        std::set<PdfField*>* fields = PiPiFieldUtil::SearchField(fieldObserver, document, fieldName);
+        const PdfString* defaultDA = this->GetDefaultDA();
+        std::string defaultDAString = defaultDA->GetString();
+        
+        std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
         
         for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
             PdfField* field = *iterator;
             
-            PdfDictionary& dictRef = field->GetDictionary();
-            PdfDictionary* dict = &dictRef;
+            PdfDictionary* dict = &(field->GetDictionary());
             
             PdfDictionary* parentDict = dict->FindKeyAs<PdfDictionary*>(PdfName("Parent"));
             PdfObject* daObj = dict->FindKey(PdfName("DA"));
@@ -303,7 +233,7 @@ namespace PiPi {
             }
             
             std::string daString = daObj == nullptr
-                ? dDa
+                ? defaultDAString
                 : daObj->GetString().GetString();
             
             std::vector<std::string>* daStringSplits = PiPiCommon::split(daString, " ");
@@ -333,5 +263,17 @@ namespace PiPi {
         appearanceManager->MarkNeedAppearance(fieldName);
         
         return this;
+    }
+
+    const PdfString* PiPiEditor::GetDefaultDA() {
+        PdfDocument* document = this->document;
+        
+        PdfAcroForm* acroform = document->GetAcroForm();
+        PdfDictionary* acroformDict = &(acroform->GetDictionary());
+        
+        PdfObject* acroformDAObj = acroformDict->FindKey(PdfName("DA"));
+        const PdfString* acroformDA = &(acroformDAObj->GetString());
+        
+        return acroformDA;
     }
 }

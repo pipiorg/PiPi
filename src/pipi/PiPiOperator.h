@@ -9,8 +9,7 @@
 #include "PiPiExtractor.h"
 #include "PiPiFontManager.h"
 #include "PiPiAppearanceManager.h"
-#include "PiPiFieldObserver.h"
-#include "PiPiAnnotationObserver.h"
+#include "PiPiFieldManager.h"
 
 using namespace std;
 
@@ -20,15 +19,15 @@ namespace PiPi {
 			PiPiOperator(char* pdfBytes, size_t pdfSize);
             ~PiPiOperator();
 
-			PiPiFiller* getFiller();
-			PiPiEditor* getEditor();
-			PiPiPager* getPager();
-			PiPiExtractor* getExtractor();
-			PiPiFontManager* getFontManager();
+			PiPiFiller* GetFiller();
+			PiPiEditor* GetEditor();
+			PiPiPager* GetPager();
+			PiPiExtractor* GetExtractor();
+			PiPiFontManager* GetFontManager();
 
-			bool isOperable();
+			bool IsOperable();
 
-			void finalize(char** newPdfBytes, size_t* newPdfSize);
+			void Finalize(char** newPdfBytes, size_t* newPdfSize);
 
 		private:
 			PoDoFo::PdfMemDocument* document;
@@ -39,7 +38,6 @@ namespace PiPi {
 			PiPiExtractor* extractor;
 			PiPiFontManager* fontManager;
 			PiPiAppearanceManager* appearanceManager;
-            PiPiFieldObserver* fieldObserver;
-            PiPiAnnotationObserver* annotObserver;
+            PiPiFieldManager* fieldManager;
 	};
 }

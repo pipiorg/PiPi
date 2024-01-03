@@ -3,26 +3,23 @@
 #include "podofo/podofo.h"
 #include "PiPiPage.h"
 #include "PiPiField.h"
-#include "PiPiAnnotationUtil.h"
 #include "PiPiPageUtil.h"
-#include "PiPiAnnotationObserver.h"
-#include "PiPiFieldUtil.h"
-#include "PiPiExtractUtil.h"
+#include "PiPiFieldManager.h"
 
 using namespace PoDoFo;
 
 namespace PiPi {
 	class PiPiExtractor {
 		public:
-			PiPiExtractor(PdfMemDocument* document, PiPiAnnotationObserver* annotObserver);
+			PiPiExtractor(PdfMemDocument* document, PiPiFieldManager* fieldManager);
 
-			std::vector<const PiPiPage*>* extractPage();
-			std::vector<const PiPiField*>* extractField();
+			std::vector<const PiPiPage*>* ExtractPage();
+			std::vector<const PiPiField*>* ExtractField();
 
-			bool isOperable();
+			bool IsOperable();
 
 		private:
 			PdfMemDocument* document;
-            PiPiAnnotationObserver* annotObserver;
+            PiPiFieldManager* fieldManager;
 	};
 }
