@@ -46,8 +46,7 @@ namespace PiPi {
                 PdfField* field = *fieldIterator;
                 PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
 
-				const PdfPage* constPage = annot->GetPage();
-				PdfPage* page = const_cast<PdfPage*>(constPage);
+				PdfPage* page = annot->GetPage();
 				unsigned int pageIndex = PiPiPageUtil::SearchPageIndex(document, page);
 
 				double x = PiPiExtractUtil::ExtractAnnotationX(annot);
