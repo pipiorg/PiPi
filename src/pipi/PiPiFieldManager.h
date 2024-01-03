@@ -7,6 +7,7 @@
 #include "PiPiManageFieldException.h"
 #include "PiPiPageUtil.h"
 #include "PiPiExtractUtil.h"
+#include "PiPiFieldCompatibilityUtil.h"
 
 using namespace PoDoFo;
 
@@ -18,40 +19,40 @@ namespace PiPi {
         
             bool IsOperable();
         
-            std::map<const std::string, std::set<PdfField*>*>* SearchAllField(); //V
-            std::set<PdfField*>* SearchField(std::string fieldName); //V
+            std::map<const std::string, std::set<PdfField*>*>* SearchAllField();
+            std::set<PdfField*>* SearchField(std::string fieldName);
         
-            void RemoveAllField(); //V
-            void RemoveField(std::string fieldName); // V
-            void RemoveField(std::string fieldName, long pageIndex); //V
-            void RemoveField(std::string fieldName, long pageIndex, double x, double y); //V
-            void RemoveField(std::string fieldName, long pageIndex, double x, double y, double width, double height); //V
+            void RemoveAllField();
+            void RemoveField(std::string fieldName);
+            void RemoveField(std::string fieldName, long pageIndex);
+            void RemoveField(std::string fieldName, long pageIndex, double x, double y);
+            void RemoveField(std::string fieldName, long pageIndex, double x, double y, double width, double height);
         
             PdfField* CreateField(std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height);
         
             void RenameField(std::string oldFieldName, std::string newFieldName);
         
-            std::map<const std::string, std::set<PdfAnnotation*>*>* SearchAllFieldAnnotation();//V
-            std::set<PdfAnnotation*>* SearchFieldAnnotation(std::string fieldName);//V
+            std::map<const std::string, std::set<PdfAnnotation*>*>* SearchAllFieldAnnotation();
+            std::set<PdfAnnotation*>* SearchFieldAnnotation(std::string fieldName);
         
-            void RemoveAllFieldAnnotation(); //V
-            void RemoveFieldAnnotation(std::string fieldName); //V
-            void RemoveFieldAnnotation(std::string fieldName, long pageIndex); //V
-            void RemoveFieldAnnotation(std::string fieldName, long pageIndex, double x, double y); //V
-            void RemoveFieldAnnotation(std::string fieldName, long pageIndex, double x, double y, double width, double height); //V
+            void RemoveAllFieldAnnotation();
+            void RemoveFieldAnnotation(std::string fieldName);
+            void RemoveFieldAnnotation(std::string fieldName, long pageIndex);
+            void RemoveFieldAnnotation(std::string fieldName, long pageIndex, double x, double y);
+            void RemoveFieldAnnotation(std::string fieldName, long pageIndex, double x, double y, double width, double height);
             
-            PdfAnnotation* CreateFieldAnnotation(std::string fieldName, unsigned int pageIndex, double x, double y, double width, double height); //V
+            PdfAnnotation* CreateFieldAnnotation(std::string fieldName, unsigned int pageIndex, double x, double y, double width, double height);
         
             void RenameFieldAnnotation(std::string oldFieldName, std::string newFieldName);
         
-            PdfAnnotation* BridgeFieldToAnnotation(PdfField* field); //V
-            PdfAnnotation* BridgeObjectToAnnotation(PdfObject* object);// V
+            PdfAnnotation* BridgeFieldToAnnotation(PdfField* field);
+            PdfAnnotation* BridgeObjectToAnnotation(PdfObject* object);
         
-            PdfField* BridgeAnnotationToField(PdfAnnotation* annot); //V
-            PdfField* BridgeObjectToField(PdfObject* object);//V
+            PdfField* BridgeAnnotationToField(PdfAnnotation* annot);
+            PdfField* BridgeObjectToField(PdfObject* object);
         
         private:
-            static const std::vector<PdfName> SpecialHierarchicalFieldKeys; // V
+            static const std::vector<PdfName> SpecialHierarchicalFieldKeys;
         
             PdfMemDocument* document;
             std::map<const std::string, PiPiManagedFields*>* fieldMap;
@@ -59,32 +60,33 @@ namespace PiPi {
             std::map<PdfObject*, PdfAnnotation*>* annotBridgeMap;
             std::map<PdfObject*, PdfField*>* fieldBridgeMap;
         
-            void InitFieldMap(); // V
-            void InitAnnotationMap(); // V
-            void InitFieldBridgeMap();// V
-            void InitAnnotationBridgeMap(); //V
+            void InitDocument(PdfMemDocument* document);
+            void InitFieldMap();
+            void InitAnnotationMap();
+            void InitFieldBridgeMap();
+            void InitAnnotationBridgeMap();
         
-            void InnerSearchAllField(PdfObject* fieldObj); // V
+            void InnerSearchAllField(PdfObject* fieldObj);
         
-            void InnerRemoveField(PdfObject* fieldObj);//V
-            void InnerRemoveFieldFromAcroform(PdfObject* fieldObj);//V
-            void InnerRemoveFieldFromParentField(PdfObject* fieldObj);//V
+            void InnerRemoveField(PdfObject* fieldObj);
+            void InnerRemoveFieldFromAcroform(PdfObject* fieldObj);
+            void InnerRemoveFieldFromParentField(PdfObject* fieldObj);
         
-            PdfObject* InnerCreateRealField(std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height); //V
-            PdfObject* InnerCreateFakeField(std::string fieldName); //V
+            PdfObject* InnerCreateRealField(std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height);
+            PdfObject* InnerCreateFakeField(std::string fieldName);
         
-            void RestrictField(PdfObject* fieldObj); //V
+            void RestrictField(PdfObject* fieldObj);
         
-            void ExpandField(PdfObject* fieldObj); //v
+            void ExpandField(PdfObject* fieldObj);
         
-            void RemoveFieldMap(PdfObject* fieldObj, std::string fieldName);//V
-            void RemoveAnnotationMap(PdfObject* annotObj, std::string fieldName);//V
+            void RemoveFieldMap(PdfObject* fieldObj, std::string fieldName);
+            void RemoveAnnotationMap(PdfObject* annotObj, std::string fieldName);
         
             void RenameFieldMap(std::string oldFieldName, std::string newFieldName);
             void RenameAnnotationMap(std::string oldFieldName, std::string newFieldName);
         
-            void AddFieldMap(PdfObject* fieldObj, PdfField* field, std::string fieldName, bool real); //V
-            void AddAnnotationMap(PdfObject* annotObj, PdfAnnotation* annot, std::string fieldName); //V
+            void AddFieldMap(PdfObject* fieldObj, PdfField* field, std::string fieldName, bool real);
+            void AddAnnotationMap(PdfObject* annotObj, PdfAnnotation* annot, std::string fieldName);
         
             bool IsDuplicateFieldExists(std::string fieldName);
     };

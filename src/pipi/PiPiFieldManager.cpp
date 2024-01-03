@@ -10,8 +10,7 @@ namespace PiPi {
     };
 
     PiPiFieldManager::PiPiFieldManager(PdfMemDocument* document) {
-        this->document = document;
-        
+        this->InitDocument(document);
         this->InitFieldMap();
         this->InitAnnotationMap();
         this->InitFieldBridgeMap();
@@ -410,6 +409,12 @@ namespace PiPi {
         }
         
         return findIterator->second;
+    }
+
+    void PiPiFieldManager::InitDocument(PdfMemDocument* document) {
+        PiPiFieldCompatibilityUtil::Patch(document);
+        
+        this->document = document;
     }
 
     void PiPiFieldManager::InitFieldMap() {
