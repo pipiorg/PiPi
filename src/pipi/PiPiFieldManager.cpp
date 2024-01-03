@@ -364,9 +364,12 @@ namespace PiPi {
         }
         
         PdfPage* page = &(pages->GetPageAt(pageIndex));
+        
+        double pageHeight = PiPiExtractUtil::ExtractPageHeight(page);
+        
         PdfAnnotationCollection* annots = &(page->GetAnnotations());
         
-        PdfAnnotation* annot = &(annots->CreateAnnot(PdfAnnotationType::Widget, Rect(x, y, width, height)));
+        PdfAnnotation* annot = &(annots->CreateAnnot(PdfAnnotationType::Widget, Rect(x, pageHeight - y - height, width, height)));
         PdfObject* object = &(annot->GetObject());
         
         this->AddAnnotationMap(object, annot, fieldName);
@@ -666,6 +669,8 @@ namespace PiPi {
                 cField = *(fields->begin());
                 
                 delete fields;
+                
+                break;
             }
             
             std::string lastPartialFieldName = splits->back();
@@ -804,7 +809,7 @@ namespace PiPi {
             PdfArray* parentKids = &(parentKidsObject->GetArray());
             
             dict->AddKeyIndirect(PdfName("Parent"), *parentObject);
-            dict->AddKey(PdfName("T"), PdfName(lastFieldName));
+            dict->AddKey(PdfName("T"), PdfString(lastFieldName));
             
             parentKids->AddIndirect(*object);
         }
