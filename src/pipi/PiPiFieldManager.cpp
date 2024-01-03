@@ -343,7 +343,7 @@ namespace PiPi {
                 
                 size_t removePageAnnotIndexCount = removePageAnnotIndexs->size();
                 for (unsigned int removePageAnnotIndexIndex = 0; removePageAnnotIndexIndex < removePageAnnotIndexCount; removePageAnnotIndexIndex++) {
-                    pageAnnots->RemoveAnnotAt(removePageAnnotIndexIndex);
+                    pageAnnots->RemoveAnnotAt((*removePageAnnotIndexs)[removePageAnnotIndexIndex]);
                     this->RemoveAnnotationMap(annotObj, fieldName);
                 }
                 
@@ -980,7 +980,7 @@ namespace PiPi {
         
         auto findAnnotBridgeMapIterator = annotBridgeMap->find(annotObj);
         if (findAnnotBridgeMapIterator != annotBridgeMap->end()) {
-            annotBridgeMap->erase(annotObj);
+            annotBridgeMap->erase(findAnnotBridgeMapIterator);
         }
     }
 
