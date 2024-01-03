@@ -70,12 +70,12 @@ namespace PiPi {
 
 		switch (type) {
             case PiPiFieldType::TextBox:
-				ClearCheckBoxAppearance(annot);
-				GenerateCheckBoxAppearance(annot);
-				break;
+                GenerateTextBoxAppearance(fontManager, annot);
+                break;
             case PiPiFieldType::CheckBox:
-				GenerateTextBoxAppearance(fontManager, annot);
-				break;
+                ClearCheckBoxAppearance(annot);
+                GenerateCheckBoxAppearance(annot);
+                break;
             case PiPiFieldType::Unknown:
             default:
                 throw PiPiAppearanceException(PiPiAppearanceException::PiPiAppearanceExceptionCode::UnsupportedFieldType);
@@ -86,6 +86,10 @@ namespace PiPi {
 		PdfDictionary* dict = &(annot->GetDictionary());
 
 		PdfObject* apObj = dict->FindKey(PdfName("AP"));
+        if (apObj == nullptr) {
+            return;
+        }
+        
 		PdfDictionary* ap = &(apObj->GetDictionary());
 		
 		PdfObject* nObj = ap->FindKey(PdfName("N"));

@@ -178,7 +178,7 @@ namespace PiPi {
     }
 
     PdfField* PiPiFieldManager::CreateField(std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height) {
-        if (!this->IsDuplicateFieldExists(fieldName)) {
+        if (this->IsDuplicateFieldExists(fieldName)) {
             throw PiPiManageFieldException(PiPiManageFieldException::PiPiManageFieldExceptionCode::DuplicateFieldExists);
         }
         
@@ -344,7 +344,7 @@ namespace PiPi {
                 size_t removePageAnnotIndexCount = removePageAnnotIndexs->size();
                 for (unsigned int removePageAnnotIndexIndex = 0; removePageAnnotIndexIndex < removePageAnnotIndexCount; removePageAnnotIndexIndex++) {
                     pageAnnots->RemoveAnnotAt(removePageAnnotIndexIndex);
-                    this->RemoveAnnotationMap(annotObj);
+                    this->RemoveAnnotationMap(annotObj, fieldName);
                 }
                 
                 delete removePageAnnotIndexs;
@@ -428,8 +428,9 @@ namespace PiPi {
         
         PdfArray* fields = &(fieldsObj->GetArray());
         
-        for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
-            this->InnerSearchAllField(&(*iterator));
+        for (unsigned int idx = 0; idx < fields->size(); idx++) {
+            PdfObject* fieldObj = &(fields->MustFindAt(idx));
+            this->InnerSearchAllField(fieldObj);
         }
     }
 
@@ -548,12 +549,26 @@ namespace PiPi {
             }
             
             PiPiManagedFields* manageFields = findIterator->second;
-            fieldMap->insert(std::pair<const std::string, PiPiManagedFields*>(name, manageFields));
+            manageFields->ManageField(field);
             return;
         }
         
-        PiPiManagedFields* manageFields = new PiPiManagedFields(field, false);
-        fieldMap->insert(std::pair<const std::string, PiPiManagedFields*>(name, manageFields));
+        bool allKidEnd = true;
+        for (unsigned int childrenIndex = 0; childrenIndex < childrenCount; childrenIndex++) {
+            PdfField* childrenField = &(childrens->GetFieldAt(childrenIndex));
+            PdfObject* childrenObject = &(childrenField->GetObject());
+            PdfDictionary* childrenDict = &(childrenObject->GetDictionary());
+            
+            if (childrenDict->HasKey(PdfName("T"))) {
+                allKidEnd = false;
+                break;
+            }
+        }
+        
+        if (!allKidEnd) {
+            PiPiManagedFields* manageFields = new PiPiManagedFields(field, false);
+            fieldMap->insert(std::pair<const std::string, PiPiManagedFields*>(name, manageFields));
+        }
 
         for (unsigned int childrenIndex = 0; childrenIndex < childrenCount; childrenIndex++) {
             PdfField* childrenField = &(childrens->GetFieldAt(childrenIndex));
@@ -575,6 +590,29 @@ namespace PiPi {
     }
 
     void PiPiFieldManager::InnerRemoveFieldFromAcroform(PdfObject *fieldObj) {
+        PdfField* field = this->BridgeObjectToField(fieldObj);
+        
+        PdfAcroForm* acroform = &(document->GetOrCreateAcroForm());
+        PdfDictionary* acroformDict = &(acroform->GetDictionary());
+        
+        PdfObject* acroformFieldsObj = acroformDict->FindKey(PdfName("Fields"));
+        PdfArray* acroformFields = &(acroformFieldsObj->GetArray());
+        
+        size_t acroformFieldCount = acroformFields->size();
+        unsigned int pos = 0;
+        for (unsigned int idx = 0; idx < acroformFieldCount; idx++) {
+            if (fieldObj == &(acroformFields->MustFindAt(idx))) {
+                acroformFields->RemoveAt(idx);
+                break;
+            }
+        }
+        
+        std::string fieldName = field->GetFullName();
+        this->RemoveFieldMap(fieldObj, fieldName);
+    }
+
+    void PiPiFieldManager::InnerRemoveFieldFromParentField(PdfObject *fieldObj) {
+        PdfField* field = this->BridgeObjectToField(fieldObj);
         PdfDictionary* fieldDict = &(fieldObj->GetDictionary());
         
         PdfObject* parentFieldObj = fieldDict->FindKey(PdfName("Parent"));
@@ -591,13 +629,14 @@ namespace PiPi {
             }
         }
         
-        this->RemoveFieldMap(fieldObj);
+        std::string fieldName = field->GetFullName();
+        this->RemoveFieldMap(fieldObj, fieldName);
         
         if (parentFieldKidCount - 1 == 1) {
             PdfObject* brotherFieldObj = &(parentFieldKids->MustFindAt(0));
             PdfDictionary* brotherFieldDict = &(brotherFieldObj->GetDictionary());
             
-            if (brotherFieldDict->HasKey(PdfName("T"))) {
+            if (!brotherFieldDict->HasKey(PdfName("T"))) {
                 this->RestrictField(brotherFieldObj);
             }
         }
@@ -605,25 +644,6 @@ namespace PiPi {
         if (parentFieldKidCount - 1 == 0) {
             this->InnerRemoveField(parentFieldObj);
         }
-    }
-
-    void PiPiFieldManager::InnerRemoveFieldFromParentField(PdfObject *fieldObj) {
-        PdfAcroForm* acroform = &(document->GetOrCreateAcroForm());
-        PdfDictionary* acroformDict = &(acroform->GetDictionary());
-        
-        PdfObject* acroformFieldsObj = acroformDict->FindKey(PdfName("Fields"));
-        PdfArray* acroformFields = &(acroformFieldsObj->GetArray());
-        
-        size_t acroformFieldCount = acroformFields->size();
-        unsigned int pos = 0;
-        for (unsigned int idx = 0; idx < acroformFieldCount; idx++) {
-            if (fieldObj == &(acroformFields->MustFindAt(idx))) {
-                acroformFields->RemoveAt(idx);
-                break;
-            }
-        }
-        
-        this->RemoveFieldMap(fieldObj);
     }
 
     PdfObject* PiPiFieldManager::InnerCreateFakeField(std::string fieldName) {
@@ -736,15 +756,17 @@ namespace PiPi {
         switch (type) {
             case PiPiFieldType::TextBox:
                 dict->AddKey(PdfName("FT"), PdfName("Tx"));
+                break;
             case PiPiFieldType::CheckBox:
                 dict->AddKey(PdfName("FT"), PdfName("Btn"));
+                break;
             case PiPiFieldType::Unknown:
             default:
                 throw PiPiManageFieldException(PiPiManageFieldException::PiPiManageFieldExceptionCode::InvalidPdfFieldType);
         }
         
         // 已有欄位 -> 同名書籤 -> 從兄弟找爸爸
-        // 未有書籤 -> 全薪書籤 -> 建立假爸爸
+        // 未有書籤 -> 全新書籤 -> 建立假爸爸
         auto findIterator = fieldMap->find(fieldName);
         if (findIterator != fieldMap->end()) {
             PiPiManagedFields* managedFields = findIterator->second;
@@ -758,8 +780,13 @@ namespace PiPi {
             delete brotherFields;
             
             PdfObject* parentObject = brotherFieldDict->FindKey(PdfName("Parent"));
+            PdfDictionary* parentDict = &(parentObject->GetDictionary());
+            
+            PdfObject* parentKidsObject = parentDict->FindKey(PdfName("Kids"));
+            PdfArray* parentKids = &(parentKidsObject->GetArray());
             
             dict->AddKeyIndirect(PdfName("Parent"), *parentObject);
+            parentKids->AddIndirect(*object);
         } else {
             std::vector<std::string>* splits = PiPiCommon::split(fieldName, ".");
             
@@ -771,9 +798,15 @@ namespace PiPi {
             delete splits;
             
             PdfObject* parentObject = this->InnerCreateFakeField(parentFieldName);
+            PdfDictionary* parentDict = &(parentObject->GetDictionary());
+            
+            PdfObject* parentKidsObject = parentDict->FindKey(PdfName("Kids"));
+            PdfArray* parentKids = &(parentKidsObject->GetArray());
             
             dict->AddKeyIndirect(PdfName("Parent"), *parentObject);
             dict->AddKey(PdfName("T"), PdfName(lastFieldName));
+            
+            parentKids->AddIndirect(*object);
         }
         
         std::unique_ptr<PdfField> fieldPtr;
@@ -853,6 +886,12 @@ namespace PiPi {
         PdfObject* expandFieldObj = &(indirectObjectList->CreateDictionaryObject());
         PdfDictionary* expandFieldDict = &(expandFieldObj->GetDictionary());
         
+        PdfObject* parentFieldObj = fieldDict->FindKey(PdfName("Parent"));
+        
+        if (parentFieldObj != nullptr) {
+            fieldDict->RemoveKey(PdfName("Parent"));
+        }
+        
         for (unsigned int i = 0; i < SpecialHierarchicalFieldKeys.size(); i++) {
             PdfName SpecialHierarchicalFieldKey = SpecialHierarchicalFieldKeys[i];
             
@@ -865,19 +904,19 @@ namespace PiPi {
             fieldDict->RemoveKey(SpecialHierarchicalFieldKey);
         }
         
-        expandFieldDict->AddKey(PdfName("Kids"), PdfArray());
-        PdfObject* expandFieldKidsObj = expandFieldDict->FindKey(PdfName("Kids"));
-        PdfArray* expandFieldKids = &(expandFieldKidsObj->GetArray());
-        
-        fieldDict->AddKeyIndirect(PdfName("Parent"), *expandFieldKids);
-        expandFieldKids->AddIndirect(*fieldObj);
-        
-        PdfObject* parentFieldObj = fieldDict->FindKey(PdfName("Parent"));
         if (parentFieldObj == nullptr) {
             PdfAcroForm* acroform = document->GetAcroForm();
             PdfDictionary* acroformDict = &(acroform->GetDictionary());
             PdfObject* acroformFieldsObj = acroformDict->FindKey(PdfName("Fields"));
             PdfArray* acroformFields = &(acroformFieldsObj->GetArray());
+            
+            for (unsigned int idx = 0; idx < acroformFields->size(); idx++) {
+                PdfObject* acroformFieldObj = acroformFields->FindAt(idx);
+                if (acroformFieldObj == fieldObj) {
+                    acroformFields->RemoveAt(idx);
+                    break;
+                }
+            }
             
             acroformFields->AddIndirect(*expandFieldObj);
         } else {
@@ -885,18 +924,31 @@ namespace PiPi {
             PdfObject* parentFieldKidsObj = parentFieldDict->FindKey(PdfName("Kids"));
             PdfArray* parentFieldKids = &(parentFieldKidsObj->GetArray());
             
-            expandFieldDict->AddKeyIndirect(PdfName("Parent"), *parentFieldObj);
+            for (unsigned int idx = 0; idx< parentFieldKids->size(); idx++) {
+                PdfObject* parentFieldKidObj = parentFieldKids->FindAt(idx);
+                if (parentFieldKidObj == fieldObj) {
+                    parentFieldKids->RemoveAt(idx);
+                    break;
+                }
+            }
             
+            expandFieldDict->AddKeyIndirect(PdfName("Parent"), *parentFieldObj);
             parentFieldKids->AddIndirect(*expandFieldObj);
         }
+        
+        expandFieldDict->AddKey(PdfName("Kids"), PdfArray());
+        PdfObject* expandFieldKidsObj = expandFieldDict->FindKey(PdfName("Kids"));
+        PdfArray* expandFieldKids = &(expandFieldKidsObj->GetArray());
+        
+        fieldDict->AddKeyIndirect(PdfName("Parent"), *expandFieldObj);
+        expandFieldKids->AddIndirect(*fieldObj);
     }
 
-    void PiPiFieldManager::RemoveFieldMap(PdfObject *fieldObj) {
+    void PiPiFieldManager::RemoveFieldMap(PdfObject *fieldObj, std::string fieldName) {
         std::map<const std::string, PiPiManagedFields*>* fieldMap = this->fieldMap;
         std::map<PdfObject*, PdfField*>* fieldBridgeMap = this->fieldBridgeMap;
         
         PdfField* field = this->BridgeObjectToField(fieldObj);
-        std::string fieldName = field->GetFullName();
         auto findFieldMapIterator = fieldMap->find(fieldName);
         if (findFieldMapIterator != fieldMap->end()) {
             PiPiManagedFields* managedFields = findFieldMapIterator->second;
@@ -909,14 +961,12 @@ namespace PiPi {
         }
     }
 
-    void PiPiFieldManager::RemoveAnnotationMap(PdfObject *annotObj) {
+    void PiPiFieldManager::RemoveAnnotationMap(PdfObject *annotObj, std::string fieldName) {
         std::map<const std::string, PiPiManagedAnnotations*>* annotMap = this->annotMap;
         std::map<PdfObject*, PdfAnnotation*>* annotBridgeMap = this->annotBridgeMap;
         
         PdfAnnotation* annot = this->BridgeObjectToAnnotation(annotObj);
-        PdfField* field = this->BridgeAnnotationToField(annot);
         
-        std::string fieldName = field->GetFullName();
         auto findAnnotMapIterator = annotMap->find(fieldName);
         if (findAnnotMapIterator != annotMap->end()) {
             PiPiManagedAnnotations* managedAnnots = findAnnotMapIterator->second;
