@@ -146,7 +146,7 @@ namespace PiPi {
 		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
 		
 		appearanceManager->GenerateAppearance();
-        fontManager->embedFonts();
+        fontManager->EmbedFonts();
         document->Save(outputStreamDevice);
 
 		*newPdfSize = outputVector.size();

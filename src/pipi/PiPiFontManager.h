@@ -9,22 +9,24 @@ namespace PiPi {
 		public:
 			PiPiFontManager(PdfMemDocument* document);
 
-			bool isOperable();
+			bool IsOperable();
 
-            void embedFonts();
+            void EmbedFonts();
         
-			const std::string registerFont(char* fontBytes, size_t fontSize);
+			const std::string RegisterFont(char* fontBytes, size_t fontSize);
         
-			const PdfFont* accessFont(const std::string fontName);
-			const PdfFont* accessDefaultFont();
+			const PdfFont* AccessFont(const std::string fontName);
+			const PdfFont* AccessDefaultFont();
 
 		private:
 			PdfMemDocument* document;
 
 			std::map<const std::string, const PdfFont*>* fontMap;
 
-			void init(PdfMemDocument* document);
-			void loadAcroformFonts();
-            void embedAcroformFonts();
+			void Init(PdfMemDocument* document);
+			void LoadAcroformFonts();
+        
+            void EmbedDocumentFonts();
+            void EmbedAcroformFonts();
 	};
 }

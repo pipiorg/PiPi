@@ -156,7 +156,7 @@ namespace PiPi {
         PiPiFontManager* fontManager = this->fontManager;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         
-        const PdfFont* font = fontManager->accessFont(fontName);
+        const PdfFont* font = fontManager->AccessFont(fontName);
         if (font == nullptr) {
             throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::NotRegisterFont);
         }

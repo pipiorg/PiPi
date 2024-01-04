@@ -208,9 +208,9 @@ namespace PiPi {
     std::string PiPiFiller::FilterValue(std::string value, std::string fontName) {
         PiPiFontManager* fontManager = this->fontManager;
         
-        const PdfFont* font = fontManager->accessFont(fontName) == nullptr
-            ? fontManager->accessDefaultFont()
-            : fontManager->accessFont(fontName);
+        const PdfFont* font = fontManager->AccessFont(fontName) == nullptr
+            ? fontManager->AccessDefaultFont()
+            : fontManager->AccessFont(fontName);
         
         std::string newValue = "";
         
@@ -236,9 +236,9 @@ namespace PiPi {
     std::string PiPiFiller::TrimValue(std::string value, float width, std::string fontName, float fontSize) {
         PiPiFontManager* fontManager = this->fontManager;
         
-        const PdfFont* font = fontManager->accessFont(fontName) == nullptr
-            ? fontManager->accessDefaultFont()
-            : fontManager->accessFont(fontName);
+        const PdfFont* font = fontManager->AccessFont(fontName) == nullptr
+            ? fontManager->AccessDefaultFont()
+            : fontManager->AccessFont(fontName);
         
         PdfTextState textState;
         textState.Font = font;
@@ -274,9 +274,9 @@ namespace PiPi {
     std::string PiPiFiller::EllipsisValue(std::string value, float width, float height, std::string fontName, float fontSize) {
         PiPiFontManager* fontManager = this->fontManager;
         
-        const PdfFont* font = fontManager->accessFont(fontName) == nullptr
-            ? fontManager->accessDefaultFont()
-            : fontManager->accessFont(fontName);
+        const PdfFont* font = fontManager->AccessFont(fontName) == nullptr
+            ? fontManager->AccessDefaultFont()
+            : fontManager->AccessFont(fontName);
         
         PdfTextState textState;
         textState.Font = font;
@@ -315,9 +315,9 @@ namespace PiPi {
     std::string PiPiFiller::EllipsisValueMultiline(std::string value, float width, float height, std::string fontName, float fontSize) {
         PiPiFontManager* fontManager = this->fontManager;
         
-        const PdfFont* font = fontManager->accessFont(fontName) == nullptr
-            ? fontManager->accessDefaultFont()
-            : fontManager->accessFont(fontName);
+        const PdfFont* font = fontManager->AccessFont(fontName) == nullptr
+            ? fontManager->AccessDefaultFont()
+            : fontManager->AccessFont(fontName);
         
         PdfTextState textState;
         textState.Font = font;

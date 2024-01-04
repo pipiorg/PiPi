@@ -474,11 +474,9 @@ namespace PiPi {
 		float fontSize = PiPiExtractUtil::ExtractAnnotationFontSize(annot);
 		std::string fontName = PiPiExtractUtil::ExtractAnnotationFontName(annot);
 		
-		const PdfFont* font = fontName == ""
-			? fontManager->accessDefaultFont()
-			: fontManager->accessFont(fontName) == nullptr
-				? fontManager->accessDefaultFont()
-				: fontManager->accessFont(fontName);
+		const PdfFont* font = fontManager->AccessFont(fontName) == nullptr
+            ? fontManager->AccessDefaultFont()
+            : fontManager->AccessFont(fontName);
 		const PdfFont& fontRef = *font;
 		
 		textState->SetFont(fontRef, fontSize);
