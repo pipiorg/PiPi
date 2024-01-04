@@ -21,8 +21,8 @@ namespace PiPi {
 			PdfPage& pdfPageRef = pdfPages.GetPageAt(pdfPageIndex);
 			PdfPage* pdfPage = &pdfPageRef;
 
-			double width = PiPiExtractUtil::ExtractPageWidth(pdfPage);
-			double height = PiPiExtractUtil::ExtractPageHeight(pdfPage);
+			double width = PiPiPageUtil::ExtractPageWidth(pdfPage);
+			double height = PiPiPageUtil::ExtractPageHeight(pdfPage);
 
 			const PiPi::PiPiPage* page = new PiPi::PiPiPage(width, height);
 			pages->push_back(page);

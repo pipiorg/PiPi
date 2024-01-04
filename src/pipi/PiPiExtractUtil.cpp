@@ -1,45 +1,6 @@
 #include "PiPiExtractUtil.h"
 
 namespace PiPi {
-    double PiPiExtractUtil::ExtractPageWidth(PdfPage* page) {
-        Rect rect = page->GetRect();
-
-        double left = rect.GetLeft();
-        double right = rect.GetRight();
-
-        double width = right - left;
-
-        return width;
-    }
-
-    double PiPiExtractUtil::ExtractPageHeight(PdfPage* page) {
-        Rect rect = page->GetRect();
-
-        double top = rect.GetTop();
-        double bottom = rect.GetBottom();
-
-        double height = top - bottom;
-
-        return height;
-    }
-
-    double PiPiExtractUtil::ExtractPageX(PdfPage* page) {
-        Rect rect = page->GetRect();
-
-        double x = rect.GetLeft();
-
-        return x;
-    }
-
-    double PiPiExtractUtil::ExtractPageY(PdfPage* page) {
-        Rect rect = page->GetRect();
-
-        double y = rect.GetTop();
-
-        return y;
-    }
-
-    // FIXME: there
     std::string PiPiExtractUtil::ExtractAnnotationName(PdfAnnotation *annotation) {
         PdfObject* obj = &(annotation->GetObject());
         
@@ -166,7 +127,7 @@ namespace PiPi {
         Rect pageRect = page->GetRect();
         Rect annotRect = annotation->GetRect();
 
-        double pageHeight = ExtractPageHeight(page);
+        double pageHeight = PiPiPageUtil::ExtractPageHeight(page);
         double annotHeight = ExtractAnnotationHeight(annotation);
         double y = pageHeight - annotRect.GetTop();
 

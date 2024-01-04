@@ -12,12 +12,6 @@ using namespace PoDoFo;
 namespace PiPi {
 	class PiPiExtractUtil {
 		public:
-			static double ExtractPageWidth(PdfPage* page);
-			static double ExtractPageHeight(PdfPage* page);
-
-			static double ExtractPageX(PdfPage* page);
-			static double ExtractPageY(PdfPage* page);
-        
             static std::string ExtractAnnotationName(PdfAnnotation* annotation);
 
 			static std::string ExtractAnnotationFontName(PdfAnnotation* annotation);

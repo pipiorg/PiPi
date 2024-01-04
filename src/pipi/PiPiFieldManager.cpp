@@ -356,7 +356,7 @@ namespace PiPi {
         
         PdfPage* page = &(pages->GetPageAt(pageIndex));
         
-        double pageHeight = PiPiExtractUtil::ExtractPageHeight(page);
+        double pageHeight = PiPiPageUtil::ExtractPageHeight(page);
         
         PdfAnnotationCollection* annots = &(page->GetAnnotations());
         
