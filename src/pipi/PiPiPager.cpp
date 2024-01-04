@@ -8,8 +8,7 @@ namespace PiPi {
     void PiPiPager::Merge(std::vector<size_t>* indexs, std::vector<char>** newPdf) {
         std::vector<std::tuple<PdfMemDocument*, PiPiOperator*>>* docs = this->docs;
         
-        PdfMemDocument* mergedDocument = new PdfMemDocument();
-        PdfPageCollection* mergedPages = &(mergedDocument->GetPages());
+        PdfMemDocument* mergedDoc = new PdfMemDocument();
         
         for (size_t i = 0; i < indexs->size(); i++) {
             size_t index = indexs->at(i);
@@ -24,14 +23,13 @@ namespace PiPi {
             std::tie(doc, op) = (*docs)[index];
             
             PdfPageCollection* pages = &(doc->GetPages());
-            
-            mergedPages->AppendDocumentPages(*doc, 0, pages->GetCount());
+            this->CopyPage(mergedDoc, doc, 0, pages->GetCount());
         }
         
         *newPdf = new vector<char>();
         PoDoFo::VectorStreamDevice outputStreamDevice(**newPdf);
         
-        mergedDocument->Save(outputStreamDevice);
+        mergedDoc->Save(outputStreamDevice);
     }
 
     void PiPiPager::Split(size_t index, std::string instruction, std::vector<std::vector<char>*>** newPdfs) {
@@ -50,19 +48,19 @@ namespace PiPi {
         
         std::vector<std::tuple<size_t, size_t>>* instructionPairs = this->ParseSplitInstruction(instruction);
         for (auto iterator = instructionPairs->begin(); iterator != instructionPairs->end(); iterator.operator++()) {
-            PdfMemDocument* splitedDocument = new PdfMemDocument();
-            PdfPageCollection* splitedPages = &(splitedDocument->GetPages());
+            PdfMemDocument* splitedDoc = new PdfMemDocument();
+            PdfPageCollection* splitedPages = &(splitedDoc->GetPages());
             
             size_t s;
             size_t e;
             
             std::tie(s, e) = *iterator;
             
-            splitedPages->AppendDocumentPages(*doc, (unsigned int)s, (unsigned int)(e-s));
+            this->CopyPage(doc, splitedDoc, (unsigned int)s, (unsigned int)e);
             
             vector<char>* outputVector = new vector<char>();
             PoDoFo::VectorStreamDevice outputStreamDevice(*outputVector);
-            splitedDocument->Save(outputStreamDevice);
+            splitedDoc->Save(outputStreamDevice);
             
             dAllNewPdfBytes->push_back(outputVector);
         }
@@ -144,5 +142,19 @@ namespace PiPi {
         delete docInstructions;
         
         return instructionPairs;
+    }
+
+    void PiPiPager::CopyPage(PdfMemDocument *to, PdfMemDocument* from, unsigned int start, unsigned int end) {
+        this->CopyPageDocument(to, from, start, end);
+        this->CopyPageAcroform(to, from, start, end);
+    }
+
+    void PiPiPager::CopyPageDocument(PdfMemDocument *to, PdfMemDocument* from, unsigned int start, unsigned int end) {
+        PdfPageCollection* toPages = &(to->GetPages());
+        toPages->AppendDocumentPages(*from, start, end - start);
+    }
+
+    void PiPiPager::CopyPageAcroform(PdfMemDocument *to, PdfMemDocument* from, unsigned int start, unsigned int end) {
+        
     }
 }
