@@ -25,8 +25,8 @@ namespace PiPi {
             PdfField* field = *iterator;
             PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
             
-            float width = PiPiExtractUtil::ExtractAnnotationWidth(annot);
-            float height = PiPiExtractUtil::ExtractAnnotationHeight(annot);
+            float width = PiPiAnnotationUtil::ExtractAnnotationWidth(annot);
+            float height = PiPiAnnotationUtil::ExtractAnnotationHeight(annot);
             float area = width * height;
             
             if (minArea == -1 || area < minArea) {
@@ -42,12 +42,12 @@ namespace PiPi {
             return this;
         }
         
-        bool minMultiline = PiPiExtractUtil::ExtractAnnotationTextMultiine(minAnnot);
+        bool minMultiline = PiPiAnnotationUtil::ExtractAnnotationTextMultiine(minAnnot);
         
-        std::string minFontName = PiPiExtractUtil::ExtractAnnotationFontName(minAnnot);
-        float minFontSize = PiPiExtractUtil::ExtractAnnotationFontSize(minAnnot);
+        std::string minFontName = PiPiAnnotationUtil::ExtractAnnotationFontName(minAnnot);
+        float minFontSize = PiPiAnnotationUtil::ExtractAnnotationFontSize(minAnnot);
         
-        float minWidth = PiPiExtractUtil::ExtractAnnotationWidth(minAnnot);
+        float minWidth = PiPiAnnotationUtil::ExtractAnnotationWidth(minAnnot);
         
         value = this->FilterValue(value, minFontName);
         
@@ -72,8 +72,8 @@ namespace PiPi {
             PdfField* field = *iterator;
             PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
             
-            float width = PiPiExtractUtil::ExtractAnnotationWidth(annot);
-            float height = PiPiExtractUtil::ExtractAnnotationHeight(annot);
+            float width = PiPiAnnotationUtil::ExtractAnnotationWidth(annot);
+            float height = PiPiAnnotationUtil::ExtractAnnotationHeight(annot);
             float area = width * height;
             
             if (minArea == -1 || area < minArea) {
@@ -89,21 +89,21 @@ namespace PiPi {
             return this;
         }
         
-        PiPiFieldType minType = PiPiExtractUtil::ExtractAnnotationType(minAnnot);
+        PiPiFieldType minType = PiPiAnnotationUtil::ExtractAnnotationType(minAnnot);
         
-        std::string minFontName = PiPiExtractUtil::ExtractAnnotationFontName(minAnnot);
+        std::string minFontName = PiPiAnnotationUtil::ExtractAnnotationFontName(minAnnot);
         
         
         value = this->FilterValue(value, minFontName);
         
         if (ellipsis) {
             if (minType == PiPiFieldType::TextBox) {
-                bool minMultiline = PiPiExtractUtil::ExtractAnnotationTextMultiine(minAnnot);
+                bool minMultiline = PiPiAnnotationUtil::ExtractAnnotationTextMultiine(minAnnot);
                 
-                float minFontSize = PiPiExtractUtil::ExtractAnnotationFontSize(minAnnot);
+                float minFontSize = PiPiAnnotationUtil::ExtractAnnotationFontSize(minAnnot);
                 
-                float minWidth = PiPiExtractUtil::ExtractAnnotationWidth(minAnnot);
-                float minHeight = PiPiExtractUtil::ExtractAnnotationHeight(minAnnot);
+                float minWidth = PiPiAnnotationUtil::ExtractAnnotationWidth(minAnnot);
+                float minHeight = PiPiAnnotationUtil::ExtractAnnotationHeight(minAnnot);
                 
                 value = minMultiline
                     ? this->EllipsisValueMultiline(value, minWidth, minHeight, minFontName, minFontSize)

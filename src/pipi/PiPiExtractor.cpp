@@ -49,15 +49,15 @@ namespace PiPi {
 				PdfPage* page = annot->GetPage();
 				unsigned int pageIndex = PiPiPageUtil::SearchPageIndex(document, page);
 
-				double x = PiPiExtractUtil::ExtractAnnotationX(annot);
-				double y = PiPiExtractUtil::ExtractAnnotationY(annot);
-				double width = PiPiExtractUtil::ExtractAnnotationWidth(annot);
-				double height = PiPiExtractUtil::ExtractAnnotationHeight(annot);
+				double x = PiPiAnnotationUtil::ExtractAnnotationX(annot);
+				double y = PiPiAnnotationUtil::ExtractAnnotationY(annot);
+				double width = PiPiAnnotationUtil::ExtractAnnotationWidth(annot);
+				double height = PiPiAnnotationUtil::ExtractAnnotationHeight(annot);
 
-				std::string fontName = PiPiExtractUtil::ExtractAnnotationFontName(annot);
-				float fontSize = PiPiExtractUtil::ExtractAnnotationFontSize(annot);
+				std::string fontName = PiPiAnnotationUtil::ExtractAnnotationFontName(annot);
+				float fontSize = PiPiAnnotationUtil::ExtractAnnotationFontSize(annot);
 
-				PiPiFieldType type = PiPiExtractUtil::ExtractAnnotationType(annot);
+				PiPiFieldType type = PiPiAnnotationUtil::ExtractAnnotationType(annot);
 
 				PiPiField* tField = new PiPiField(name, type, pageIndex, x, y, width, height, fontName, fontSize);
 

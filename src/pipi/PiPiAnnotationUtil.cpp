@@ -1,7 +1,7 @@
-#include "PiPiExtractUtil.h"
+#include "PiPiAnnotationUtil.h"
 
 namespace PiPi {
-    std::string PiPiExtractUtil::ExtractAnnotationName(PdfAnnotation *annotation) {
+    std::string PiPiAnnotationUtil::ExtractAnnotationName(PdfAnnotation *annotation) {
         PdfObject* obj = &(annotation->GetObject());
         
         std::unique_ptr<PdfField> fieldPtr;
@@ -19,7 +19,7 @@ namespace PiPi {
         return name;
     }
 
-    std::string PiPiExtractUtil::ExtractAnnotationFontName(PdfAnnotation* annotation) {
+    std::string PiPiAnnotationUtil::ExtractAnnotationFontName(PdfAnnotation* annotation) {
         PdfDictionary* dict = &(annotation->GetDictionary());
 
         PdfObject* daObj = dict->FindKey(PdfName("DA"));
@@ -55,7 +55,7 @@ namespace PiPi {
         return "";
     }
 
-    float PiPiExtractUtil::ExtractAnnotationFontSize(PdfAnnotation* annotation) {
+    float PiPiAnnotationUtil::ExtractAnnotationFontSize(PdfAnnotation* annotation) {
         PdfDictionary* dict = &(annotation->GetDictionary());
 
         PdfObject* daObj = dict->FindKey(PdfName("DA"));
@@ -91,7 +91,7 @@ namespace PiPi {
         return 0.0;
     }
 
-    double PiPiExtractUtil::ExtractAnnotationWidth(PdfAnnotation* annotation) {
+    double PiPiAnnotationUtil::ExtractAnnotationWidth(PdfAnnotation* annotation) {
         Rect rect = annotation->GetRect();
 
         double left = rect.GetLeft();
@@ -102,7 +102,7 @@ namespace PiPi {
         return width;
     }
 
-    double PiPiExtractUtil::ExtractAnnotationHeight(PdfAnnotation* annotation) {
+    double PiPiAnnotationUtil::ExtractAnnotationHeight(PdfAnnotation* annotation) {
         Rect rect = annotation->GetRect();
 
         double top = rect.GetTop();
@@ -113,7 +113,7 @@ namespace PiPi {
         return height;
     }
 
-    double PiPiExtractUtil::ExtractAnnotationX(PdfAnnotation* annotation) {
+    double PiPiAnnotationUtil::ExtractAnnotationX(PdfAnnotation* annotation) {
         Rect rect = annotation->GetRect();
 
         double x = rect.GetLeft();
@@ -121,7 +121,7 @@ namespace PiPi {
         return x;
     }
 
-    double PiPiExtractUtil::ExtractAnnotationY(PdfAnnotation* annotation) {
+    double PiPiAnnotationUtil::ExtractAnnotationY(PdfAnnotation* annotation) {
         PdfPage* page = annotation->GetPage();
         
         Rect pageRect = page->GetRect();
@@ -134,7 +134,7 @@ namespace PiPi {
         return y;
     }
 
-    bool PiPiExtractUtil::ExtractAnnotationBorderExists(PdfAnnotation *annotation) {
+    bool PiPiAnnotationUtil::ExtractAnnotationBorderExists(PdfAnnotation *annotation) {
         PdfDictionary* dict = &(annotation->GetDictionary());
         
         PdfObject* mkObj = dict->GetKey(PdfName("MK"));
@@ -160,7 +160,7 @@ namespace PiPi {
         return true;
     }
 
-    double PiPiExtractUtil::ExtractAnnotationBorderWidth(PdfAnnotation *annotation) {
+    double PiPiAnnotationUtil::ExtractAnnotationBorderWidth(PdfAnnotation *annotation) {
         PdfDictionary* dict = &(annotation->GetDictionary());
         
         PdfObject* bsObj = dict->FindKey(PdfName("BS"));
@@ -180,7 +180,7 @@ namespace PiPi {
         return width;
     }
 
-    void PiPiExtractUtil::ExtractAnnotationBorderColor(PdfAnnotation *annotation, float *red, float *green, float *blue) {
+    void PiPiAnnotationUtil::ExtractAnnotationBorderColor(PdfAnnotation *annotation, float *red, float *green, float *blue) {
         *red = 0;
         *green = 0;
         *blue = 0;
@@ -212,7 +212,7 @@ namespace PiPi {
         PiPiColorConverter::ConvertPoDoFoArrayToRGB(bc, red, green, blue);
     }
 
-    void PiPiExtractUtil::ExtractAnnotationColor(PdfAnnotation *annotation, float *red, float *green, float *blue) {
+    void PiPiAnnotationUtil::ExtractAnnotationColor(PdfAnnotation *annotation, float *red, float *green, float *blue) {
         *red = 0;
         *green = 0;
         *blue = 0;
@@ -266,7 +266,7 @@ namespace PiPi {
         delete splitted;
     }
 
-    bool PiPiExtractUtil::ExtractAnnotationBackgroundExists(PdfAnnotation *annotation) {
+    bool PiPiAnnotationUtil::ExtractAnnotationBackgroundExists(PdfAnnotation *annotation) {
         PdfDictionary* dict = &(annotation->GetDictionary());
         
         PdfObject* mkObj = dict->GetKey(PdfName("MK"));
@@ -292,7 +292,7 @@ namespace PiPi {
         return true;
     }
 
-    void PiPiExtractUtil::ExtractAnnotationBackgroundColor(PdfAnnotation *annotation, float *red, float *green, float *blue) {
+    void PiPiAnnotationUtil::ExtractAnnotationBackgroundColor(PdfAnnotation *annotation, float *red, float *green, float *blue) {
         *red = 0;
         *green = 0;
         *blue = 0;
@@ -324,7 +324,7 @@ namespace PiPi {
         PiPiColorConverter::ConvertPoDoFoArrayToRGB(bc, red, green, blue);
     }
 
-    PiPiFieldType PiPiExtractUtil::ExtractAnnotationType(PdfAnnotation* annotation) {
+    PiPiFieldType PiPiAnnotationUtil::ExtractAnnotationType(PdfAnnotation* annotation) {
         const PdfObject& constObject = annotation->GetObject();
         PdfObject& object = const_cast<PdfObject&>(constObject);
 
@@ -351,7 +351,7 @@ namespace PiPi {
         }
     }
 
-    bool PiPiExtractUtil::ExtractAnnotationTextMultiine(PdfAnnotation *annotation) {
+    bool PiPiAnnotationUtil::ExtractAnnotationTextMultiine(PdfAnnotation *annotation) {
         PiPiFieldType type = ExtractAnnotationType(annotation);
         if (type != PiPiFieldType::TextBox) {
             return false;
@@ -374,7 +374,7 @@ namespace PiPi {
         return multiline;
     }
 
-    PiPiTextHorizontalAlignment PiPiExtractUtil::ExtractAnnotationTextHorizontalAlignment(PdfAnnotation *annotation) {
+    PiPiTextHorizontalAlignment PiPiAnnotationUtil::ExtractAnnotationTextHorizontalAlignment(PdfAnnotation *annotation) {
         PdfObject* obj = &(annotation->GetObject());
         
         PdfDictionary* dict = &(obj->GetDictionary());
@@ -396,7 +396,7 @@ namespace PiPi {
         }
     }
 
-    std::string PiPiExtractUtil::ExtractAnnotationValue(PdfAnnotation *annotation) {
+    std::string PiPiAnnotationUtil::ExtractAnnotationValue(PdfAnnotation *annotation) {
         PdfObject* obj = &(annotation->GetObject());
         
         PdfDictionary* dict = &(obj->GetDictionary());

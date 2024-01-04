@@ -146,10 +146,10 @@ namespace PiPi {
             PdfPage* page = &(annot->MustGetPage());
             
             int aPageIndex = PiPiPageUtil::SearchPageIndex(document, page);
-            double ax = PiPiExtractUtil::ExtractAnnotationX(annot);
-            double ay = PiPiExtractUtil::ExtractAnnotationY(annot);
-            double aWidth = PiPiExtractUtil::ExtractAnnotationWidth(annot);
-            double aHeight = PiPiExtractUtil::ExtractAnnotationHeight(annot);
+            double ax = PiPiAnnotationUtil::ExtractAnnotationX(annot);
+            double ay = PiPiAnnotationUtil::ExtractAnnotationY(annot);
+            double aWidth = PiPiAnnotationUtil::ExtractAnnotationWidth(annot);
+            double aHeight = PiPiAnnotationUtil::ExtractAnnotationHeight(annot);
             
             bool matched = (aPageIndex == pageIndex || pageIndex == -1) &&
                 (x == ax || x == -1) &&
@@ -308,10 +308,10 @@ namespace PiPi {
             PdfPage* page = &(annot->MustGetPage());
             
             int aPageIndex = PiPiPageUtil::SearchPageIndex(document, page);
-            double ax = PiPiExtractUtil::ExtractAnnotationX(annot);
-            double ay = PiPiExtractUtil::ExtractAnnotationY(annot);
-            double aWidth = PiPiExtractUtil::ExtractAnnotationWidth(annot);
-            double aHeight = PiPiExtractUtil::ExtractAnnotationHeight(annot);
+            double ax = PiPiAnnotationUtil::ExtractAnnotationX(annot);
+            double ay = PiPiAnnotationUtil::ExtractAnnotationY(annot);
+            double aWidth = PiPiAnnotationUtil::ExtractAnnotationWidth(annot);
+            double aHeight = PiPiAnnotationUtil::ExtractAnnotationHeight(annot);
             
             bool matched = (pageIndex == aPageIndex || pageIndex == -1) &&
                 (x == ax || x == -1) &&

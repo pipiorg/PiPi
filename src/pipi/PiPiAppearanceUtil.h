@@ -2,7 +2,7 @@
 
 #include "podofo/podofo.h"
 #include "PiPiStringCommon.h"
-#include "PiPiExtractUtil.h"
+#include "PiPiAnnotationUtil.h"
 #include "PiPiFontManager.h"
 #include "PiPiFieldManager.h"
 #include "PiPiAppearanceException.h"

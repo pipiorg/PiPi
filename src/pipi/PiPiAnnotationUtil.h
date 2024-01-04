@@ -10,7 +10,7 @@
 using namespace PoDoFo;
 
 namespace PiPi {
-	class PiPiExtractUtil {
+	class PiPiAnnotationUtil {
 		public:
             static std::string ExtractAnnotationName(PdfAnnotation* annotation);
 
