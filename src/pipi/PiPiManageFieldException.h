@@ -15,8 +15,6 @@ namespace PiPi {
                 InvalidRealStatus = 3,
                 InvalidPageIndex = 4,
                 DuplicateFieldExists = 5
-                
-                
             };
         
             PiPiManageFieldException(PiPiManageFieldExceptionCode code);
