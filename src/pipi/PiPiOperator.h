@@ -5,7 +5,6 @@
 #include "podofo/podofo.h"
 #include "PiPiFiller.h"
 #include "PiPiEditor.h"
-#include "PiPiPager.h"
 #include "PiPiExtractor.h"
 #include "PiPiFontManager.h"
 #include "PiPiAppearanceManager.h"
@@ -14,27 +13,29 @@
 using namespace std;
 
 namespace PiPi {
+    class PiPiMultiOperator;
+
 	class PiPiOperator {
-		public:
+        friend class PiPiMultiOperator;
+        
+        public:
 			PiPiOperator(char* pdfBytes, size_t pdfSize);
             ~PiPiOperator();
 
 			PiPiFiller* GetFiller();
 			PiPiEditor* GetEditor();
-			PiPiPager* GetPager();
 			PiPiExtractor* GetExtractor();
 			PiPiFontManager* GetFontManager();
 
 			bool IsOperable();
 
-			void Finalize(char** newPdfBytes, size_t* newPdfSize);
+			void Finalize(std::vector<char>** newPdf);
 
 		private:
 			PoDoFo::PdfMemDocument* document;
 
 			PiPiFiller* filler;
 			PiPiEditor* editor;
-			PiPiPager* pager;
 			PiPiExtractor* extractor;
 			PiPiFontManager* fontManager;
 			PiPiAppearanceManager* appearanceManager;

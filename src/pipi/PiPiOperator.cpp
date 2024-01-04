@@ -17,7 +17,6 @@ namespace PiPi {
 		PiPiAppearanceManager* appearanceManager = new PiPiAppearanceManager(document, fontManager, fieldManager);
 		this->appearanceManager = appearanceManager;
 
-		this->pager = nullptr;
 		this->editor = nullptr;
 		this->filler = nullptr;
 		this->extractor = nullptr;
@@ -37,11 +36,6 @@ namespace PiPi {
         if (this->fontManager != nullptr) {
             delete this->fontManager;
             this->fontManager = nullptr;
-        }
-        
-        if (this->pager != nullptr) {
-            delete this->pager;
-            this->pager = nullptr;
         }
         
         if (this->editor != nullptr) {
@@ -88,19 +82,6 @@ namespace PiPi {
 		return this->filler;
 	}
 
-	PiPiPager* PiPiOperator::GetPager() {
-		if (this->pager != nullptr) {
-			return this->pager;
-		}
-
-		PdfMemDocument* document = this->document;
-		PiPiPager* pager = new PiPiPager(document);
-
-		this->pager = pager;
-
-		return this->pager;
-	}
-
 	PiPiEditor* PiPiOperator::GetEditor() {
 		if (this->editor != nullptr) {
 			return this->editor;
@@ -137,9 +118,9 @@ namespace PiPi {
 		return this->document != nullptr;
 	}
 
-	void PiPiOperator::Finalize(char** newPdfBytes, size_t* newPdfSize) {
-		vector<char> outputVector;
-		PoDoFo::VectorStreamDevice outputStreamDevice(outputVector);
+	void PiPiOperator::Finalize(std::vector<char>** newPdf) {
+        *newPdf = new std::vector<char>();
+		PoDoFo::VectorStreamDevice outputStreamDevice(**newPdf);
         
         PdfMemDocument* document = this->document;
         PiPiFontManager* fontManager = this->fontManager;
@@ -148,11 +129,5 @@ namespace PiPi {
 		appearanceManager->GenerateAppearance();
         fontManager->EmbedFonts();
         document->Save(outputStreamDevice);
-
-		*newPdfSize = outputVector.size();
-		*newPdfBytes = new char[*newPdfSize];
-		for (size_t i = 0; i < *newPdfSize; i++) {
-			*(*newPdfBytes + i) = outputVector[i];
-		}
 	}
 }
