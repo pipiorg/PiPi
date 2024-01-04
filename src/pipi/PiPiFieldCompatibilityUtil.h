@@ -9,9 +9,15 @@ namespace PiPi {
         public:
             static void Patch(PdfMemDocument* document);
         
-        static void PatchFieldFieldNameWithDot(PdfMemDocument* document);
-        static void PatchFieldShouldRestrict(PdfMemDocument* document);
+            static void PatchFieldDot(PdfMemDocument* document);
+            static void PatchFieldRestrict(PdfMemDocument* document);
+        private:
+            static std::vector<PdfObject*>* CollectRestrictField(PdfDocument* document);
+            static void CollectRestrictFieldRecursive(PdfDocument* document, PdfObject* fieldObj, std::vector<PdfObject*>* restrictFieldObjs);
         
-        static void InnerPatchFieldShouldRestrict(PdfObject* fieldObj);
+            static void Restrict(PdfDocument* document, PdfObject* fieldObj);
+        
+            static bool IsNoBrother(PdfObject* fieldObj);
+        
     };
 }
