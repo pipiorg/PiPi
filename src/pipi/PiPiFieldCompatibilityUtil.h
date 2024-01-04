@@ -2,6 +2,7 @@
 
 #include "podofo/podofo.h"
 #include "PiPiStringCommon.h"
+#include "PiPiFieldConstants.h"
 #include "PiPiFieldCompatibilityException.h"
 
 using namespace PoDoFo;

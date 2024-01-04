@@ -7,7 +7,7 @@ namespace PiPi {
     }
 
     void PiPiFieldCompatibilityUtil::PatchFieldDot(PdfMemDocument* document) {
-        std::vector<PdfObject*>* dotFieldObjs = CollectRestrictField(document);
+        std::vector<PdfObject*>* dotFieldObjs = CollectDotField(document);
         
         for (auto iterator = dotFieldObjs->begin(); iterator != dotFieldObjs->end(); iterator.operator++()) {
             PdfObject* dotFieldObj = *iterator;
@@ -140,6 +140,20 @@ namespace PiPi {
     }
 
     void PiPiFieldCompatibilityUtil::FixDotAcroform(PdfDocument *document, PdfObject *fieldObj) {
+        PdfAcroForm* acroform = document->GetAcroForm();
+        PdfDictionary* acroformDict = &(acroform->GetDictionary());
+        
+        PdfObject* acroformFieldsObj = acroformDict->FindKey(PdfName("Fields"));
+        PdfArray* acroformFields = &(acroformFieldsObj->GetArray());
+        
+        for (unsigned int idx = 0; idx < acroformFields->size(); idx++) {
+            PdfObject* acroformFieldObj = &(acroformFields->MustFindAt(idx));
+            if (acroformFieldObj == fieldObj) {
+                acroformFields->RemoveAt(idx);
+                break;
+            }
+        }
+        
         PdfDictionary* fieldDict = &(fieldObj->GetDictionary());
         
         PdfObject* tObj = fieldDict->FindKey(PdfName("T"));
@@ -167,7 +181,7 @@ namespace PiPi {
         PdfDictionary* parentFieldDict = &(parentFieldObj->GetDictionary());
         
         PdfObject* parentFieldKidsObj = parentFieldDict->FindKey(PdfName("Kids"));
-        PdfArray* parentFieldKids = &(parentFieldObj->GetArray());
+        PdfArray* parentFieldKids = &(parentFieldKidsObj->GetArray());
         
         parentFieldKids->AddIndirect(*fieldObj);
     }
@@ -217,7 +231,69 @@ namespace PiPi {
     }
 
     void PiPiFieldCompatibilityUtil::FixExpand(PdfDocument *document, PdfObject *fieldObj) {
+        PdfIndirectObjectList* indirectObjectList = &(document->GetObjects());
         
+        PdfObject* expandFieldObj = &(indirectObjectList->CreateDictionaryObject());
+        PdfDictionary* expandFieldDict = &(expandFieldObj->GetDictionary());
+        
+        PdfDictionary* fieldDict = &(fieldObj->GetDictionary());
+        
+        PdfObject* parentFieldObj = fieldDict->FindKey(PdfName("Parent"));
+        
+        if (parentFieldObj != nullptr) {
+            fieldDict->RemoveKey(PdfName("Parent"));
+        }
+        
+        for (unsigned int i = 0; i < PiPiFieldConstants::SpecialHierarchicalFieldKeys.size(); i++) {
+            PdfName SpecialHierarchicalFieldKey = PiPiFieldConstants::SpecialHierarchicalFieldKeys[i];
+            
+            PdfObject* fieldValueObj = fieldDict->FindKey(SpecialHierarchicalFieldKey);
+            if (fieldValueObj == nullptr) {
+                continue;
+            }
+            
+            expandFieldDict->AddKey(SpecialHierarchicalFieldKey, *fieldValueObj);
+            fieldDict->RemoveKey(SpecialHierarchicalFieldKey);
+        }
+        
+        if (parentFieldObj == nullptr) {
+            PdfAcroForm* acroform = document->GetAcroForm();
+            PdfDictionary* acroformDict = &(acroform->GetDictionary());
+            PdfObject* acroformFieldsObj = acroformDict->FindKey(PdfName("Fields"));
+            PdfArray* acroformFields = &(acroformFieldsObj->GetArray());
+            
+            for (unsigned int idx = 0; idx < acroformFields->size(); idx++) {
+                PdfObject* acroformFieldObj = acroformFields->FindAt(idx);
+                if (acroformFieldObj == fieldObj) {
+                    acroformFields->RemoveAt(idx);
+                    break;
+                }
+            }
+            
+            acroformFields->AddIndirect(*expandFieldObj);
+        } else {
+            PdfDictionary* parentFieldDict = &(parentFieldObj->GetDictionary());
+            PdfObject* parentFieldKidsObj = parentFieldDict->FindKey(PdfName("Kids"));
+            PdfArray* parentFieldKids = &(parentFieldKidsObj->GetArray());
+            
+            for (unsigned int idx = 0; idx< parentFieldKids->size(); idx++) {
+                PdfObject* parentFieldKidObj = parentFieldKids->FindAt(idx);
+                if (parentFieldKidObj == fieldObj) {
+                    parentFieldKids->RemoveAt(idx);
+                    break;
+                }
+            }
+            
+            expandFieldDict->AddKeyIndirect(PdfName("Parent"), *parentFieldObj);
+            parentFieldKids->AddIndirect(*expandFieldObj);
+        }
+        
+        expandFieldDict->AddKey(PdfName("Kids"), PdfArray());
+        PdfObject* expandFieldKidsObj = expandFieldDict->FindKey(PdfName("Kids"));
+        PdfArray* expandFieldKids = &(expandFieldKidsObj->GetArray());
+        
+        fieldDict->AddKeyIndirect(PdfName("Parent"), *expandFieldObj);
+        expandFieldKids->AddIndirect(*fieldObj);
     }
 
     void PiPiFieldCompatibilityUtil::FixRestrict(PdfDocument *document, PdfObject *fieldObj) {

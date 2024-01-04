@@ -8,6 +8,7 @@
 #include "PiPiPageUtil.h"
 #include "PiPiExtractUtil.h"
 #include "PiPiFieldCompatibilityUtil.h"
+#include "PiPiFieldConstants.h"
 
 using namespace PoDoFo;
 
@@ -52,8 +53,6 @@ namespace PiPi {
             PdfField* BridgeObjectToField(PdfObject* object);
         
         private:
-            static const std::vector<PdfName> SpecialHierarchicalFieldKeys;
-        
             PdfMemDocument* document;
             std::map<const std::string, PiPiManagedFields*>* fieldMap;
             std::map<const std::string, PiPiManagedAnnotations*>* annotMap;

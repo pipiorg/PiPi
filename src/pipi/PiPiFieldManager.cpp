@@ -1,14 +1,6 @@
 #include "PiPiFieldManager.h"
 
 namespace PiPi {
-    const std::vector<PdfName> PiPiFieldManager::SpecialHierarchicalFieldKeys {
-        PdfName("T"),
-        PdfName("FT"),
-        PdfName("Ff"),
-        PdfName("Opt"),
-        PdfName("V")
-    };
-
     PiPiFieldManager::PiPiFieldManager(PdfMemDocument* document) {
         this->InitDocument(document);
         this->InitFieldMap();
@@ -902,8 +894,8 @@ namespace PiPi {
             fieldDict->RemoveKey(PdfName("Parent"));
         }
         
-        for (unsigned int i = 0; i < SpecialHierarchicalFieldKeys.size(); i++) {
-            PdfName SpecialHierarchicalFieldKey = SpecialHierarchicalFieldKeys[i];
+        for (unsigned int i = 0; i < PiPiFieldConstants::SpecialHierarchicalFieldKeys.size(); i++) {
+            PdfName SpecialHierarchicalFieldKey = PiPiFieldConstants::SpecialHierarchicalFieldKeys[i];
             
             PdfObject* fieldValueObj = fieldDict->FindKey(SpecialHierarchicalFieldKey);
             if (fieldValueObj == nullptr) {
