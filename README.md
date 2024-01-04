@@ -20,6 +20,11 @@ cd build
 cmake ..
 ```
 
+## Planing
+
+- Clean up unused font
+- Edit feature
+
 ## License
 
 PiPi Based on MIT license, licensed under [LICENSE](LICENSE)
