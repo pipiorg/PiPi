@@ -46,8 +46,10 @@ namespace PiPi {
         
         PdfObject* fieldKidsObj = fieldDict->FindKey(PdfName("Kids"));
         if (fieldKidsObj == nullptr) {
-            if (IsNoBrother(fieldObj)) {
-                restrictFieldObjs->push_back(fieldObj);
+            if (!IsRoot(fieldObj)) {
+                if (IsNoBrother(fieldObj)) {
+                    restrictFieldObjs->push_back(fieldObj);
+                }
             }
             
             return;
@@ -55,8 +57,10 @@ namespace PiPi {
         
         PdfArray* fieldKids = &(fieldKidsObj->GetArray());
         if (fieldKids->size() == 0) {
-            if (IsNoBrother(fieldObj)) {
-                restrictFieldObjs->push_back(fieldObj);
+            if (!IsRoot(fieldObj)) {
+                if (IsNoBrother(fieldObj)) {
+                    restrictFieldObjs->push_back(fieldObj);
+                }
             }
             
             return;
@@ -128,6 +132,12 @@ namespace PiPi {
             
             acroformFields->AddIndirect(*fieldObj);
         }
+    }
+
+    bool PiPiFieldCompatibilityUtil::IsRoot(PdfObject *fieldObj) {
+        PdfDictionary* fieldDict = &(fieldObj->GetDictionary());
+        PdfObject* parentFieldObj = fieldDict->FindKey(PdfName("Parent"));
+        return parentFieldObj == nullptr;
     }
 
     bool PiPiFieldCompatibilityUtil::IsNoBrother(PdfObject *fieldObj) {

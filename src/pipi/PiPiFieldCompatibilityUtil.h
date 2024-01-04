@@ -17,6 +17,7 @@ namespace PiPi {
         
             static void Restrict(PdfDocument* document, PdfObject* fieldObj);
         
+            static bool IsRoot(PdfObject* fieldObj);
             static bool IsNoBrother(PdfObject* fieldObj);
         
     };
