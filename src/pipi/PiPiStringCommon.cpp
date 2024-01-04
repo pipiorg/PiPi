@@ -1,7 +1,7 @@
-#include "PiPiCommon.h"
+#include "PiPiStringCommon.h"
 
 namespace PiPi {
-    std::vector<std::string>* PiPiCommon::split(const std::string& str, const std::string& pattern) {
+    std::vector<std::string>* PiPiStringCommon::split(const std::string& str, const std::string& pattern) {
         std::vector<std::string>* result = new std::vector<std::string>();
         std::string::size_type begin, end;
 
@@ -24,7 +24,7 @@ namespace PiPi {
         return result;
     }
 
-    std::string PiPiCommon::join(const std::vector<std::string>* strings, std::string gap) {
+    std::string PiPiStringCommon::join(const std::vector<std::string>* strings, std::string gap) {
         std::string result = "";
 
         for (auto iterator = strings->begin(); iterator != strings->end() - 1; iterator.operator++()) {
@@ -39,11 +39,11 @@ namespace PiPi {
         return result;
     }
 
-    bool PiPiCommon::includes(const std::string &str, const std::string &substr) {
+    bool PiPiStringCommon::includes(const std::string &str, const std::string &substr) {
         return str.find(substr) != std::string::npos;
     }
 
-    bool PiPiCommon::startsWith(const std::string &str1, const std::string &str2) {
+    bool PiPiStringCommon::startsWith(const std::string &str1, const std::string &str2) {
         return str1.rfind(str2, 0) == 0;
     }
 }

@@ -80,7 +80,7 @@ namespace PiPi {
         PdfString da = daObj->GetString();
         std::string daValue = da.GetString();
 
-        std::vector<std::string>* splitted = PiPiCommon::split(daValue, " ");
+        std::vector<std::string>* splitted = PiPiStringCommon::split(daValue, " ");
         size_t splitSize = splitted->size();
 
         if (splitSize >= 1) {
@@ -116,7 +116,7 @@ namespace PiPi {
         PdfString da = daObj->GetString();
         std::string daValue = da.GetString();
 
-        std::vector<std::string>* splitted = PiPiCommon::split(daValue, " ");
+        std::vector<std::string>* splitted = PiPiStringCommon::split(daValue, " ");
         size_t splitSize = splitted->size();
 
         if (splitSize >= 2) {
@@ -271,7 +271,7 @@ namespace PiPi {
         PdfString da = daObj->GetString();
         std::string daValue = da.GetString();
         
-        std::vector<std::string>* splitted = PiPiCommon::split(daValue, " ");
+        std::vector<std::string>* splitted = PiPiStringCommon::split(daValue, " ");
         size_t splitSize = splitted->size();
         
         if (splitSize <= 0) {

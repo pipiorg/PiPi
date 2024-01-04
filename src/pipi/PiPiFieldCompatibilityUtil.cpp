@@ -59,7 +59,7 @@ namespace PiPi {
         
         const PdfString* t = &(tObj->GetString());
         std::string tString = t->GetString();
-        if (PiPiCommon::includes(tString, ".")) {
+        if (PiPiStringCommon::includes(tString, ".")) {
             dotFieldObjs->push_back(fieldObj);
         }
         
@@ -146,7 +146,7 @@ namespace PiPi {
         const PdfString* t = &(tObj->GetString());
         std::string tString = t->GetString();
         
-        std::vector<std::string>* splits = PiPiCommon::split(tString, ".");
+        std::vector<std::string>* splits = PiPiStringCommon::split(tString, ".");
         
         std::string lastFieldName = splits->back();
         fieldDict->RemoveKey(PdfName("T"));
@@ -193,7 +193,7 @@ namespace PiPi {
         const PdfString* t = &(tObj->GetString());
         std::string tString = t->GetString();
         
-        std::vector<std::string>* splits = PiPiCommon::split(tString, ".");
+        std::vector<std::string>* splits = PiPiStringCommon::split(tString, ".");
         
         std::string lastFieldName = splits->back();
         fieldDict->RemoveKey(PdfName("T"));

@@ -181,7 +181,7 @@ namespace PiPi {
                 ? defaultDAString
                 : daObj->GetString().GetString();
             
-            std::vector<std::string>* daStringSplits = PiPiCommon::split(daString, " ");
+            std::vector<std::string>* daStringSplits = PiPiStringCommon::split(daString, " ");
             std::vector<std::string>* newDaStringSplits = new std::vector<std::string>();
             
             for (int i = 0; i < daStringSplits->size(); i++) {
@@ -194,7 +194,7 @@ namespace PiPi {
                 newDaStringSplits->push_back(daStringSplit);
             }
             
-            std::string newDaString = PiPiCommon::join(newDaStringSplits, " ");
+            std::string newDaString = PiPiStringCommon::join(newDaStringSplits, " ");
             
             dict->RemoveKey(PdfName("DA"));
             dict->AddKey(PdfName("DA"), PdfString(newDaString));
@@ -236,7 +236,7 @@ namespace PiPi {
                 ? defaultDAString
                 : daObj->GetString().GetString();
             
-            std::vector<std::string>* daStringSplits = PiPiCommon::split(daString, " ");
+            std::vector<std::string>* daStringSplits = PiPiStringCommon::split(daString, " ");
             std::vector<std::string>* newDaStringSplits = new std::vector<std::string>();
             
             for (int i = 0; i < daStringSplits->size(); i++) {
@@ -249,7 +249,7 @@ namespace PiPi {
                 newDaStringSplits->push_back(daStringSplit);
             }
             
-            std::string newDaString = PiPiCommon::join(newDaStringSplits, " ");
+            std::string newDaString = PiPiStringCommon::join(newDaStringSplits, " ");
             
             dict->RemoveKey(PdfName("DA"));
             dict->AddKey(PdfName("DA"), PdfString(newDaString));

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "podofo/podofo.h"
-#include "PiPiCommon.h"
+#include "PiPiStringCommon.h"
 #include "PiPiFieldCompatibilityException.h"
 
 using namespace PoDoFo;

@@ -659,11 +659,11 @@ namespace PiPi {
         
         PdfField* cField = nullptr;
         
-        std::vector<std::string>* splits = PiPiCommon::split(fieldName, ".");
+        std::vector<std::string>* splits = PiPiStringCommon::split(fieldName, ".");
         std::vector<std::string>* createSplits = new std::vector<std::string>();
         
         while (cField == nullptr && splits->size()) {
-            std::string partialFieldName = PiPiCommon::join(splits, ".");
+            std::string partialFieldName = PiPiStringCommon::join(splits, ".");
             
             auto findIterator = fieldMap->find(partialFieldName);
             if (findIterator != fieldMap->end()) {
@@ -798,12 +798,12 @@ namespace PiPi {
             dict->AddKeyIndirect(PdfName("Parent"), *parentObject);
             parentKids->AddIndirect(*object);
         } else {
-            std::vector<std::string>* splits = PiPiCommon::split(fieldName, ".");
+            std::vector<std::string>* splits = PiPiStringCommon::split(fieldName, ".");
             
             std::string lastFieldName = splits->back();
             
             splits->pop_back();
-            std::string parentFieldName = PiPiCommon::join(splits, ".");
+            std::string parentFieldName = PiPiStringCommon::join(splits, ".");
             
             delete splits;
             
@@ -1062,7 +1062,7 @@ namespace PiPi {
         for (auto iterator = fieldMap->begin(); iterator != fieldMap->end(); iterator.operator++()) {
             const std::string name = iterator->first;
             
-            if (PiPiCommon::startsWith(name, fieldName) && name != fieldName) {
+            if (PiPiStringCommon::startsWith(name, fieldName) && name != fieldName) {
                 return true;
             }
         }
