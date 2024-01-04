@@ -12,7 +12,7 @@ namespace PiPi {
 		public:
             PiPiPager(std::vector<std::tuple<PdfMemDocument*, PiPiOperator*>>* docs);
 
-            void Merge(size_t* indexs, size_t count, std::vector<char>** newPdf);
+            void Merge(std::vector<size_t>* indexs, std::vector<char>** newPdf);
             void Split(size_t index, std::string instruction, std::vector<std::vector<char>*>** newPdfs);
 
 		private:

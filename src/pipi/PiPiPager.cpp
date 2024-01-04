@@ -5,14 +5,14 @@ namespace PiPi {
         this->docs = docs;
 	}
 
-    void PiPiPager::Merge(size_t *indexs, size_t count, std::vector<char>** newPdf) {
+    void PiPiPager::Merge(std::vector<size_t>* indexs, std::vector<char>** newPdf) {
         std::vector<std::tuple<PdfMemDocument*, PiPiOperator*>>* docs = this->docs;
         
         PdfMemDocument* mergedDocument = new PdfMemDocument();
         PdfPageCollection* mergedPages = &(mergedDocument->GetPages());
         
-        for (size_t i = 0; i < count; i++) {
-            size_t index = indexs[i];
+        for (size_t i = 0; i < indexs->size(); i++) {
+            size_t index = indexs->at(i);
             
             if (index >= docs->size()) {
                 // 拋錯誤
