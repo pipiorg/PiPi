@@ -4,6 +4,7 @@
 #include <tuple>
 #include "podofo/podofo.h"
 #include "PiPiOperator.h"
+#include "PiPiPageException.h"
 
 using namespace PoDoFo;
 

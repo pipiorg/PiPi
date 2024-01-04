@@ -15,7 +15,7 @@ namespace PiPi {
             size_t index = indexs->at(i);
             
             if (index >= docs->size()) {
-                // 拋錯誤
+                throw PiPiPageException(PiPiPageException::PiPiPageExceptionCode::IndexOutOfRange);
             }
             
             PiPiOperator* op;
@@ -38,7 +38,7 @@ namespace PiPi {
         std::vector<std::tuple<PdfMemDocument*, PiPiOperator*>>* docs = this->docs;
         
         if (index >= docs->size()) {
-            // 拋錯誤
+            throw PiPiPageException(PiPiPageException::PiPiPageExceptionCode::IndexOutOfRange);
         }
         
         PiPiOperator* op;
@@ -97,13 +97,13 @@ namespace PiPi {
                 try {
                     oneNum = std::stoi(one);
                 } catch (std::invalid_argument& e) {
-                    // 拋異常
+                    throw PiPiPageException(PiPiPageException::PiPiPageExceptionCode::InvalidSplitInstruction);
                 } catch (std::out_of_range& e) {
-                    // 拋異常
+                    throw PiPiPageException(PiPiPageException::PiPiPageExceptionCode::InvalidSplitInstruction);
                 }
                 
                 if (oneNum < 0) {
-                    // 拋異常
+                    throw PiPiPageException(PiPiPageException::PiPiPageExceptionCode::InvalidSplitInstruction);
                 }
                 
                 instructionPairs->push_back(std::make_tuple(oneNum, oneNum + 1));
@@ -118,13 +118,13 @@ namespace PiPi {
                     oneNum = std::stoi(one);
                     twoNum = std::stoi(two);
                 } catch (std::invalid_argument& e) {
-                    // 拋異常
+                    throw PiPiPageException(PiPiPageException::PiPiPageExceptionCode::InvalidSplitInstruction);
                 } catch (std::out_of_range& e) {
-                    // 拋異常
+                    throw PiPiPageException(PiPiPageException::PiPiPageExceptionCode::InvalidSplitInstruction);
                 }
                 
                 if (oneNum < 0 || twoNum < 0) {
-                    // 拋異常
+                    throw PiPiPageException(PiPiPageException::PiPiPageExceptionCode::InvalidSplitInstruction);
                 }
                 
                 if (oneNum == twoNum) {
@@ -135,7 +135,7 @@ namespace PiPi {
                     instructionPairs->push_back(std::make_tuple(oneNum, twoNum));
                 }
             } else {
-                // 拋異常
+                throw PiPiPageException(PiPiPageException::PiPiPageExceptionCode::InvalidSplitInstruction);
             }
             
             delete pageInstructions;
