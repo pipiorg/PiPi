@@ -2,8 +2,7 @@
 
 namespace PiPi {
     int PiPiPageUtil::SearchPageIndex(PdfMemDocument* document, PdfPage* page) {
-        PdfPageCollection& pagesRef = document->GetPages();
-        PdfPageCollection* pages = &pagesRef;
+        PdfPageCollection* pages = &(document->GetPages());
         
         unsigned int pageCount = pages->GetCount();
         for (unsigned int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
