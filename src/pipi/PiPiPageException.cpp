@@ -2,6 +2,8 @@
 
 namespace PiPi {
     const map<const PiPiPageException::PiPiPageExceptionCode, const string> PiPiPageException::PiPiPageExceptionMessageCodeMap {
+        { PiPiPageException::PiPiPageExceptionCode::InvalidSplitInstruction, "Invalid split instruction" },
+        { PiPiPageException::PiPiPageExceptionCode::IndexOutOfRange, "Index out of range" }
     };
 
     PiPiPageException::PiPiPageException(PiPiPageException::PiPiPageExceptionCode code) : runtime_error(PiPiPageException::PiPiPageExceptionMessageCodeMap.at(code)) {

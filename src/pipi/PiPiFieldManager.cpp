@@ -138,6 +138,10 @@ namespace PiPi {
         }
         
         PiPiManagedFields* managedFields = findIterator->second;
+        if (!managedFields->IsReal()) {
+            throw PiPiManageFieldException(PiPiManageFieldException::PiPiManageFieldExceptionCode::UnsupportRemoveFakeField);
+        }
+        
         std::set<PdfField*>* fields = managedFields->AccessFields();
         for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
             PdfField* field = *iterator;

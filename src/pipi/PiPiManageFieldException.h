@@ -14,7 +14,8 @@ namespace PiPi {
                 InvalidRestrictFieldOperation = 2,
                 InvalidRealStatus = 3,
                 InvalidPageIndex = 4,
-                DuplicateFieldExists = 5
+                DuplicateFieldExists = 5,
+                UnsupportRemoveFakeField = 6
             };
         
             PiPiManageFieldException(PiPiManageFieldExceptionCode code);

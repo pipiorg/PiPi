@@ -9,7 +9,7 @@ namespace PiPi {
     class PiPiFieldCompatibilityException : public runtime_error {
         public:
             enum PiPiFieldCompatibilityExceptionCode {
-                FixDotFieldFail = 0,
+                FixDotFieldFail = 0
             };
         
             PiPiFieldCompatibilityException(PiPiFieldCompatibilityExceptionCode code);

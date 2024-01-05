@@ -2,7 +2,7 @@
 
 namespace PiPi {
     const map<const PiPiFillFieldException::PiPiFillFieldExceptionCode, const string> PiPiFillFieldException::PiPiFillFieldExceptionMessageCodeMap {
-        {}
+        { PiPiFillFieldException::PiPiFillFieldExceptionCode::UnsupportedPdfFieldType, "Unsupported field type" }
     };
 
     PiPiFillFieldException::PiPiFillFieldException(PiPiFillFieldException::PiPiFillFieldExceptionCode code) : runtime_error(PiPiFillFieldException::PiPiFillFieldExceptionMessageCodeMap.at(code)) {

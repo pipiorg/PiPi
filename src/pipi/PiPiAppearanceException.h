@@ -11,7 +11,7 @@ namespace PiPi {
             enum PiPiAppearanceExceptionCode {
                 NoAppearanceExistsForFlatten = 0,
                 CreateFormObjectFromAppearanceFail = 1,
-                UnsupportedFieldType = 2,
+                UnsupportedFieldType = 2
             };
         
             PiPiAppearanceException(PiPiAppearanceExceptionCode code);
