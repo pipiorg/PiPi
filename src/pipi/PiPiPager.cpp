@@ -198,6 +198,7 @@ namespace PiPi {
                     PdfObject* acroformFieldObj = &(acroformFields->MustFindAt(k));
                     if (acroformFieldObj == toRootObj) {
                         added = true;
+                        break;
                     }
                 }
                 
@@ -259,7 +260,6 @@ namespace PiPi {
             }
         }
         
-        // 新的建立字型表
         PdfIndirectObjectList* toIndirectObjectList = &(to->GetObjects());
         
         PdfAcroForm* toAcroform = &(to->GetOrCreateAcroForm());
