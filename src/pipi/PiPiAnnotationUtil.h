@@ -12,8 +12,6 @@ using namespace PoDoFo;
 namespace PiPi {
 	class PiPiAnnotationUtil {
 		public:
-            static std::string ExtractAnnotationName(PdfAnnotation* annotation);
-
 			static std::string ExtractAnnotationFontName(PdfAnnotation* annotation);
 			static float ExtractAnnotationFontSize(PdfAnnotation* annotation);
 

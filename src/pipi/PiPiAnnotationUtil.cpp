@@ -1,24 +1,6 @@
 #include "PiPiAnnotationUtil.h"
 
 namespace PiPi {
-    std::string PiPiAnnotationUtil::ExtractAnnotationName(PdfAnnotation *annotation) {
-        PdfObject* obj = &(annotation->GetObject());
-        
-        std::unique_ptr<PdfField> fieldPtr;
-        bool created = PdfField::TryCreateFromObject(*obj, fieldPtr);
-        if (!created) {
-            return "";
-        }
-
-        PdfField* field = fieldPtr.get();
-
-        PdfFieldType type = field->GetType();
-        
-        std::string name = field->GetFullName();
-        
-        return name;
-    }
-
     std::string PiPiAnnotationUtil::ExtractAnnotationFontName(PdfAnnotation* annotation) {
         PdfDictionary* dict = &(annotation->GetDictionary());
 
