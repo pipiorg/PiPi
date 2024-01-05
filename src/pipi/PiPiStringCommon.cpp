@@ -26,9 +26,9 @@ namespace PiPi {
 
     std::string PiPiStringCommon::join(const std::vector<std::string>* strings, std::string gap) {
         std::string result = "";
-
-        for (auto iterator = strings->begin(); iterator != strings->end() - 1; iterator.operator++()) {
-            std::string string = *iterator;
+        
+        for (unsigned int idx = 0; idx < ((long)strings->size()) - 1; idx++) {
+            std::string string = (*strings)[idx];
             result.append(string);
             result.append(gap);
         }

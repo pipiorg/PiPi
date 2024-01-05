@@ -18,6 +18,12 @@ namespace PiPi {
         }
     }
 
+    bool PiPiManagedAnnotations::IsEmpty() {
+        std::set<PdfAnnotation*>* annots = this->annots;
+        
+        return annots->size() == 0;
+    }
+
     void PiPiManagedAnnotations::ManageAnnotation(PdfAnnotation *annot) {
         bool exists = false;
         

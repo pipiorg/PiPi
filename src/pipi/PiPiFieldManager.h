@@ -81,8 +81,8 @@ namespace PiPi {
             void RemoveFieldMap(PdfObject* fieldObj, std::string fieldName);
             void RemoveAnnotationMap(PdfObject* annotObj, std::string fieldName);
         
-            void RenameFieldMap(std::string oldFieldName, std::string newFieldName);
-            void RenameAnnotationMap(std::string oldFieldName, std::string newFieldName);
+            void RenameFieldMap(std::map<PdfObject*, PdfField*>* renameFieldMap, std::string fieldName);
+            void RenameAnnotationMap(std::map<PdfObject*, PdfAnnotation*>* renameAnnotMap, std::string fieldName);
         
             void AddFieldMap(PdfObject* fieldObj, PdfField* field, std::string fieldName, bool real);
             void AddAnnotationMap(PdfObject* annotObj, PdfAnnotation* annot, std::string fieldName);

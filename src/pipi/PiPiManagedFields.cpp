@@ -26,6 +26,11 @@ namespace PiPi {
         return this->real;
     }
 
+    bool PiPiManagedFields::IsEmpty() {
+        std::set<PdfField*>* fields = this->fields;
+        return fields->size() == 0;
+    }
+
     void PiPiManagedFields::ManageField(PdfField *field) {
         bool exists = false;
         

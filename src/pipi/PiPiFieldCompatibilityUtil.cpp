@@ -101,7 +101,7 @@ namespace PiPi {
         
         PdfObject* fieldKidsObj = fieldDict->FindKey(PdfName("Kids"));
         if (fieldKidsObj == nullptr) {
-            if (!IsRoot(fieldObj)) {
+            if (!IsReal(fieldObj)) {
                 if (IsNoBrother(fieldObj)) {
                     restrictFieldObjs->push_back(fieldObj);
                 }
@@ -112,7 +112,7 @@ namespace PiPi {
         
         PdfArray* fieldKids = &(fieldKidsObj->GetArray());
         if (fieldKids->size() == 0) {
-            if (!IsRoot(fieldObj)) {
+            if (!IsReal(fieldObj)) {
                 if (IsNoBrother(fieldObj)) {
                     restrictFieldObjs->push_back(fieldObj);
                 }

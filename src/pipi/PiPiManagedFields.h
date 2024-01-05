@@ -13,6 +13,7 @@ namespace PiPi {
             ~PiPiManagedFields();
         
             bool IsReal();
+            bool IsEmpty();
         
             void ManageField(PdfField* field);
             void UnManageField(PdfField* field);

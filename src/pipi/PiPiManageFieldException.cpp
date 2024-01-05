@@ -8,7 +8,8 @@ namespace PiPi {
         { PiPiManageFieldException::PiPiManageFieldExceptionCode::InvalidRealStatus, "Invalid real status" },
         { PiPiManageFieldException::PiPiManageFieldExceptionCode::InvalidPageIndex, "Invalid page index" },
         { PiPiManageFieldException::PiPiManageFieldExceptionCode::DuplicateFieldExists, "Duplicate field already exists" },
-        { PiPiManageFieldException::PiPiManageFieldExceptionCode::UnsupportRemoveFakeField, "Unsupported remove fake field" }
+        { PiPiManageFieldException::PiPiManageFieldExceptionCode::UnsupportRemoveFakeField, "Unsupported remove fake field" },
+        { PiPiManageFieldException::PiPiManageFieldExceptionCode::UnsupportRenameFakeField, "Unsupported rename fake field" }
     };
 
     PiPiManageFieldException::PiPiManageFieldException(PiPiManageFieldException::PiPiManageFieldExceptionCode code) : runtime_error(PiPiManageFieldException::PiPiManageFieldExceptionMessageCodeMap.at(code)) {

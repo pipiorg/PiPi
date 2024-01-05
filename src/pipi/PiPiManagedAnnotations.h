@@ -11,6 +11,8 @@ namespace PiPi {
             PiPiManagedAnnotations(PdfAnnotation* annot);
         
             ~PiPiManagedAnnotations();
+        
+            bool IsEmpty();
             
             void ManageAnnotation(PdfAnnotation* annot);
             void UnManageAnnotation(PdfAnnotation* annot);

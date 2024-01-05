@@ -23,7 +23,6 @@ cmake ..
 ## Planing
 
 - Clean up unused font feature
-- Rename field feature
 
 ## License
 
