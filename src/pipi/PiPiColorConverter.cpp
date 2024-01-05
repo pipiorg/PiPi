@@ -44,4 +44,12 @@ namespace PiPi {
             ConvertCMYKToRGB(cyan, magenta, yellow, black, red, green, blue);
         }
     }
+
+    void PiPiColorConverter::ConvertRGBToPoDoFoArray(float red, float green, float blue, PdfArray **colors) {
+        *colors = new PdfArray();
+        
+        (*colors)->Add(PdfObject(red));
+        (*colors)->Add(PdfObject(green));
+        (*colors)->Add(PdfObject(blue));
+    }
 }
