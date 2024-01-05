@@ -155,6 +155,178 @@ namespace PiPi {
     }
 
     void PiPiPager::CopyPageAcroform(PdfMemDocument *to, PdfMemDocument* from, unsigned int start, unsigned int end) {
+        this->CopyPageAcroformField(to, from, start, end);
+        this->CopyPageAcroformFont(to, from, start, end);
+    }
+
+    void PiPiPager::CopyPageAcroformField(PdfMemDocument *to, PdfMemDocument *from, unsigned int start, unsigned int end) {
+        PdfAcroForm* acroform = &(to->GetOrCreateAcroForm());
+        PdfDictionary* acroformDict = &(acroform->GetDictionary());
         
+        PdfObject* acroformFieldsObj = acroformDict->FindKey(PdfName("Fields"));
+        if (acroformFieldsObj == nullptr) {
+            acroformDict->AddKey(PdfName("Fields"), PdfArray());
+            acroformFieldsObj = acroformDict->FindKey(PdfName("Fields"));
+        }
+        
+        PdfArray* acroformFields = &(acroformFieldsObj->GetArray());
+        
+        PdfPageCollection* toPages = &(to->GetPages());
+        for (unsigned int i = start; i < end; i++) {
+            PdfPage* toPage = &(toPages->GetPageAt(i));
+            PdfAnnotationCollection* toAnnots = &(toPage->GetAnnotations());
+            for (unsigned int j = 0; j < toAnnots->GetCount(); j++) {
+                PdfAnnotation* toAnnot = &(toAnnots->GetAnnotAt(j));
+                PdfObject* toObj = &(toAnnot->GetObject());
+                PdfDictionary* toDict = &(toObj->GetDictionary());
+                
+                std::unique_ptr<PdfField> toFieldPtr;
+                bool created = PdfField::TryCreateFromObject(*toObj, toFieldPtr);
+                if (!created) {
+                    continue;
+                }
+                
+                PdfObject* toRootObj = toObj;
+                PdfObject* toParentObj = toDict->FindKey(PdfName("Parent"));
+                while (toParentObj != nullptr) {
+                    toRootObj = toParentObj;
+                    toParentObj = (&(toRootObj->GetDictionary()))->FindKey(PdfName("Parent"));
+                }
+                
+                bool added = false;
+                for (unsigned int k = 0; k < acroformFields->size(); k++) {
+                    PdfObject* acroformFieldObj = &(acroformFields->MustFindAt(k));
+                    if (acroformFieldObj == toRootObj) {
+                        added = true;
+                    }
+                }
+                
+                if (added) {
+                    continue;
+                }
+                
+                acroformFields->AddIndirect(*toRootObj);
+            }
+        }
+    }
+
+    void PiPiPager::CopyPageAcroformFont(PdfMemDocument *to, PdfMemDocument *from, unsigned int start, unsigned int end) {
+        std::map<std::string, std::string>* fontMap = new std::map<std::string, std::string>();
+        
+        PdfAcroForm* fromAcroform = &(from->GetOrCreateAcroForm());
+        PdfDictionary* fromAcroformDict = &(fromAcroform->GetDictionary());
+        
+        PdfObject* fromAcroformDrObj = fromAcroformDict->FindKey(PdfName("DR"));
+        PdfDictionary* fromAcroformDr = &(fromAcroformDrObj->GetDictionary());
+        
+        PdfObject* fromAcroformDrFontObj = fromAcroformDr->FindKey(PdfName("Font"));
+        PdfDictionary* fromAcroformDrFont = &(fromAcroformDrFontObj->GetDictionary());
+        
+        PdfPageCollection* fromPages = &(from->GetPages());
+        for (unsigned int i = 0; i < fromPages->GetCount(); i++) {
+            PdfPage* fromPage = &(fromPages->GetPageAt(i));
+            PdfAnnotationCollection* fromAnnots = &(fromPage->GetAnnotations());
+            for (unsigned int j = 0; j < fromAnnots->GetCount(); j++) {
+                PdfAnnotation* toAnnot = &(fromAnnots->GetAnnotAt(j));
+                
+                std::string fromFontName = PiPiAnnotationUtil::ExtractAnnotationFontName(toAnnot);
+                if (fromFontName == "") {
+                    continue;
+                }
+                
+                auto fontMapFindIterator = fontMap->find(fromFontName);
+                if (fontMapFindIterator != fontMap->end()) {
+                    continue;
+                }
+                
+                PdfObject* fromFontObj = fromAcroformDrFont->FindKey(PdfName(fromFontName));
+                if (fromFontObj == nullptr) {
+                    continue;
+                }
+                
+                PdfDictionary* fromFontDict = &(fromFontObj->GetDictionary());
+                
+                PdfObject* fromFontBaseFontObj = fromFontDict->FindKey(PdfName("BaseFont"));
+                if (fromFontBaseFontObj == nullptr) {
+                    continue;
+                }
+                
+                const PdfName* fromFontBaseFont = &(fromFontBaseFontObj->GetName());
+                
+                std::string fromBaseFontName = fromFontBaseFont->GetString();
+                
+                fontMap->insert(std::pair<std::string, std::string>(fromFontName, fromBaseFontName));
+            }
+        }
+        
+        // 新的建立字型表
+        PdfIndirectObjectList* toIndirectObjectList = &(to->GetObjects());
+        
+        PdfAcroForm* toAcroform = &(to->GetOrCreateAcroForm());
+        PdfDictionary* toAcroformDict = &(toAcroform->GetDictionary());
+        
+        PdfObject* toAcroformDrObj = toAcroformDict->FindKey(PdfName("DR"));
+        PdfDictionary* toAcroformDr = &(toAcroformDrObj->GetDictionary());
+        
+        PdfObject* toAcroformDrFontObj = toAcroformDr->FindKey(PdfName("Font"));
+        PdfDictionary* toAcroformDrFont = &(toAcroformDrFontObj->GetDictionary());
+        
+        for (auto iterator = fontMap->begin(); iterator != fontMap->end(); iterator.operator++()) {
+            std::string fontName = iterator->first;
+            std::string baseFontName = iterator->second;
+            
+            PdfObject* fontObj = nullptr;
+            for (auto toIndirectIterator = toIndirectObjectList->begin(); toIndirectIterator != toIndirectObjectList->end(); toIndirectIterator.operator++()) {
+                PdfObject* toIndirectObject = *toIndirectIterator;
+                
+                if (!toIndirectObject->IsDictionary()) {
+                    continue;
+                }
+                
+                PdfDictionary* toIndirectDict = &(toIndirectObject->GetDictionary());
+                
+                if (!toIndirectDict->HasKey(PdfName("Type"))) {
+                    continue;
+                }
+                
+                PdfObject* toIndirectTypeObj = toIndirectDict->FindKey(PdfName("Type"));
+                
+                if (!toIndirectTypeObj->IsName()) {
+                    continue;
+                }
+                
+                const PdfName* toIndirectType = &(toIndirectTypeObj->GetName());
+                
+                if (*toIndirectType != PdfName("Font")) {
+                    continue;
+                }
+                
+                PdfObject* toIndirectBaseFontEncoding = toIndirectDict->FindKey(PdfName("Encoding"));
+                if (toIndirectBaseFontEncoding == nullptr) {
+                    continue;
+                }
+                
+                PdfObject* toIndirectBaseFontObj = toIndirectDict->FindKey(PdfName("BaseFont"));
+                if (toIndirectBaseFontObj == nullptr) {
+                    continue;
+                }
+                
+                const PdfName* toIndirectBaseFont = &(toIndirectBaseFontObj->GetName());
+                
+                const std::string toBaseFontName = toIndirectBaseFont->GetString();
+                
+                if (toBaseFontName == baseFontName) {
+                    fontObj = toIndirectObject;
+                }
+            }
+            
+            if (fontObj == nullptr) {
+                continue;
+            }
+            
+            toAcroformDrFont->AddKeyIndirect(PdfName(fontName), *fontObj);
+        }
+        
+        delete fontMap;
     }
 }

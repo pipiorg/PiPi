@@ -23,7 +23,10 @@ namespace PiPi {
         
             void CopyPage(PdfMemDocument* to, PdfMemDocument* from, unsigned int start, unsigned int end);
             
-            void CopyPageAcroform(PdfMemDocument* to, PdfMemDocument* from, unsigned int start, unsigned int end);
             void CopyPageDocument(PdfMemDocument* to, PdfMemDocument* from, unsigned int start, unsigned int end);
+        
+            void CopyPageAcroform(PdfMemDocument* to, PdfMemDocument* from, unsigned int start, unsigned int end);
+            void CopyPageAcroformField(PdfMemDocument* to, PdfMemDocument* from, unsigned int start, unsigned int end);
+            void CopyPageAcroformFont(PdfMemDocument* to, PdfMemDocument* from, unsigned int start, unsigned int end);
 	};
 }
