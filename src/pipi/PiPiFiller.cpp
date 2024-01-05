@@ -212,6 +212,16 @@ namespace PiPi {
             ? fontManager->AccessDefaultFont()
             : fontManager->AccessFont(fontName);
         
+        const PdfEncoding& encodingRef = font->GetEncoding();
+        const PdfEncoding* encoding = &encodingRef;
+        
+        std::string replaceValue = " ";
+        charbuff replaceValueEncoded;
+        bool replaceConverted = encoding->TryConvertToEncoded(replaceValue, replaceValueEncoded);
+        if (!replaceConverted) {
+            replaceValue = "";
+        }
+        
         std::string newValue = "";
         
         auto iterator = value.begin();
@@ -221,13 +231,10 @@ namespace PiPi {
             std::string characterString = "";
             utf8::append(character, characterString);
             
-            const PdfEncoding& encodingRef = font->GetEncoding();
-            const PdfEncoding* encoding = &encodingRef;
-            
             charbuff encoded;
             bool converted = encoding->TryConvertToEncoded(characterString, encoded);
             
-            newValue += converted ? characterString : " ";
+            newValue += converted ? characterString : replaceValue;
         }
         
         return newValue;
