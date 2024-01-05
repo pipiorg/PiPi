@@ -17,3 +17,4 @@
 #include "PiPiEditFieldException.h"
 #include "PiPiAppearanceException.h"
 #include "PiPiPageException.h"
+#include "PiPiExtractException.h"
