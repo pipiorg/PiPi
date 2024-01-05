@@ -4,6 +4,7 @@
 #include "PiPiOperator.h"
 #include "PiPiPager.h"
 #include "PiPiStringCommon.h"
+#include "PiPiMultiOperateException.h"
 
 using namespace PoDoFo;
 

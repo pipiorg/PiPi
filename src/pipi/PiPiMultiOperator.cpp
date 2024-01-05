@@ -55,7 +55,7 @@ namespace PiPi {
         std::vector<std::tuple<PdfMemDocument*, PiPiOperator*>>* docs = this->docs;
         
         if (index >= docs->size()) {
-            // 拋錯誤
+            throw PiPiMultiOperateException(PiPiMultiOperateException::PiPiMultiOperateExceptionCode::IndexOutOfRange);
         }
         
         PdfMemDocument* doc;
