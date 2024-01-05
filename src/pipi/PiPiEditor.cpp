@@ -109,24 +109,166 @@ namespace PiPi {
 		return this;
 	}
 
-    PiPiEditor* PiPiEditor::SetFieldColor(std::string fieldName, int red, int green, int blue) {
-        throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::NotImplementate);
+    PiPiEditor* PiPiEditor::SetFieldColor(std::string fieldName, float red, float green, float blue) {
+        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+        PiPiFieldManager* fieldManager = this->fieldManager;
+        
+        if (red < 0 || red > 1) {
+            throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+        }
+        
+        if (green < 0 || green > 1) {
+            throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+        }
+        
+        if (blue < 0 || blue > 1) {
+            throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+        }
+        
+        std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
+        for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
+            PdfField* field = *iterator;
+            PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
+            annot->SetColor(PdfColor(red, green, blue));
+        }
+        
+        delete fields;
+        
+        appearanceManager->MarkNeedAppearance(fieldName);
+        
+        return this;
     }
 
-    PiPiEditor* PiPiEditor::SetFieldBorderColor(std::string fieldName, int red, int green, int blue) {
-        throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::NotImplementate);
+    PiPiEditor* PiPiEditor::SetFieldBorderColor(std::string fieldName, float red, float green, float blue) {
+        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+        PiPiFieldManager* fieldManager = this->fieldManager;
+        
+        if (red < 0 || red > 1) {
+            throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+        }
+        
+        if (green < 0 || green > 1) {
+            throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+        }
+        
+        if (blue < 0 || blue > 1) {
+            throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+        }
+        
+        std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
+        for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
+            PdfField* field = *iterator;
+            PdfDictionary* fieldDict = &(field->GetDictionary());
+            
+            PdfObject* fieldMkObj = fieldDict->FindKey(PdfName("MK"));
+            if (fieldMkObj == nullptr) {
+                fieldDict->AddKey(PdfName("MK"), PdfDictionary());
+                fieldMkObj = fieldDict->FindKey(PdfName("MK"));
+            }
+            
+            PdfDictionary* fieldMk = &(fieldMkObj->GetDictionary());
+            
+            PdfObject* fieldBcObj = fieldMk->FindKey(PdfName("BC"));
+            if (fieldBcObj != nullptr) {
+                fieldMk->RemoveKey(PdfName("BC"));
+            }
+            
+            PdfArray* colors;
+            PiPiColorConverter::ConvertRGBToPoDoFoArray(red, green, blue, &colors);
+            
+            fieldMk->AddKey(PdfName("BC"), *colors);
+        }
+        
+        delete fields;
+        
+        appearanceManager->MarkNeedAppearance(fieldName);
+        
+        return this;
     }
 
-    PiPiEditor* PiPiEditor::SetFieldBackgroundColor(std::string fieldName, int red, int green, int blue) {
-        throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::NotImplementate);
+    PiPiEditor* PiPiEditor::SetFieldBackgroundColor(std::string fieldName, float red, float green, float blue) {
+        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+        PiPiFieldManager* fieldManager = this->fieldManager;
+        
+        if (red < 0 || red > 1) {
+            throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+        }
+        
+        if (green < 0 || green > 1) {
+            throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+        }
+        
+        if (blue < 0 || blue > 1) {
+            throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+        }
+        
+        std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
+        for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
+            PdfField* field = *iterator;
+            PdfDictionary* fieldDict = &(field->GetDictionary());
+            
+            PdfObject* fieldMkObj = fieldDict->FindKey(PdfName("MK"));
+            if (fieldMkObj == nullptr) {
+                fieldDict->AddKey(PdfName("MK"), PdfDictionary());
+                fieldMkObj = fieldDict->FindKey(PdfName("MK"));
+            }
+            
+            PdfDictionary* fieldMk = &(fieldMkObj->GetDictionary());
+            
+            PdfObject* fieldBgObj = fieldMk->FindKey(PdfName("BG"));
+            if (fieldBgObj != nullptr) {
+                fieldMk->RemoveKey(PdfName("BG"));
+            }
+            
+            PdfArray* colors;
+            PiPiColorConverter::ConvertRGBToPoDoFoArray(red, green, blue, &colors);
+            
+            fieldMk->AddKey(PdfName("BG"), *colors);
+        }
+        
+        delete fields;
+        
+        appearanceManager->MarkNeedAppearance(fieldName);
+        
+        return this;
     }
 
     PiPiEditor* PiPiEditor::SetFieldTextHorizontalAlignment(std::string fieldName, PiPiTextHorizontalAlignment alignment) {
-        throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::NotImplementate);
+        PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+        PiPiFieldManager* fieldManager = this->fieldManager;
+        
+        std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
+        for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++()) {
+            PdfField* field = *iterator;
+            PdfDictionary* fieldDict = &(field->GetDictionary());
+            
+            PdfObject* fieldQObj = fieldDict->FindKey(PdfName("Q"));
+            if (fieldQObj != nullptr) {
+                fieldDict->RemoveKey(PdfName("Q"));
+            }
+            
+            switch (alignment) {
+                case PiPiTextHorizontalAlignment::Center:
+                    break;
+                    fieldDict->AddKey(PdfName("Q"), PdfObject((int64_t)0));
+                case PiPiTextHorizontalAlignment::Right:
+                    break;
+                    fieldDict->AddKey(PdfName("Q"), PdfObject((int64_t)1));
+                case PiPiTextHorizontalAlignment::Left:
+                default:
+                    fieldDict->AddKey(PdfName("Q"), PdfObject((int64_t)2));
+                    break;
+            }
+        }
+        
+        delete fields;
+        
+        appearanceManager->MarkNeedAppearance(fieldName);
+        
+        return this;
     }
 
     PiPiEditor* PiPiEditor::SetFieldMultiline(std::string fieldName, bool multiline) {
-        PdfMemDocument* document = this->document;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         PiPiFieldManager* fieldManager = this->fieldManager;
         

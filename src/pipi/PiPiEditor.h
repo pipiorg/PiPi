@@ -33,9 +33,9 @@ namespace PiPi {
             
             PiPiEditor* SetFieldTextHorizontalAlignment(std::string fieldName, PiPiTextHorizontalAlignment alignment);
         
-            PiPiEditor* SetFieldColor(std::string fieldName, int red, int green, int blue);
-            PiPiEditor* SetFieldBackgroundColor(std::string fieldName, int red, int green, int blue);
-            PiPiEditor* SetFieldBorderColor(std::string fieldName, int red, int green, int blue);
+            PiPiEditor* SetFieldColor(std::string fieldName, float red, float green, float blue);
+            PiPiEditor* SetFieldBackgroundColor(std::string fieldName, float red, float green, float blue);
+            PiPiEditor* SetFieldBorderColor(std::string fieldName, float red, float green, float blue);
         
             PiPiEditor* SetFieldMultiline(std::string fieldName, bool multiline);
         
