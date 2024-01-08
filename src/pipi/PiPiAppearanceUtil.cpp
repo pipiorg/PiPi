@@ -36,7 +36,7 @@ namespace PiPi {
         }
 
         if (apperanceStream == nullptr) {
-            throw PiPiAppearanceException(PiPiAppearanceException::PiPiAppearanceExceptionCode::NoAppearanceExistsForFlatten);
+            return;
         }
 
         PdfObject& apperanceStreanRef = *apperanceStream;

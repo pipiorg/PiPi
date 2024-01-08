@@ -9,9 +9,8 @@ namespace PiPi {
     class PiPiAppearanceException : public runtime_error {
         public:
             enum PiPiAppearanceExceptionCode {
-                NoAppearanceExistsForFlatten = 0,
-                CreateFormObjectFromAppearanceFail = 1,
-                UnsupportedFieldType = 2
+                CreateFormObjectFromAppearanceFail = 0,
+                UnsupportedFieldType = 1
             };
         
             PiPiAppearanceException(PiPiAppearanceExceptionCode code);
