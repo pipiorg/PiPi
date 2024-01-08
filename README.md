@@ -22,7 +22,6 @@ cmake ..
 
 ## Planing
 
-- Log
 - Clean up unused font feature
 
 ## License
