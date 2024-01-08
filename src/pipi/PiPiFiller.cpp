@@ -234,9 +234,8 @@ namespace PiPi {
         const PdfFont* font = fontManager->AccessFont(fontName) == nullptr
             ? fontManager->AccessDefaultFont()
             : fontManager->AccessFont(fontName);
-        
-        const PdfEncoding& encodingRef = font->GetEncoding();
-        const PdfEncoding* encoding = &encodingRef;
+    
+        const PdfEncoding* encoding = &(font->GetEncoding());
         
         std::string replaceValue = " ";
         charbuff replaceValueEncoded;

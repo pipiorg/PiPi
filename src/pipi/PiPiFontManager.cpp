@@ -99,11 +99,9 @@ namespace PiPi {
         for (auto iterator = fonts->begin(); iterator != fonts->end(); iterator.operator++()) {
             auto pair = *iterator;
             
-            const PdfName& fontNameRef = pair.first;
-            const std::string sFontName = fontNameRef.GetString();
+            const std::string sFontName = pair.first.GetString();
             
-            const PdfObject& fontReferenceObjectRef = pair.second;
-            const PdfReference& fontReferenceRef = fontReferenceObjectRef.GetReference();
+            const PdfReference& fontReferenceRef = pair.second.GetReference();
 
             PdfObject* fontObject = indirectObjectList->GetObject(fontReferenceRef);
 
@@ -129,24 +127,21 @@ namespace PiPi {
             return;
         }
 
-        PdfDictionary& acroformDictRef = acroForm->GetDictionary();
-        PdfDictionary* acroformDict = &acroformDictRef;
+        PdfDictionary* acroformDict = &(acroForm->GetDictionary());
 
         PdfObject* drObj = acroformDict->FindKey(PdfName("DR"));
         if (drObj == nullptr) {
             return;
         }
 
-        PdfDictionary& drRef = drObj->GetDictionary();
-        PdfDictionary* dr = &drRef;
+        PdfDictionary* dr = &(drObj->GetDictionary());
 
         PdfObject* fontsObj = dr->FindKey(PdfName("Font"));
         if (fontsObj == nullptr) {
             return;
         }
 
-        PdfDictionary& fontsRef = fontsObj->GetDictionary();
-        PdfDictionary* fonts = &fontsRef;
+        PdfDictionary* fonts = &(fontsObj->GetDictionary());
         
         std::map<const std::string, const PdfFont*>* fontMap = this->fontMap;
         

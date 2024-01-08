@@ -27,8 +27,7 @@ namespace PiPi {
 		PdfPageCollection& pdfPages = document->GetPages();
 		unsigned int pdfPageCount = pdfPages.GetCount();
 		for (unsigned int pdfPageIndex = 0; pdfPageIndex < pdfPageCount; pdfPageIndex++) {
-			PdfPage& pdfPageRef = pdfPages.GetPageAt(pdfPageIndex);
-			PdfPage* pdfPage = &pdfPageRef;
+			PdfPage* pdfPage = &(pdfPages.GetPageAt(pdfPageIndex));
 
 			double width = PiPiPageUtil::ExtractPageWidth(pdfPage);
 			double height = PiPiPageUtil::ExtractPageHeight(pdfPage);
