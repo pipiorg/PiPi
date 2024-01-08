@@ -1,6 +1,7 @@
 #pragma once
 
-#include "podofo/podofo.h"
+#include <podofo/podofo.h>
+#include <spdlog/spdlog.h>
 
 using namespace PoDoFo;
 

@@ -2,6 +2,8 @@
 
 namespace PiPi {
     int PiPiPageUtil::SearchPageIndex(PdfMemDocument* document, PdfPage* page) {
+        spdlog::trace("SearchPageIndex");
+
         PdfPageCollection* pages = &(document->GetPages());
         
         unsigned int pageCount = pages->GetCount();
@@ -15,6 +17,8 @@ namespace PiPi {
     }
 
     double PiPiPageUtil::ExtractPageWidth(PdfPage* page) {
+        spdlog::trace("ExtractPageWidth");
+
         Rect rect = page->GetRect();
 
         double left = rect.GetLeft();
@@ -26,6 +30,8 @@ namespace PiPi {
     }
 
     double PiPiPageUtil::ExtractPageHeight(PdfPage* page) {
+        spdlog::trace("ExtractPageHeight");
+
         Rect rect = page->GetRect();
 
         double top = rect.GetTop();
@@ -37,6 +43,8 @@ namespace PiPi {
     }
 
     double PiPiPageUtil::ExtractPageX(PdfPage* page) {
+        spdlog::trace("ExtractPageX");
+
         Rect rect = page->GetRect();
 
         double x = rect.GetLeft();
@@ -45,6 +53,8 @@ namespace PiPi {
     }
 
     double PiPiPageUtil::ExtractPageY(PdfPage* page) {
+        spdlog::trace("ExtractPageY");
+
         Rect rect = page->GetRect();
 
         double y = rect.GetTop();

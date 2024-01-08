@@ -1,6 +1,7 @@
 #pragma once
 
 #include <podofo/podofo.h>
+#include <spdlog/spdlog.h>
 #include "PiPiStringCommon.h"
 #include "PiPiColorConverter.h"
 #include "PiPiFieldManager.h"

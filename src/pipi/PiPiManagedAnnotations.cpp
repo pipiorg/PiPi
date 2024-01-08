@@ -19,12 +19,16 @@ namespace PiPi {
     }
 
     bool PiPiManagedAnnotations::IsEmpty() {
+        spdlog::trace("IsEmpty");
+
         std::set<PdfAnnotation*>* annots = this->annots;
         
         return annots->size() == 0;
     }
 
     void PiPiManagedAnnotations::ManageAnnotation(PdfAnnotation *annot) {
+        spdlog::trace("ManageAnnotation");
+
         bool exists = false;
         
         for (auto iterator = this->annots->begin(); iterator != this->annots->end(); iterator.operator++()) {
@@ -42,6 +46,8 @@ namespace PiPi {
     }
 
     void PiPiManagedAnnotations::UnManageAnnotation(PdfAnnotation *annot) {
+        spdlog::trace("UnManageAnnotation");
+
         std::vector<PdfAnnotation*>* unManageAnnots = new std::vector<PdfAnnotation*>();
         for (auto iterator = this->annots->begin(); iterator != this->annots->end(); iterator.operator++()) {
             if (&(annot->GetObject()) == &((*iterator)->GetObject())) {
@@ -57,6 +63,8 @@ namespace PiPi {
     }
 
     std::set<PdfAnnotation*>* PiPiManagedAnnotations::AccessAnnotations() {
+        spdlog::trace("AccessAnnotations");
+
         std::set<PdfAnnotation*>* annots = this->annots;
         std::set<PdfAnnotation*>* outAnnots = new std::set<PdfAnnotation*>();
         
@@ -66,6 +74,8 @@ namespace PiPi {
     }
 
     std::set<PdfObject*>* PiPiManagedAnnotations::AccessObjects() {
+        spdlog::trace("AccessObjects");
+
         std::set<PdfAnnotation*>* annots = this->annots;
         std::set<PdfObject*>* outObjects = new std::set<PdfObject*>();
         

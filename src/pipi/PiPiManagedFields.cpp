@@ -23,15 +23,21 @@ namespace PiPi {
     }
 
     bool PiPiManagedFields::IsReal() {
+        spdlog::trace("IsReal");
+
         return this->real;
     }
 
     bool PiPiManagedFields::IsEmpty() {
+        spdlog::trace("IsEmpty");
+
         std::set<PdfField*>* fields = this->fields;
         return fields->size() == 0;
     }
 
     void PiPiManagedFields::ManageField(PdfField *field) {
+        spdlog::trace("ManageField");
+
         bool exists = false;
         
         for (auto iterator = this->fields->begin(); iterator != this->fields->end(); iterator.operator++()) {
@@ -49,6 +55,8 @@ namespace PiPi {
     }
 
     void PiPiManagedFields::UnManageField(PdfField *field) {
+        spdlog::trace("UnManageField");
+
         std::vector<PdfField*>* unManageFields = new std::vector<PdfField*>();
         for (auto iterator = this->fields->begin(); iterator != this->fields->end(); iterator.operator++()) {
             if (&(field->GetObject()) == &((*iterator)->GetObject())) {
@@ -64,6 +72,8 @@ namespace PiPi {
     }
 
     std::set<PdfField*>* PiPiManagedFields::AccessFields() {
+        spdlog::trace("AccessFields");
+
         std::set<PdfField*>* fields = this->fields;
         std::set<PdfField*>* outFields = new std::set<PdfField*>();
         
@@ -73,6 +83,8 @@ namespace PiPi {
     }
 
     std::set<PdfObject*>* PiPiManagedFields::AccessObjects() {
+        spdlog::trace("AccessObjects");
+
         std::set<PdfField*>* fields = this->fields;
         std::set<PdfObject*>* outObjects = new std::set<PdfObject*>();
         

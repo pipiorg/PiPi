@@ -43,10 +43,14 @@ namespace PiPi {
     }
 
     bool PiPiFieldManager::IsOperable() {
+        spdlog::trace("IsOperable");
+
         return this->document != nullptr;
     }
     
     std::map<const std::string, std::set<PdfField*>*>* PiPiFieldManager::SearchAllField() {
+        spdlog::trace("SearchAllField");
+
         std::map<const std::string, PiPiManagedFields*>* fieldMap = this->fieldMap;
         std::map<const std::string, std::set<PdfField*>*>* outFieldMap = new std::map<const std::string, std::set<PdfField*>*>();
         for (auto mapIterator = fieldMap->begin(); mapIterator != fieldMap->end(); mapIterator.operator++()) {
@@ -70,6 +74,8 @@ namespace PiPi {
     }
 
     std::set<PdfField*>* PiPiFieldManager::SearchField(std::string fieldName) {
+        spdlog::trace("SearchField");
+
         auto findIterator = this->fieldMap->find(fieldName);
         if (findIterator == this->fieldMap->end()) {
             return new std::set<PdfField*>();
@@ -88,6 +94,8 @@ namespace PiPi {
     }
 
     void PiPiFieldManager::RemoveAllField() {
+        spdlog::trace("RemoveAllField");
+
         PdfMemDocument* document = this->document;
         
         PdfAcroForm* acroform = &(document->GetOrCreateAcroForm());
@@ -117,18 +125,26 @@ namespace PiPi {
 
 
     void PiPiFieldManager::RemoveField(std::string fieldName) {
+        spdlog::trace("RemoveField");
+
         this->RemoveField(fieldName, -1);
     }
 
     void PiPiFieldManager::RemoveField(std::string fieldName, long pageIndex) {
+        spdlog::trace("RemoveField");
+
         this->RemoveField(fieldName, pageIndex, -1, -1);
     }
 
     void PiPiFieldManager::RemoveField(std::string fieldName, long pageIndex, double x, double y) {
+        spdlog::trace("RemoveField");
+
         this->RemoveField(fieldName, pageIndex, x, y, -1, -1);
     }
 
     void PiPiFieldManager::RemoveField(std::string fieldName, long pageIndex, double x, double y, double width, double height) {
+        spdlog::trace("RemoveField");
+
         PdfMemDocument* document = this->document;
         std::map<const std::string, PiPiManagedFields*>* fieldMap = this->fieldMap;
         
@@ -173,6 +189,8 @@ namespace PiPi {
     }
 
     PdfField* PiPiFieldManager::CreateField(std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height) {
+        spdlog::trace("CreateField");
+
         if (this->IsDuplicateFieldExists(fieldName)) {
             throw PiPiManageFieldException(PiPiManageFieldException::PiPiManageFieldExceptionCode::DuplicateFieldExists);
         }
@@ -203,6 +221,8 @@ namespace PiPi {
     }
 
     void PiPiFieldManager::RenameField(std::string oldFieldName, std::string newFieldName) {
+        spdlog::trace("RenameField");
+
         std::map<const std::string, PiPiManagedFields*>* fieldMap = this->fieldMap;
         
         auto oldFindIterator = fieldMap->find(oldFieldName);
@@ -368,6 +388,8 @@ namespace PiPi {
     }
 
     std::map<const std::string, std::set<PdfAnnotation*>*>* PiPiFieldManager::SearchAllFieldAnnotation() {
+        spdlog::trace("SearchAllFieldAnnotation");
+
         std::map<const std::string, PiPiManagedAnnotations*>* annotMap = this->annotMap;
         std::map<const std::string, std::set<PdfAnnotation*>*>* outAnnotMap = new std::map<const std::string, std::set<PdfAnnotation*>*>();
         
@@ -389,6 +411,8 @@ namespace PiPi {
     }
 
     std::set<PdfAnnotation*>* PiPiFieldManager::SearchFieldAnnotation(std::string fieldName) {
+        spdlog::trace("SearchFieldAnnotation");
+
         std::map<const std::string, PiPiManagedAnnotations*>* annotMap = this->annotMap;
         
         auto findIterator = annotMap->find(fieldName);
@@ -408,6 +432,8 @@ namespace PiPi {
     }
 
     void PiPiFieldManager::RemoveAllFieldAnnotation() {
+        spdlog::trace("RemoveAllFieldAnnotation");
+
         PdfDocument* document = this->document;
         PdfPageCollection* pages = &(document->GetPages());
         
@@ -435,18 +461,26 @@ namespace PiPi {
     }
 
     void PiPiFieldManager::RemoveFieldAnnotation(std::string fieldName) {
+        spdlog::trace("RemoveFieldAnnotation");
+
         this->RemoveFieldAnnotation(fieldName, -1);
     }
 
     void PiPiFieldManager::RemoveFieldAnnotation(std::string fieldName, long pageIndex) {
+        spdlog::trace("RemoveFieldAnnotation");
+
         this->RemoveFieldAnnotation(fieldName, pageIndex, -1, -1);
     }
 
     void PiPiFieldManager::RemoveFieldAnnotation(std::string fieldName, long pageIndex, double x, double y) {
+        spdlog::trace("RemoveFieldAnnotation");
+
         this->RemoveFieldAnnotation(fieldName, pageIndex, x, y, -1, -1);
     }
 
     void PiPiFieldManager::RemoveFieldAnnotation(std::string fieldName, long pageIndex, double x, double y, double width, double height) {
+        spdlog::trace("RemoveFieldAnnotation");
+
         PdfMemDocument* document = this->document;
         std::map<const std::string, PiPiManagedAnnotations*>* annotMap = this->annotMap;
         
@@ -502,6 +536,8 @@ namespace PiPi {
     }
 
     PdfAnnotation* PiPiFieldManager::CreateFieldAnnotation(std::string fieldName, unsigned int pageIndex, double x, double y, double width, double height) {
+        spdlog::trace("CreateFieldAnnotation");
+
         PdfMemDocument* document = this->document;
         
         PdfPageCollection* pages = &(document->GetPages());
@@ -525,6 +561,8 @@ namespace PiPi {
     }
 
     void PiPiFieldManager::RenameFieldAnnotation(std::string oldFieldName, std::string newFieldName) {
+        spdlog::trace("RenameFieldAnnotation");
+
         std::map<const std::string, PiPiManagedAnnotations*>* annotMap = this->annotMap;
         
         auto findIterator = annotMap->find(oldFieldName);
@@ -552,6 +590,8 @@ namespace PiPi {
     }
 
     PdfField* PiPiFieldManager::BridgeAnnotationToField(PdfAnnotation *annot) {
+        spdlog::trace("BridgeAnnotationToField");
+
         std::map<PdfObject*, PdfField*>* fieldBridgeMap = this->fieldBridgeMap;
         PdfObject* object = &(annot->GetObject());
         
@@ -559,6 +599,8 @@ namespace PiPi {
     }
 
     PdfField* PiPiFieldManager::BridgeObjectToField(PdfObject *object) {
+        spdlog::trace("BridgeObjectToField");
+
         auto findIterator = fieldBridgeMap->find(object);
         if (findIterator == fieldBridgeMap->end()) {
             return nullptr;
@@ -568,12 +610,16 @@ namespace PiPi {
     }
 
     PdfAnnotation* PiPiFieldManager::BridgeFieldToAnnotation(PdfField *field) {
+        spdlog::trace("BridgeFieldToAnnotation");
+
         std::map<PdfObject*, PdfAnnotation*>* annotBridgeMap = this->annotBridgeMap;
         PdfObject* object = &(field->GetObject());
         return this->BridgeObjectToAnnotation(object);
     }
 
     PdfAnnotation* PiPiFieldManager::BridgeObjectToAnnotation(PdfObject *object) {
+        spdlog::trace("BridgeObjectToAnnotation");
+
         auto findIterator = annotBridgeMap->find(object);
         if (findIterator == annotBridgeMap->end()) {
             return nullptr;
@@ -583,12 +629,16 @@ namespace PiPi {
     }
 
     void PiPiFieldManager::InitDocument(PdfMemDocument* document) {
+        spdlog::trace("InitDocument");
+
         PiPiFieldCompatibilityUtil::Patch(document);
         
         this->document = document;
     }
 
     void PiPiFieldManager::InitFieldMap() {
+        spdlog::trace("InitFieldMap");
+
         this->fieldMap = new std::map<const std::string, PiPiManagedFields*>();
         
         PdfMemDocument* document = this->document;
@@ -614,6 +664,8 @@ namespace PiPi {
     }
 
     void PiPiFieldManager::InitAnnotationMap() {
+        spdlog::trace("InitAnnotationMap");
+
         PdfDocument* document = this->document;
         
         std::map<const std::string, PiPiManagedAnnotations*>* annotMap = new std::map<const std::string, PiPiManagedAnnotations*>();
@@ -659,6 +711,8 @@ namespace PiPi {
     }
 
     void PiPiFieldManager::InitFieldBridgeMap() {
+        spdlog::trace("InitFieldBridgeMap");
+
         std::map<const std::string, PiPiManagedFields*>* fieldMap = this->fieldMap;
         
         std::map<PdfObject*, PdfField*>* fieldBridgeMap = new std::map<PdfObject*, PdfField*>();
@@ -682,6 +736,8 @@ namespace PiPi {
     }
 
     void PiPiFieldManager::InitAnnotationBridgeMap() {
+        spdlog::trace("InitAnnotationBridgeMap");
+
         std::map<const std::string, PiPiManagedAnnotations*>* annotMap = this->annotMap;
         
         std::map<PdfObject*, PdfAnnotation*>* annotBridgeMap = new std::map<PdfObject*, PdfAnnotation*>();
@@ -705,6 +761,8 @@ namespace PiPi {
     }
 
     void PiPiFieldManager::InnerSearchAllField(PdfObject *fieldObj) {
+        spdlog::trace("InnerSearchAllField");
+
         std::unique_ptr<PdfField> fieldPtr;
         bool created = PdfField::TryCreateFromObject(*fieldObj, fieldPtr);
         if (!created) {
@@ -758,6 +816,8 @@ namespace PiPi {
     }
 
     void PiPiFieldManager::InnerRemoveField(PdfObject *fieldObj) {
+        spdlog::trace("InnerRemoveField");
+
         PdfDictionary* fieldDict = &(fieldObj->GetDictionary());
         
         PdfObject* parentFieldObj = fieldDict->FindKey(PdfName("Parent"));
@@ -769,6 +829,8 @@ namespace PiPi {
     }
 
     void PiPiFieldManager::InnerRemoveFieldFromAcroform(PdfObject *fieldObj) {
+        spdlog::trace("InnerRemoveFieldFromAcroform");
+
         PdfField* field = this->BridgeObjectToField(fieldObj);
         
         PdfAcroForm* acroform = &(document->GetOrCreateAcroForm());
@@ -791,6 +853,8 @@ namespace PiPi {
     }
 
     void PiPiFieldManager::InnerRemoveFieldFromParentField(PdfObject *fieldObj) {
+        spdlog::trace("InnerRemoveFieldFromParentField");
+
         PdfField* field = this->BridgeObjectToField(fieldObj);
         PdfDictionary* fieldDict = &(fieldObj->GetDictionary());
         
@@ -826,6 +890,8 @@ namespace PiPi {
     }
 
     PdfObject* PiPiFieldManager::InnerCreateFakeField(std::string fieldName) {
+        spdlog::trace("InnerCreateFakeField");
+
         PdfMemDocument* document = this->document;
         
         PdfField* cField = nullptr;
@@ -928,6 +994,8 @@ namespace PiPi {
     }
 
     PdfObject* PiPiFieldManager::InnerCreateRealField(std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height) {
+        spdlog::trace("InnerCreateRealField");
+        
         std::map<const std::string, PiPiManagedFields*>* fieldMap = this->fieldMap;
         
         PdfAnnotation* annot = this->CreateFieldAnnotation(fieldName, pageIndex, x, y, width, height);
@@ -998,6 +1066,8 @@ namespace PiPi {
     }
 
     void PiPiFieldManager::RestrictField(PdfObject* fieldObj) {
+        spdlog::trace("RestrictField");
+
         PdfMemDocument* document = this->document;
         
         PdfDictionary* fieldDict = &(fieldObj->GetDictionary());
@@ -1058,6 +1128,8 @@ namespace PiPi {
     }
 
     void PiPiFieldManager::ExpandField(PdfObject* fieldObj) {
+        spdlog::trace("ExpandField");
+
         PdfMemDocument* document = this->document;
         
         PdfIndirectObjectList* indirectObjectList = &(document->GetObjects());
@@ -1126,6 +1198,8 @@ namespace PiPi {
     }
 
     void PiPiFieldManager::RemoveFieldMap(PdfObject *fieldObj, std::string fieldName) {
+        spdlog::trace("RemoveFieldMap");
+
         std::map<const std::string, PiPiManagedFields*>* fieldMap = this->fieldMap;
         std::map<PdfObject*, PdfField*>* fieldBridgeMap = this->fieldBridgeMap;
         
@@ -1147,6 +1221,8 @@ namespace PiPi {
     }
 
     void PiPiFieldManager::RemoveAnnotationMap(PdfObject *annotObj, std::string fieldName) {
+        spdlog::trace("RemoveAnnotationMap");
+
         std::map<const std::string, PiPiManagedAnnotations*>* annotMap = this->annotMap;
         std::map<PdfObject*, PdfAnnotation*>* annotBridgeMap = this->annotBridgeMap;
         
@@ -1169,6 +1245,8 @@ namespace PiPi {
     }
 
     void PiPiFieldManager::AddFieldMap(PdfObject* fieldObj, PdfField* field, std::string fieldName, bool real) {
+        spdlog::trace("AddFieldMap");
+
         std::map<const std::string, PiPiManagedFields*>* fieldMap = this->fieldMap;
         std::map<PdfObject*, PdfField*>* fieldBridgeMap = this->fieldBridgeMap;
         
@@ -1190,6 +1268,8 @@ namespace PiPi {
     }
 
     void PiPiFieldManager::AddAnnotationMap(PdfObject* annotObj, PdfAnnotation* annot, std::string fieldName) {
+        spdlog::trace("AddAnnotationMap");
+
         std::map<const std::string, PiPiManagedAnnotations*>* annotMap = this->annotMap;
         std::map<PdfObject*, PdfAnnotation*>* annotBridgeMap = this->annotBridgeMap;
         
@@ -1206,6 +1286,8 @@ namespace PiPi {
     }
 
     void PiPiFieldManager::RenameFieldMap(std::map<PdfObject*, PdfField*>* renameFieldMap, std::string fieldName) {
+        spdlog::trace("RenameFieldMap");
+
         std::map<const std::string, PiPiManagedFields*>* fieldMap = this->fieldMap;
         std::map<PdfObject*, PdfField*>* fieldBridgeMap = this->fieldBridgeMap;
         
@@ -1233,6 +1315,8 @@ namespace PiPi {
     }
 
     void PiPiFieldManager::RenameAnnotationMap(std::map<PdfObject*, PdfAnnotation*>* renameAnnotMap, std::string fieldName) {
+        spdlog::trace("RenameAnnotationMap");
+
         std::map<const std::string, PiPiManagedAnnotations*>* annotMap = this->annotMap;
         std::map<PdfObject*, PdfAnnotation*>* annotBridgeMap = this->annotBridgeMap;
         
@@ -1260,6 +1344,8 @@ namespace PiPi {
     }
 
     bool PiPiFieldManager::IsDuplicateFieldExists(std::string fieldName) {
+        spdlog::trace("IsDuplicateFieldExists");
+
         std::map<const std::string, PiPiManagedFields*>* fieldMap = this->fieldMap;
         
         for (auto iterator = fieldMap->begin(); iterator != fieldMap->end(); iterator.operator++()) {

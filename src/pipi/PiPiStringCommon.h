@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <cstring>
+#include <spdlog/spdlog.h>
 
 namespace PiPi {
 	class PiPiStringCommon {

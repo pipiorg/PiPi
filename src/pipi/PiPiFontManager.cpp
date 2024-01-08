@@ -7,15 +7,21 @@ namespace PiPi {
 	}
 
 	bool PiPiFontManager::IsOperable() {
+        spdlog::trace("IsOperable");
+
         return this->operable;
 	}
 
     void PiPiFontManager::EmbedFonts() {
+        spdlog::trace("EmbedFonts");
+
         this->EmbedDocumentFonts();
         this->EmbedAcroformFonts();
     }
 
 	const std::string PiPiFontManager::RegisterFont(char* fontBytes, size_t fontSize) {
+        spdlog::trace("RegisterFont");
+
         if (!this->IsOperable()) {
             throw PiPiFontManageException(PiPiFontManageException::PiPiFontManageExceptionCode::InOperable);
         }
@@ -35,6 +41,8 @@ namespace PiPi {
 	}
 
 	const PdfFont* PiPiFontManager::AccessFont(const std::string fontName) {
+        spdlog::trace("AccessFont");
+
 		std::map<const std::string, const PdfFont*>* fontMap = this->fontMap;
 		
 		auto fontPair = fontMap->find(fontName);
@@ -47,6 +55,8 @@ namespace PiPi {
 	}
 
 	const PdfFont* PiPiFontManager::AccessDefaultFont() {
+        spdlog::trace("AccessDefaultFont");
+
 		PdfMemDocument* document = this->document;
 		PdfFontManager* fontManager = &(document->GetFonts());
 		PdfFont* font = &(fontManager->GetStandard14Font(PdfStandard14FontType::Helvetica));
@@ -54,12 +64,16 @@ namespace PiPi {
 	}
 
     void PiPiFontManager::Init(PdfMemDocument* document) {
+        spdlog::trace("Init");
+
         this->operable = true;
         this->document = document;
         this->fontMap = new std::map<const std::string, const PdfFont*>();
     }
 
     void PiPiFontManager::LoadAcroformFonts() {
+        spdlog::trace("LoadAcroformFonts");
+
         PdfMemDocument* document = this->document;
 
         PdfIndirectObjectList* indirectObjectList = &(document->GetObjects());
@@ -106,6 +120,8 @@ namespace PiPi {
     }
 
     void PiPiFontManager::EmbedAcroformFonts() {
+        spdlog::trace("EmbedAcroformFonts");
+
         PdfMemDocument* document = this->document;
         
         PdfAcroForm* acroForm = document->GetAcroForm();
@@ -149,6 +165,8 @@ namespace PiPi {
     }
 
     void PiPiFontManager::EmbedDocumentFonts() {
+        spdlog::trace("EmbedDocumentFonts");
+
         PdfMemDocument* document = this->document;
         PdfFontManager* fontManager = &(document->GetFonts());
         fontManager->EmbedFonts();

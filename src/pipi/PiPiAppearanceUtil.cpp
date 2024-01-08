@@ -2,6 +2,8 @@
 
 namespace PiPi {
     void PiPiAppearanceUtil::FlattenAppearance(PiPiFontManager *fontManager, PiPiFieldManager* fieldManager, PdfAnnotation *annot) {
+        spdlog::trace("FlattenAppearance");
+
         GenerateAppearance(fontManager, fieldManager, annot);
         
         PdfDictionary& dictionary = annot->GetDictionary();
@@ -66,6 +68,8 @@ namespace PiPi {
     }
 
 	void PiPiAppearanceUtil::GenerateAppearance(PiPiFontManager* fontManager, PiPiFieldManager* fieldManager, PdfAnnotation* annot) {
+        spdlog::trace("GenerateAppearance");
+
         PiPiFieldType type = PiPiAnnotationUtil::ExtractAnnotationType(annot);
 
 		switch (type) {
@@ -83,6 +87,8 @@ namespace PiPi {
 	}
 
 	void PiPiAppearanceUtil::ClearCheckBoxAppearance(PdfAnnotation* annot) {
+        spdlog::trace("ClearCheckBoxAppearance");
+
 		PdfDictionary* dict = &(annot->GetDictionary());
 
 		PdfObject* apObj = dict->FindKey(PdfName("AP"));
@@ -106,12 +112,16 @@ namespace PiPi {
 	}
 
 	void PiPiAppearanceUtil::GenerateCheckBoxAppearance(PdfAnnotation* annot) {
+        spdlog::trace("GenerateCheckBoxAppearance");
+
 		PiPiAppearanceUtil::GenerateCheckBoxDownCheckAppearance(annot);
 		PiPiAppearanceUtil::GenerateCheckBoxDownUnCheckAppearance(annot);
 		PiPiAppearanceUtil::GenerateCheckBoxNormalCheckAppearance(annot);
 	}
 
 	void PiPiAppearanceUtil::GenerateCheckBoxNormalCheckAppearance(PdfAnnotation* annot) {
+        spdlog::trace("GenerateCheckBoxNormalCheckAppearance");
+
 		PdfDocument* document = &(annot->GetDocument());
 
 		Rect annotRect = annot->GetRect();
@@ -215,6 +225,8 @@ namespace PiPi {
 	}
 
 	void PiPiAppearanceUtil::GenerateCheckBoxDownCheckAppearance(PdfAnnotation* annot) {
+        spdlog::trace("GenerateCheckBoxDownCheckAppearance");
+
 		PdfDocument* document = &(annot->GetDocument());
 
 		Rect annotRect = annot->GetRect();
@@ -326,6 +338,8 @@ namespace PiPi {
 	}
 
 	void PiPiAppearanceUtil::GenerateCheckBoxDownUnCheckAppearance(PdfAnnotation* annot) {
+        spdlog::trace("GenerateCheckBoxDownUnCheckAppearance");
+
 		PdfDocument* document = &(annot->GetDocument());
 
 		Rect annotRect = annot->GetRect();
@@ -399,6 +413,8 @@ namespace PiPi {
 	}
 
 	void PiPiAppearanceUtil::GenerateTextBoxAppearance(PiPiFontManager* fontManager, PdfAnnotation* annot) {
+        spdlog::trace("GenerateTextBoxAppearance");
+
 		PdfDocument* document = &(annot->GetDocument());
         
 		Rect annotRect = annot->GetRect();

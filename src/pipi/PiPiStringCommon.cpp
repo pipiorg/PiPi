@@ -2,6 +2,8 @@
 
 namespace PiPi {
     std::vector<std::string>* PiPiStringCommon::split(const std::string& str, const std::string& pattern) {
+        spdlog::trace("split");
+
         std::vector<std::string>* result = new std::vector<std::string>();
         std::string::size_type begin, end;
 
@@ -25,6 +27,8 @@ namespace PiPi {
     }
 
     std::string PiPiStringCommon::join(const std::vector<std::string>* strings, std::string gap) {
+        spdlog::trace("join");
+
         std::string result = "";
         
         for (unsigned int idx = 0; idx < ((long)strings->size()) - 1; idx++) {
@@ -40,10 +44,14 @@ namespace PiPi {
     }
 
     bool PiPiStringCommon::includes(const std::string &str, const std::string &substr) {
+        spdlog::trace("includes");
+
         return str.find(substr) != std::string::npos;
     }
 
     bool PiPiStringCommon::startsWith(const std::string &str1, const std::string &str2) {
+        spdlog::trace("startsWith");
+
         return str1.rfind(str2, 0) == 0;
     }
 }

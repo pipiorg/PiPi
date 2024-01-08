@@ -14,6 +14,8 @@ namespace PiPi {
 	}
 
     PiPiEditor* PiPiEditor::Flatten() {
+        spdlog::trace("Flatten");
+
         if (!this->IsOperable()) {
             throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
         }
@@ -45,6 +47,8 @@ namespace PiPi {
     }
 
 	PiPiEditor* PiPiEditor::Flatten(std::string fieldName) {
+        spdlog::trace("Flatten");
+
         if (!this->IsOperable()) {
             throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
         }
@@ -72,6 +76,8 @@ namespace PiPi {
 	}
 
     PiPiEditor* PiPiEditor::AddField(std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height) {
+        spdlog::trace("AddField");
+
         if (!this->IsOperable()) {
             throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
         }
@@ -87,18 +93,26 @@ namespace PiPi {
     }
 
 	PiPiEditor* PiPiEditor::RemoveField(std::string fieldName) {
+        spdlog::trace("RemoveField");
+
         return this->RemoveField(fieldName, -1);
 	}
 
     PiPiEditor* PiPiEditor::RemoveField(std::string fieldName, long pageIndex) {
+        spdlog::trace("RemoveField");
+
         return this->RemoveField(fieldName, pageIndex, -1, -1);
     }
 
     PiPiEditor* PiPiEditor::RemoveField(std::string fieldName, long pageIndex, double x, double y) {
+        spdlog::trace("RemoveField");
+
         return this->RemoveField(fieldName, pageIndex, x, y, -1, -1);
     }
 
     PiPiEditor* PiPiEditor::RemoveField(std::string fieldName, long pageIndex, double x, double y, double width, double height) {
+        spdlog::trace("RemoveField");
+
         if (!this->IsOperable()) {
             throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
         }
@@ -114,6 +128,8 @@ namespace PiPi {
     }
 
 	PiPiEditor* PiPiEditor::RenameField(std::string oldFieldName, std::string newFieldName) {
+        spdlog::trace("RenameField");
+
         if (!this->IsOperable()) {
             throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
         }
@@ -131,6 +147,8 @@ namespace PiPi {
 	}
 
     PiPiEditor* PiPiEditor::SetFieldColor(std::string fieldName, float red, float green, float blue) {
+        spdlog::trace("SetFieldColor");
+
         if (!this->IsOperable()) {
             throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
         }
@@ -165,6 +183,8 @@ namespace PiPi {
     }
 
     PiPiEditor* PiPiEditor::SetFieldBorderColor(std::string fieldName, float red, float green, float blue) {
+        spdlog::trace("SetFieldBorderColor");
+
         if (!this->IsOperable()) {
             throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
         }
@@ -216,6 +236,8 @@ namespace PiPi {
     }
 
     PiPiEditor* PiPiEditor::SetFieldBackgroundColor(std::string fieldName, float red, float green, float blue) {
+        spdlog::trace("SetFieldBackgroundColor");
+
         if (!this->IsOperable()) {
             throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
         }
@@ -267,6 +289,8 @@ namespace PiPi {
     }
 
     PiPiEditor* PiPiEditor::SetFieldTextHorizontalAlignment(std::string fieldName, PiPiTextHorizontalAlignment alignment) {
+        spdlog::trace("SetFieldTextHorizontalAlignment");
+
         if (!this->IsOperable()) {
             throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
         }
@@ -306,6 +330,8 @@ namespace PiPi {
     }
 
     PiPiEditor* PiPiEditor::SetFieldMultiline(std::string fieldName, bool multiline) {
+        spdlog::trace("SetFieldMultiline");
+
         if (!this->IsOperable()) {
             throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
         }
@@ -335,6 +361,8 @@ namespace PiPi {
     }
 
     PiPiEditor* PiPiEditor::SetFieldFontName(std::string fieldName, std::string fontName) {
+        spdlog::trace("SetFieldFontName");
+
         if (!this->IsOperable()) {
             throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
         }
@@ -398,6 +426,8 @@ namespace PiPi {
     }
 
     PiPiEditor* PiPiEditor::SetFieldFontSize(std::string fieldName, float fontSize) {
+        spdlog::trace("SetFieldFontSize");
+
         if (!this->IsOperable()) {
             throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
         }
@@ -457,6 +487,8 @@ namespace PiPi {
     }
 
     const PdfString* PiPiEditor::GetDefaultDA() {
+        spdlog::trace("GetDefaultDA");
+
         PdfDocument* document = this->document;
         
         PdfAcroForm* acroform = document->GetAcroForm();

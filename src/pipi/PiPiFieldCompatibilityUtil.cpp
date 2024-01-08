@@ -2,11 +2,15 @@
 
 namespace PiPi {
     void PiPiFieldCompatibilityUtil::Patch(PdfMemDocument* document) {
+        spdlog::trace("Patch");
+
         PatchFieldRestrict(document);
         PatchFieldDot(document);
     }
 
     void PiPiFieldCompatibilityUtil::PatchFieldDot(PdfMemDocument* document) {
+        spdlog::trace("PatchFieldDot");
+
         std::vector<PdfObject*>* dotFieldObjs = CollectDotField(document);
         
         for (auto iterator = dotFieldObjs->begin(); iterator != dotFieldObjs->end(); iterator.operator++()) {
@@ -18,6 +22,8 @@ namespace PiPi {
     }
 
     void PiPiFieldCompatibilityUtil::PatchFieldRestrict(PdfMemDocument *document) {
+        spdlog::trace("PatchFieldRestrict");
+
         std::vector<PdfObject*>* restrictFieldObjs = CollectRestrictField(document);
         
         for (auto iterator = restrictFieldObjs->begin(); iterator != restrictFieldObjs->end(); iterator.operator++()) {
@@ -29,6 +35,8 @@ namespace PiPi {
     }
 
     std::vector<PdfObject*>* PiPiFieldCompatibilityUtil::CollectDotField(PdfDocument* document) {
+        spdlog::trace("CollectDotField");
+
         std::vector<PdfObject*>* dotFieldObjs = new std::vector<PdfObject*>();
         
         PdfAcroForm* acroform = &(document->GetOrCreateAcroForm());
@@ -50,6 +58,8 @@ namespace PiPi {
     }
 
     void PiPiFieldCompatibilityUtil::CollectDotFieldRecursive(PdfDocument *document, PdfObject *fieldObj, std::vector<PdfObject *> *dotFieldObjs) {
+        spdlog::trace("CollectDotFieldRecursive");
+
         PdfDictionary* fieldDict = &(fieldObj->GetDictionary());
         
         PdfObject* tObj = fieldDict->FindKey(PdfName("T"));
@@ -76,6 +86,8 @@ namespace PiPi {
     }
 
     std::vector<PdfObject*>* PiPiFieldCompatibilityUtil::CollectRestrictField(PdfDocument* document) {
+        spdlog::trace("CollectRestrictField");
+
         std::vector<PdfObject*>* restrictFieldObjs = new std::vector<PdfObject*>();
         
         PdfAcroForm* acroform = &(document->GetOrCreateAcroForm());
@@ -97,6 +109,8 @@ namespace PiPi {
     }
 
     void PiPiFieldCompatibilityUtil::CollectRestrictFieldRecursive(PdfDocument* document, PdfObject* fieldObj, std::vector<PdfObject*>* restrictFieldObjs) {
+        spdlog::trace("CollectRestrictFieldRecursive");
+
         PdfDictionary* fieldDict = &(fieldObj->GetDictionary());
         
         PdfObject* fieldKidsObj = fieldDict->FindKey(PdfName("Kids"));
@@ -129,6 +143,8 @@ namespace PiPi {
     }
 
     void PiPiFieldCompatibilityUtil::FixDot(PdfDocument *document, PdfObject *fieldObj) {
+        spdlog::trace("FixDot");
+
         PdfDictionary* fieldDict = &(fieldObj->GetDictionary());
         
         PdfObject* parentFieldObj = fieldDict->FindKey(PdfName("Parent"));
@@ -140,6 +156,8 @@ namespace PiPi {
     }
 
     void PiPiFieldCompatibilityUtil::FixDotAcroform(PdfDocument *document, PdfObject *fieldObj) {
+        spdlog::trace("FixDotAcroform");
+
         PdfAcroForm* acroform = document->GetAcroForm();
         PdfDictionary* acroformDict = &(acroform->GetDictionary());
         
@@ -187,6 +205,8 @@ namespace PiPi {
     }
 
     void PiPiFieldCompatibilityUtil::FixDotParentField(PdfDocument *document, PdfObject *fieldObj) {
+        spdlog::trace("FixDotParentField");
+
         PdfDictionary* fieldDict = &(fieldObj->GetDictionary());
         
         PdfObject* parentFieldObj = fieldDict->FindKey(PdfName("Parent"));
@@ -231,6 +251,8 @@ namespace PiPi {
     }
 
     void PiPiFieldCompatibilityUtil::FixExpand(PdfDocument *document, PdfObject *fieldObj) {
+        spdlog::trace("FixExpand");
+
         PdfIndirectObjectList* indirectObjectList = &(document->GetObjects());
         
         PdfObject* expandFieldObj = &(indirectObjectList->CreateDictionaryObject());
@@ -297,6 +319,8 @@ namespace PiPi {
     }
 
     void PiPiFieldCompatibilityUtil::FixRestrict(PdfDocument *document, PdfObject *fieldObj) {
+        spdlog::trace("FixRestrict");
+
         PdfDictionary* fieldDict = &(fieldObj->GetDictionary());
         
         PdfObject* parentFieldObj = fieldDict->FindKey(PdfName("Parent"));
@@ -358,6 +382,8 @@ namespace PiPi {
     }
 
     PdfObject* PiPiFieldCompatibilityUtil::PrepareFieldAcroform(PdfDocument *document, std::string name) {
+        spdlog::trace("PrepareFieldAcroform");
+
         PdfAcroForm* acroform = document->GetAcroForm();
         PdfDictionary* acroformDict = &(acroform->GetDictionary());
         PdfObject* acroformFieldsObj = acroformDict->FindKey(PdfName("Fields"));
@@ -399,6 +425,8 @@ namespace PiPi {
     }
 
     PdfObject* PiPiFieldCompatibilityUtil::PrepareFieldParentField(PdfDocument* document, PdfObject *parentFieldObj, std::string name) {
+        spdlog::trace("PrepareFieldParentField");
+
         if (IsReal(parentFieldObj)) {
             throw PiPiFieldCompatibilityException(PiPiFieldCompatibilityException::PiPiFieldCompatibilityExceptionCode::FixDotFieldFail);
         }
@@ -453,18 +481,24 @@ namespace PiPi {
     }
 
     bool PiPiFieldCompatibilityUtil::IsReal(PdfObject *fieldObj) {
+        spdlog::trace("IsReal");
+
         PdfDictionary* fieldDict = &(fieldObj->GetDictionary());
         PdfObject* fieldFTObj = fieldDict->FindKey(PdfName("FT"));
         return fieldFTObj != nullptr;
     }
 
     bool PiPiFieldCompatibilityUtil::IsRoot(PdfObject *fieldObj) {
+        spdlog::trace("IsRoot");
+
         PdfDictionary* fieldDict = &(fieldObj->GetDictionary());
         PdfObject* parentFieldObj = fieldDict->FindKey(PdfName("Parent"));
         return parentFieldObj == nullptr;
     }
 
     bool PiPiFieldCompatibilityUtil::IsNoBrother(PdfObject *fieldObj) {
+        spdlog::trace("IsNoBrother");
+
         PdfDictionary* fieldDict = &(fieldObj->GetDictionary());
         
         PdfObject* parentFieldObj = fieldDict->FindKey(PdfName("Parent"));

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <podofo/podofo.h>
+#include <spdlog/spdlog.h>
 #include "PiPiOperator.h"
 #include "PiPiPager.h"
 #include "PiPiStringCommon.h"

@@ -7,10 +7,14 @@ namespace PiPi {
 	}
 
     bool PiPiPager::IsOperable() {
+        spdlog::trace("IsOperable");
+
         return this->operable;
     }
 
     void PiPiPager::Merge(std::vector<size_t>* indexs, std::vector<char>** newPdf) {
+        spdlog::trace("Merge");
+
         if (!this->IsOperable()) {
             throw PiPiPageException(PiPiPageException::PiPiPageExceptionCode::InOperable);
         }
@@ -42,6 +46,8 @@ namespace PiPi {
     }
 
     void PiPiPager::Split(size_t index, std::string instruction, std::vector<std::vector<char>*>** newPdfs) {
+        spdlog::trace("Split");
+
         if (!this->IsOperable()) {
             throw PiPiPageException(PiPiPageException::PiPiPageExceptionCode::InOperable);
         }
@@ -91,6 +97,8 @@ namespace PiPi {
     }
 
     std::vector<std::tuple<size_t, size_t>>* PiPiPager::ParseSplitInstruction(std::string instruction) {
+        spdlog::trace("ParseSplitInstruction");
+
         std::vector<std::tuple<size_t, size_t>>* instructionPairs = new std::vector<std::tuple<size_t, size_t>>();
         
         std::vector<std::string>* docInstructions =  PiPiStringCommon::split(instruction, ",");
@@ -158,21 +166,29 @@ namespace PiPi {
     }
 
     void PiPiPager::CopyPage(PdfMemDocument *to, PdfMemDocument* from, unsigned int start, unsigned int end) {
+        spdlog::trace("CopyPage");
+
         this->CopyPageDocument(to, from, start, end);
         this->CopyPageAcroform(to, from, start, end);
     }
 
     void PiPiPager::CopyPageDocument(PdfMemDocument *to, PdfMemDocument* from, unsigned int start, unsigned int end) {
+        spdlog::trace("CopyPageDocument");
+
         PdfPageCollection* toPages = &(to->GetPages());
         toPages->AppendDocumentPages(*from, start, end - start);
     }
 
     void PiPiPager::CopyPageAcroform(PdfMemDocument *to, PdfMemDocument* from, unsigned int start, unsigned int end) {
+        spdlog::trace("CopyPageAcroform");
+
         this->CopyPageAcroformField(to, from, start, end);
         this->CopyPageAcroformFont(to, from, start, end);
     }
 
     void PiPiPager::CopyPageAcroformField(PdfMemDocument *to, PdfMemDocument *from, unsigned int start, unsigned int end) {
+        spdlog::trace("CopyPageAcroformField");
+
         PdfAcroForm* acroform = &(to->GetOrCreateAcroForm());
         PdfDictionary* acroformDict = &(acroform->GetDictionary());
         
@@ -225,6 +241,8 @@ namespace PiPi {
     }
 
     void PiPiPager::CopyPageAcroformFont(PdfMemDocument *to, PdfMemDocument *from, unsigned int start, unsigned int end) {
+        spdlog::trace("CopyPageAcroformFont");
+
         std::map<std::string, std::string>* fontMap = new std::map<std::string, std::string>();
         
         PdfAcroForm* fromAcroform = &(from->GetOrCreateAcroForm());

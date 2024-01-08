@@ -8,10 +8,14 @@ namespace PiPi {
 	}
 
 	bool PiPiExtractor::IsOperable() {
+		spdlog::trace("IsOperable");
+
 		return this->operable;
 	}
 
 	std::vector<const PiPiPage*>* PiPiExtractor::ExtractPage() {
+		spdlog::trace("ExtractPage");
+
 		if (!this->IsOperable()) {
 			throw PiPiExtractException(PiPiExtractException::PiPiExtractExceptionCode::InOperable);
 		}
@@ -37,6 +41,8 @@ namespace PiPi {
 	}
 
 	std::vector<const PiPiField*>* PiPiExtractor::ExtractField() {
+		spdlog::trace("ExtractField");
+
 		if (!this->IsOperable()) {
 			throw PiPiExtractException(PiPiExtractException::PiPiExtractExceptionCode::InOperable);
 		}

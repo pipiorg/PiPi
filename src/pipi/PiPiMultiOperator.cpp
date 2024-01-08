@@ -28,6 +28,8 @@ namespace PiPi {
     }
 
     size_t PiPiMultiOperator::Add(char *pdfBytes, size_t pdfSize) {
+        spdlog::trace("Add");
+
         std::vector<std::tuple<PdfMemDocument*, PiPiOperator*>>* docs = this->docs;
         
         size_t index = docs->size();
@@ -41,6 +43,8 @@ namespace PiPi {
     }
 
     PiPiPager* PiPiMultiOperator::GetPager() {
+        spdlog::trace("GetPager");
+
         if (this->pager != nullptr) {
             return this->pager;
         }
@@ -56,6 +60,8 @@ namespace PiPi {
     
 
     PiPiOperator* PiPiMultiOperator::GetOperator(size_t index) {
+        spdlog::trace("GetOperator");
+
         std::vector<std::tuple<PdfMemDocument*, PiPiOperator*>>* docs = this->docs;
         
         if (index >= docs->size()) {

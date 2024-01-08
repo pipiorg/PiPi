@@ -14,6 +14,8 @@ namespace PiPi {
 	}
 
 	PiPiFiller* PiPiFiller::FillValue(std::string name, std::string value) {
+        spdlog::trace("FillValue");
+
         if (!this->IsOperable()) {
             throw PiPiFillFieldException(PiPiFillFieldException::PiPiFillFieldExceptionCode::InOperable);
         }
@@ -66,6 +68,8 @@ namespace PiPi {
 	}
 
     PiPiFiller* PiPiFiller::FillValue(std::string fieldName, std::string value, bool ellipsis) {
+        spdlog::trace("FillValue");
+
         if (!this->IsOperable()) {
             throw PiPiFillFieldException(PiPiFillFieldException::PiPiFillFieldExceptionCode::InOperable);
         }
@@ -126,6 +130,8 @@ namespace PiPi {
     }
 
 	PiPiFiller* PiPiFiller::FillImage(std::string fieldName, char* imageBytes, size_t imageSize) {
+        spdlog::trace("FillImage");
+
         if (!this->IsOperable()) {
             throw PiPiFillFieldException(PiPiFillFieldException::PiPiFillFieldExceptionCode::InOperable);
         }
@@ -188,6 +194,8 @@ namespace PiPi {
 	}
 
     void PiPiFiller::DirectFillValue(std::string fieldName, std::string value) {
+        spdlog::trace("DirectFillValue");
+
         PiPiFieldManager* fieldManager = this->fieldManager;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         
@@ -219,6 +227,8 @@ namespace PiPi {
     }
 
     std::string PiPiFiller::FilterValue(std::string value, std::string fontName) {
+        spdlog::trace("FilterValue");
+
         PiPiFontManager* fontManager = this->fontManager;
         
         const PdfFont* font = fontManager->AccessFont(fontName) == nullptr
@@ -254,6 +264,8 @@ namespace PiPi {
     }
 
     std::string PiPiFiller::TrimValue(std::string value, float width, std::string fontName, float fontSize) {
+        spdlog::trace("TrimValue");
+
         PiPiFontManager* fontManager = this->fontManager;
         
         const PdfFont* font = fontManager->AccessFont(fontName) == nullptr
@@ -292,6 +304,8 @@ namespace PiPi {
     }
 
     std::string PiPiFiller::EllipsisValue(std::string value, float width, float height, std::string fontName, float fontSize) {
+        spdlog::trace("EllipsisValue");
+
         PiPiFontManager* fontManager = this->fontManager;
         
         const PdfFont* font = fontManager->AccessFont(fontName) == nullptr
@@ -333,6 +347,8 @@ namespace PiPi {
     }
 
     std::string PiPiFiller::EllipsisValueMultiline(std::string value, float width, float height, std::string fontName, float fontSize) {
+        spdlog::trace("EllipsisValueMultiline");
+
         PiPiFontManager* fontManager = this->fontManager;
         
         const PdfFont* font = fontManager->AccessFont(fontName) == nullptr

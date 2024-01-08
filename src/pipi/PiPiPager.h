@@ -2,7 +2,8 @@
 
 #include <vector>
 #include <tuple>
-#include "podofo/podofo.h"
+#include <podofo/podofo.h>
+#include <spdlog/spdlog.h>
 #include "PiPiOperator.h"
 #include "PiPiPageException.h"
 

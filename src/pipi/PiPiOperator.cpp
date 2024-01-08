@@ -58,10 +58,14 @@ namespace PiPi {
     }
 
 	PiPiFontManager* PiPiOperator::GetFontManager() {
+		spdlog::trace("GetFontManager");
+
 		return this->fontManager;
 	}
 
 	PiPiFiller* PiPiOperator::GetFiller() {
+		spdlog::trace("GetFiller");
+
 		if (this->filler != nullptr) {
 			return this->filler;
 		}
@@ -79,6 +83,8 @@ namespace PiPi {
 	}
 
 	PiPiEditor* PiPiOperator::GetEditor() {
+		spdlog::trace("GetEditor");
+
 		if (this->editor != nullptr) {
 			return this->editor;
 		}
@@ -96,6 +102,8 @@ namespace PiPi {
 	}
 
 	PiPiExtractor* PiPiOperator::GetExtractor() {
+		spdlog::trace("GetExtractor");
+
 		if (this->extractor != nullptr) {
 			return this->extractor;
 		}
@@ -111,10 +119,14 @@ namespace PiPi {
 	}
 
 	bool PiPiOperator::IsOperable() {
+		spdlog::trace("IsOperable");
+
 		return this->document != nullptr;
 	}
 
 	void PiPiOperator::Finalize(std::vector<char>** newPdf) {
+		spdlog::trace("Finalize");
+
         *newPdf = new std::vector<char>();
 		PoDoFo::VectorStreamDevice outputStreamDevice(**newPdf);
         

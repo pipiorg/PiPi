@@ -17,10 +17,14 @@ namespace PiPi {
 	}
 
 	bool PiPiAppearanceManager::IsOperable() {
+		spdlog::trace("IsOperable");
+
 		return this->document != nullptr;
 	}
 
 	void PiPiAppearanceManager::GenerateAppearance() {
+		spdlog::trace("GenerateAppearance");
+
 		PdfMemDocument* document = this->document;
 		PiPiFontManager* fontManager = this->fontManager;
         PiPiFieldManager* fieldManager = this->fieldManager;
@@ -45,16 +49,22 @@ namespace PiPi {
 	}
 
 	void PiPiAppearanceManager::MarkNeedAppearance(std::string fieldName) {
+		spdlog::trace("MarkNeedAppearance");
+
 		std::set<std::string>* fieldNames = this->fieldNames;
 		fieldNames->insert(fieldName);
 	}
 
 	void PiPiAppearanceManager::UnMarkNeedAppearance(std::string fieldName) {
+		spdlog::trace("UnMarkNeedAppearance");
+
 		std::set<std::string>* fieldNames = this->fieldNames;
 		fieldNames->erase(fieldName);
 	}
 
 	void PiPiAppearanceManager::ClearNeedAppearance() {
+		spdlog::trace("ClearNeedAppearance");
+
 		std::set<std::string>* fieldNames = this->fieldNames;
 		fieldNames->clear();
 	}

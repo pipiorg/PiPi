@@ -1,6 +1,7 @@
 #pragma once
 
-#include "podofo/podofo.h"
+#include <podofo/podofo.h>
+#include <spdlog/spdlog.h>
 #include "PiPiFieldType.h"
 #include "PiPiManagedFields.h"
 #include "PiPiManagedAnnotations.h"

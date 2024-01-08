@@ -1,7 +1,8 @@
 #pragma once
 
-#include "podofo/podofo.h"
-#include "utf8.h"
+#include <podofo/podofo.h>
+#include <spdlog/spdlog.h>
+#include <utf8.h>
 #include "PiPiFontManager.h"
 #include "PiPiAppearanceManager.h"
 #include "PiPiFieldManager.h"
