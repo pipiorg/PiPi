@@ -9,7 +9,8 @@ namespace PiPi {
     class PiPiFillFieldException : public runtime_error {
         public:
             enum PiPiFillFieldExceptionCode {
-                UnsupportedPdfFieldType = 1
+                InOperable = 1,
+                UnsupportedPdfFieldType = 2
             };
         
             PiPiFillFieldException(PiPiFillFieldExceptionCode code);

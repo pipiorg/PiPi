@@ -21,6 +21,10 @@ namespace PiPi {
             delete this->docs;
             this->docs = nullptr;
         }
+
+        if (this->pager != nullptr) {
+            this->pager->operable = false;
+        }
     }
 
     size_t PiPiMultiOperator::Add(char *pdfBytes, size_t pdfSize) {

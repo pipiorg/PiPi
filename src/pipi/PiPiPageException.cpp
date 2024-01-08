@@ -2,6 +2,7 @@
 
 namespace PiPi {
     const map<const PiPiPageException::PiPiPageExceptionCode, const string> PiPiPageException::PiPiPageExceptionMessageCodeMap {
+        { PiPiPageException::PiPiPageExceptionCode::InOperable, "InOperable" },
         { PiPiPageException::PiPiPageExceptionCode::InvalidSplitInstruction, "Invalid split instruction" },
         { PiPiPageException::PiPiPageExceptionCode::IndexOutOfRange, "Index out of range" }
     };

@@ -2,7 +2,7 @@
 
 namespace PiPi {
     const map<const PiPiExtractException::PiPiExtractExceptionCode, const string> PiPiExtractException::PiPiExtractExceptionMessageCodeMap {
-        {}
+        { PiPiExtractException::PiPiExtractExceptionCode::InOperable, "InOperable"}
     };
 
     PiPiExtractException::PiPiExtractException(PiPiExtractException::PiPiExtractExceptionCode code) : runtime_error(PiPiExtractException::PiPiExtractExceptionMessageCodeMap.at(code)) {

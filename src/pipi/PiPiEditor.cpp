@@ -2,6 +2,7 @@
 
 namespace PiPi {
 	PiPiEditor::PiPiEditor(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiAppearanceManager* appearanceManager, PiPiFieldManager* fieldManager) {
+        this->operable = true;
         this->document = document;
         this->fontManager = fontManager;
         this->appearanceManager = appearanceManager;
@@ -9,10 +10,14 @@ namespace PiPi {
 	}
 
 	bool PiPiEditor::IsOperable() {
-		return this->document != nullptr;
+        return this->operable;
 	}
 
     PiPiEditor* PiPiEditor::Flatten() {
+        if (!this->IsOperable()) {
+            throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+        }
+
         PdfMemDocument* document = this->document;
         PiPiFontManager* fontManager = this->fontManager;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
@@ -40,6 +45,10 @@ namespace PiPi {
     }
 
 	PiPiEditor* PiPiEditor::Flatten(std::string fieldName) {
+        if (!this->IsOperable()) {
+            throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+        }
+
 		PdfMemDocument* document = this->document;
         PiPiFontManager* fontManager = this->fontManager;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
@@ -63,6 +72,10 @@ namespace PiPi {
 	}
 
     PiPiEditor* PiPiEditor::AddField(std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height) {
+        if (!this->IsOperable()) {
+            throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+        }
+
         PdfMemDocument* document = this->document;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         PiPiFieldManager* fieldManager = this->fieldManager;
@@ -86,6 +99,10 @@ namespace PiPi {
     }
 
     PiPiEditor* PiPiEditor::RemoveField(std::string fieldName, long pageIndex, double x, double y, double width, double height) {
+        if (!this->IsOperable()) {
+            throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+        }
+
         PdfMemDocument* document = this->document;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         PiPiFieldManager* fieldManager = this->fieldManager;
@@ -97,6 +114,10 @@ namespace PiPi {
     }
 
 	PiPiEditor* PiPiEditor::RenameField(std::string oldFieldName, std::string newFieldName) {
+        if (!this->IsOperable()) {
+            throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+        }
+
 		PdfMemDocument* document = this->document;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         PiPiFieldManager* fieldManager = this->fieldManager;
@@ -110,6 +131,10 @@ namespace PiPi {
 	}
 
     PiPiEditor* PiPiEditor::SetFieldColor(std::string fieldName, float red, float green, float blue) {
+        if (!this->IsOperable()) {
+            throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+        }
+
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         PiPiFieldManager* fieldManager = this->fieldManager;
         
@@ -140,6 +165,10 @@ namespace PiPi {
     }
 
     PiPiEditor* PiPiEditor::SetFieldBorderColor(std::string fieldName, float red, float green, float blue) {
+        if (!this->IsOperable()) {
+            throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+        }
+
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         PiPiFieldManager* fieldManager = this->fieldManager;
         
@@ -187,6 +216,10 @@ namespace PiPi {
     }
 
     PiPiEditor* PiPiEditor::SetFieldBackgroundColor(std::string fieldName, float red, float green, float blue) {
+        if (!this->IsOperable()) {
+            throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+        }
+
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         PiPiFieldManager* fieldManager = this->fieldManager;
         
@@ -234,6 +267,10 @@ namespace PiPi {
     }
 
     PiPiEditor* PiPiEditor::SetFieldTextHorizontalAlignment(std::string fieldName, PiPiTextHorizontalAlignment alignment) {
+        if (!this->IsOperable()) {
+            throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+        }
+
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         PiPiFieldManager* fieldManager = this->fieldManager;
         
@@ -269,6 +306,10 @@ namespace PiPi {
     }
 
     PiPiEditor* PiPiEditor::SetFieldMultiline(std::string fieldName, bool multiline) {
+        if (!this->IsOperable()) {
+            throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+        }
+
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         PiPiFieldManager* fieldManager = this->fieldManager;
         
@@ -294,6 +335,10 @@ namespace PiPi {
     }
 
     PiPiEditor* PiPiEditor::SetFieldFontName(std::string fieldName, std::string fontName) {
+        if (!this->IsOperable()) {
+            throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+        }
+
         PdfMemDocument* document = this->document;
         PiPiFontManager* fontManager = this->fontManager;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
@@ -353,6 +398,10 @@ namespace PiPi {
     }
 
     PiPiEditor* PiPiEditor::SetFieldFontSize(std::string fieldName, float fontSize) {
+        if (!this->IsOperable()) {
+            throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+        }
+
         PdfMemDocument* document = this->document;
         PiPiAppearanceManager* appearanceManager = this->appearanceManager;
         PiPiFieldManager* fieldManager = this->fieldManager;

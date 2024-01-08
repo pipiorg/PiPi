@@ -2,15 +2,20 @@
 
 namespace PiPi {
 	PiPiExtractor::PiPiExtractor(PdfMemDocument* document, PiPiFieldManager* fieldManager) {
+		this->operable = true;
         this->document = document;
         this->fieldManager = fieldManager;
 	}
 
 	bool PiPiExtractor::IsOperable() {
-		return this->document != nullptr;
+		return this->operable;
 	}
 
 	std::vector<const PiPiPage*>* PiPiExtractor::ExtractPage() {
+		if (!this->IsOperable()) {
+			throw PiPiExtractException(PiPiExtractException::PiPiExtractExceptionCode::InOperable);
+		}
+
         PdfMemDocument* document = this->document;
         
 		std::vector<const PiPiPage*>* pages = new std::vector<const PiPiPage*>();
@@ -32,6 +37,10 @@ namespace PiPi {
 	}
 
 	std::vector<const PiPiField*>* PiPiExtractor::ExtractField() {
+		if (!this->IsOperable()) {
+			throw PiPiExtractException(PiPiExtractException::PiPiExtractExceptionCode::InOperable);
+		}
+
         PdfMemDocument* document = this->document;
         PiPiFieldManager* fieldManager = this->fieldManager;
         

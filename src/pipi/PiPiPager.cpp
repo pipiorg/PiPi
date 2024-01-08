@@ -2,10 +2,19 @@
 
 namespace PiPi {
 	PiPiPager::PiPiPager(std::vector<std::tuple<PdfMemDocument*, PiPiOperator*>>* docs) {
+        this->operable = true;
         this->docs = docs;
 	}
 
+    bool PiPiPager::IsOperable() {
+        return this->operable;
+    }
+
     void PiPiPager::Merge(std::vector<size_t>* indexs, std::vector<char>** newPdf) {
+        if (!this->IsOperable()) {
+            throw PiPiPageException(PiPiPageException::PiPiPageExceptionCode::InOperable);
+        }
+
         std::vector<std::tuple<PdfMemDocument*, PiPiOperator*>>* docs = this->docs;
         
         PdfMemDocument* mergedDoc = new PdfMemDocument();
@@ -33,6 +42,10 @@ namespace PiPi {
     }
 
     void PiPiPager::Split(size_t index, std::string instruction, std::vector<std::vector<char>*>** newPdfs) {
+        if (!this->IsOperable()) {
+            throw PiPiPageException(PiPiPageException::PiPiPageExceptionCode::InOperable);
+        }
+
         std::vector<std::tuple<PdfMemDocument*, PiPiOperator*>>* docs = this->docs;
         
         if (index >= docs->size()) {

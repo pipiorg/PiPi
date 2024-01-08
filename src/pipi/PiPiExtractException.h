@@ -9,6 +9,7 @@ namespace PiPi {
     class PiPiExtractException : public runtime_error {
         public:
             enum PiPiExtractExceptionCode {
+                InOperable = 1
             };
         
             PiPiExtractException(PiPiExtractExceptionCode code);

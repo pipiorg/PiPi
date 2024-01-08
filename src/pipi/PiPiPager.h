@@ -9,14 +9,22 @@
 using namespace PoDoFo;
 
 namespace PiPi {
+    class PiPiMultiOperator;
+
 	class PiPiPager {
+        friend class PiPiMultiOperator;
+
 		public:
             PiPiPager(std::vector<std::tuple<PdfMemDocument*, PiPiOperator*>>* docs);
+
+            bool IsOperable();
 
             void Merge(std::vector<size_t>* indexs, std::vector<char>** newPdf);
             void Split(size_t index, std::string instruction, std::vector<std::vector<char>*>** newPdfs);
 
 		private:
+            bool operable;
+
             std::vector<std::tuple<PdfMemDocument*, PiPiOperator*>>* docs;
         
             std::vector<std::tuple<size_t, size_t>>* ParseSplitInstruction(std::string instruction);

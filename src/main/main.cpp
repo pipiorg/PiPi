@@ -80,7 +80,7 @@ void testSingle(char* file1Bytes, size_t file1Size, char* newFileBytes, size_t n
     op->Finalize(&out);
     
     vector2array(out, &newFileBytes, &newFileSize);
-    writeFile("/Users/chchang/Desktop/TEST2_o.pdf", newFileBytes, newFileSize);
+    writeFile("", newFileBytes, newFileSize);
     
     delete out;
     
@@ -89,20 +89,20 @@ void testSingle(char* file1Bytes, size_t file1Size, char* newFileBytes, size_t n
 
 int main()
 {
-	char* file1Bytes;
-	size_t file1Size;
+	char* file1Bytes = nullptr;
+	size_t file1Size = 0;
     
-    char* file2Bytes;
-    size_t file2Size;
+    char* file2Bytes = nullptr;
+    size_t file2Size = 0;
 
-	char* newFileBytes;
-	size_t newFileSize;
+	char* newFileBytes = nullptr;
+	size_t newFileSize = 0;
 
-	char* imageBytes;
-	size_t imageSize;
+	char* imageBytes = nullptr;
+	size_t imageSize = 0;
     
-    char* fontBytes;
-    size_t fontSize;
+    char* fontBytes = nullptr;
+    size_t fontSize = 0;
 
 	// Replace with your pdf and image file path
 	readFile("", &file1Bytes, &file1Size);
@@ -122,6 +122,6 @@ int main()
     delete[] imageBytes;
     delete[] fontBytes;
 	
-    return;
+    return 0;
 }
 

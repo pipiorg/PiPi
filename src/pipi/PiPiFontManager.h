@@ -1,11 +1,16 @@
 #pragma once
 
 #include <podofo/podofo.h>
+#include "PiPiFontManageException.h"
 
 using namespace PoDoFo;
 
 namespace PiPi {
+	class PiPiOperator;
+
 	class PiPiFontManager {
+		friend class PiPiOperator;
+
 		public:
 			PiPiFontManager(PdfMemDocument* document);
 
@@ -19,6 +24,8 @@ namespace PiPi {
 			const PdfFont* AccessDefaultFont();
 
 		private:
+			bool operable;
+
 			PdfMemDocument* document;
 
 			std::map<const std::string, const PdfFont*>* fontMap;

@@ -13,6 +13,8 @@ using namespace PoDoFo;
 
 namespace PiPi {
 	class PiPiEditor {
+        friend class PiPiOperator;
+
 		public:
 			PiPiEditor(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiAppearanceManager* appearanceManager, PiPiFieldManager* fieldManager);
 
@@ -42,6 +44,8 @@ namespace PiPi {
 			bool IsOperable();
 
 		private:
+            bool operable;
+
 			PdfMemDocument* document;
         
             PiPiFontManager* fontManager;

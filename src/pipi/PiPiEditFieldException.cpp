@@ -2,6 +2,7 @@
 
 namespace PiPi {
     const map<const PiPiEditFieldException::PiPiEditFieldExceptionCode, const string> PiPiEditFieldException::PiPiEditFieldExceptionMessageCodeMap {
+        { PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable, "InOperable" },
         { PiPiEditFieldException::PiPiEditFieldExceptionCode::NotImplementate, "Not implementate" },
         { PiPiEditFieldException::PiPiEditFieldExceptionCode::MultilineNotSupported, "Multiline only support with textbox form field" },
         { PiPiEditFieldException::PiPiEditFieldExceptionCode::NotRegisterFont, "Specific font not registered" },

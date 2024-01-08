@@ -9,8 +9,9 @@ namespace PiPi {
     class PiPiPageException : public runtime_error {
         public:
             enum PiPiPageExceptionCode {
-                InvalidSplitInstruction = 0,
-                IndexOutOfRange = 1
+                InOperable = 1,
+                InvalidSplitInstruction = 2,
+                IndexOutOfRange = 3
             };
         
             PiPiPageException(PiPiPageExceptionCode code);

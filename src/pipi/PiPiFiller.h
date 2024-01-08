@@ -10,7 +10,11 @@
 using namespace PoDoFo;
 
 namespace PiPi {
+	class PiPiOperator;
+
 	class PiPiFiller {
+		friend class PiPiOperator;
+
 		public:
 			PiPiFiller(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiAppearanceManager* appearanceManager, PiPiFieldManager* fieldManager);
 
@@ -21,6 +25,8 @@ namespace PiPi {
 			bool IsOperable();
 
 		private:
+			bool operable;
+
 			PdfMemDocument* document;
 			
 			PiPiFontManager* fontManager;

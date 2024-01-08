@@ -7,7 +7,7 @@ namespace PiPi {
 	}
 
 	bool PiPiFontManager::IsOperable() {
-		return this->document != nullptr;
+        return this->operable;
 	}
 
     void PiPiFontManager::EmbedFonts() {
@@ -16,6 +16,10 @@ namespace PiPi {
     }
 
 	const std::string PiPiFontManager::RegisterFont(char* fontBytes, size_t fontSize) {
+        if (!this->IsOperable()) {
+            throw PiPiFontManageException(PiPiFontManageException::PiPiFontManageExceptionCode::InOperable);
+        }
+
 		PdfMemDocument* document = this->document;
 
 		PdfFontManager* fontManager = &(document->GetFonts());
@@ -50,6 +54,7 @@ namespace PiPi {
 	}
 
     void PiPiFontManager::Init(PdfMemDocument* document) {
+        this->operable = true;
         this->document = document;
         this->fontMap = new std::map<const std::string, const PdfFont*>();
     }

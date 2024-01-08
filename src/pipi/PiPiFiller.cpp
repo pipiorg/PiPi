@@ -2,6 +2,7 @@
 
 namespace PiPi {
 	PiPiFiller::PiPiFiller(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiAppearanceManager* appearanceManager, PiPiFieldManager* fieldManager) {
+        this->operable = true;
         this->document = document;
         this->appearanceManager = appearanceManager;
         this->fontManager = fontManager;
@@ -9,10 +10,14 @@ namespace PiPi {
 	}
 
 	bool PiPiFiller::IsOperable() {
-		return this->document != nullptr;
+        return this->operable;
 	}
 
 	PiPiFiller* PiPiFiller::FillValue(std::string name, std::string value) {
+        if (!this->IsOperable()) {
+            throw PiPiFillFieldException(PiPiFillFieldException::PiPiFillFieldExceptionCode::InOperable);
+        }
+
 		PdfMemDocument* document = this->document;
         PiPiFieldManager* fieldManager = this->fieldManager;
 
@@ -61,6 +66,10 @@ namespace PiPi {
 	}
 
     PiPiFiller* PiPiFiller::FillValue(std::string fieldName, std::string value, bool ellipsis) {
+        if (!this->IsOperable()) {
+            throw PiPiFillFieldException(PiPiFillFieldException::PiPiFillFieldExceptionCode::InOperable);
+        }
+
         PdfMemDocument* document = this->document;
         PiPiFieldManager* fieldManager = this->fieldManager;
         
@@ -117,6 +126,10 @@ namespace PiPi {
     }
 
 	PiPiFiller* PiPiFiller::FillImage(std::string fieldName, char* imageBytes, size_t imageSize) {
+        if (!this->IsOperable()) {
+            throw PiPiFillFieldException(PiPiFillFieldException::PiPiFillFieldExceptionCode::InOperable);
+        }
+
 		PdfMemDocument* document = this->document;
         PiPiFieldManager* fieldManager = this->fieldManager;
         

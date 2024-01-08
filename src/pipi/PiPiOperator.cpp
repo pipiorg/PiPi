@@ -33,32 +33,28 @@ namespace PiPi {
             this->fieldManager = nullptr;
         }
         
-        if (this->fontManager != nullptr) {
-            delete this->fontManager;
-            this->fontManager = nullptr;
-        }
-        
-        if (this->editor != nullptr) {
-            delete this->editor;
-            this->editor = nullptr;
-        }
-        
-        if (this->filler != nullptr) {
-            delete this->filler;
-            this->filler = nullptr;
-        }
-        
-        if (this->extractor != nullptr) {
-            delete this->extractor;
-            this->extractor = nullptr;
-        }
-        
         if (this->document != nullptr) {
             this->document->CollectGarbage();
             
             delete this->document;
             this->document = nullptr;
         }
+
+		if (this->fontManager != nullptr) {
+			this->fontManager->operable = false;
+		}
+
+		if (this->editor != nullptr) {
+			this->editor->operable = false;
+		}
+
+		if (this->filler != nullptr) {
+			this->filler->operable = false;
+		}
+
+		if (this->extractor != nullptr) {
+			this->extractor->operable = false;
+		}
     }
 
 	PiPiFontManager* PiPiOperator::GetFontManager() {

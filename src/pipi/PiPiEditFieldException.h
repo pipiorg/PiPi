@@ -6,13 +6,16 @@
 using namespace std;
 
 namespace PiPi {
+    class PiPiOperator;
+
     class PiPiEditFieldException : public runtime_error {
         public:
             enum PiPiEditFieldExceptionCode {
-                NotImplementate = 1,
-                MultilineNotSupported = 2,
-                NotRegisterFont = 3,
-                InvalidColor = 4
+                InOperable = 1,
+                NotImplementate = 2,
+                MultilineNotSupported = 3,
+                NotRegisterFont = 4,
+                InvalidColor = 5
             };
         
             PiPiEditFieldException(PiPiEditFieldExceptionCode code);
