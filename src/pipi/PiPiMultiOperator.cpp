@@ -2,6 +2,7 @@
 
 namespace PiPi {
     PiPiMultiOperator::PiPiMultiOperator() {
+        this->pager = nullptr;
         this->docs = new std::vector<std::tuple<PdfMemDocument*, PiPiOperator*>>();
     }
 
