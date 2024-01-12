@@ -30,7 +30,7 @@ namespace PiPi
 
     std::set<PdfField *> *fields = fieldManager->SearchField(name);
 
-    float minArea = -1;
+    double minArea = -1;
     PdfAnnotation *minAnnot = nullptr;
 
     for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
@@ -38,9 +38,9 @@ namespace PiPi
       PdfField *field = *iterator;
       PdfAnnotation *annot = fieldManager->BridgeFieldToAnnotation(field);
 
-      float width = PiPiAnnotationUtil::ExtractAnnotationWidth(annot);
-      float height = PiPiAnnotationUtil::ExtractAnnotationHeight(annot);
-      float area = width * height;
+      double width = PiPiAnnotationUtil::ExtractAnnotationWidth(annot);
+      double height = PiPiAnnotationUtil::ExtractAnnotationHeight(annot);
+      double area = width * height;
 
       if (minArea == -1 || area < minArea)
       {
@@ -62,7 +62,7 @@ namespace PiPi
     std::string minFontName = PiPiAnnotationUtil::ExtractAnnotationFontName(minAnnot);
     float minFontSize = PiPiAnnotationUtil::ExtractAnnotationFontSize(minAnnot);
 
-    float minWidth = PiPiAnnotationUtil::ExtractAnnotationWidth(minAnnot);
+    double minWidth = PiPiAnnotationUtil::ExtractAnnotationWidth(minAnnot);
 
     value = this->FilterValue(value, minFontName);
 
@@ -88,7 +88,7 @@ namespace PiPi
     PiPiFieldManager *fieldManager = this->fieldManager;
 
     PdfAnnotation *minAnnot = nullptr;
-    float minArea = -1;
+    double minArea = -1;
 
     std::set<PdfField *> *fields = fieldManager->SearchField(fieldName);
     for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
@@ -96,9 +96,9 @@ namespace PiPi
       PdfField *field = *iterator;
       PdfAnnotation *annot = fieldManager->BridgeFieldToAnnotation(field);
 
-      float width = PiPiAnnotationUtil::ExtractAnnotationWidth(annot);
-      float height = PiPiAnnotationUtil::ExtractAnnotationHeight(annot);
-      float area = width * height;
+      double width = PiPiAnnotationUtil::ExtractAnnotationWidth(annot);
+      double height = PiPiAnnotationUtil::ExtractAnnotationHeight(annot);
+      double area = width * height;
 
       if (minArea == -1 || area < minArea)
       {
@@ -129,8 +129,8 @@ namespace PiPi
 
         float minFontSize = PiPiAnnotationUtil::ExtractAnnotationFontSize(minAnnot);
 
-        float minWidth = PiPiAnnotationUtil::ExtractAnnotationWidth(minAnnot);
-        float minHeight = PiPiAnnotationUtil::ExtractAnnotationHeight(minAnnot);
+        double minWidth = PiPiAnnotationUtil::ExtractAnnotationWidth(minAnnot);
+        double minHeight = PiPiAnnotationUtil::ExtractAnnotationHeight(minAnnot);
 
         value = minMultiline
                     ? this->EllipsisValueMultiline(value, minWidth, minHeight, minFontName, minFontSize)
@@ -288,7 +288,7 @@ namespace PiPi
     return newValue;
   }
 
-  std::string PiPiFiller::TrimValue(std::string value, float width, std::string fontName, float fontSize)
+  std::string PiPiFiller::TrimValue(std::string value, double width, std::string fontName, float fontSize)
   {
     spdlog::trace("TrimValue");
 
@@ -332,7 +332,7 @@ namespace PiPi
     return line;
   }
 
-  std::string PiPiFiller::EllipsisValue(std::string value, float width, float height, std::string fontName, float fontSize)
+  std::string PiPiFiller::EllipsisValue(std::string value, double width, double height, std::string fontName, float fontSize)
   {
     spdlog::trace("EllipsisValue");
 
@@ -379,7 +379,7 @@ namespace PiPi
     return line;
   }
 
-  std::string PiPiFiller::EllipsisValueMultiline(std::string value, float width, float height, std::string fontName, float fontSize)
+  std::string PiPiFiller::EllipsisValueMultiline(std::string value, double width, double height, std::string fontName, float fontSize)
   {
     spdlog::trace("EllipsisValueMultiline");
 

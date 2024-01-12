@@ -37,8 +37,8 @@ namespace PiPi {
             void DirectFillValue(std::string fieldName, std::string value);
 
             std::string FilterValue(std::string value, std::string fontName);
-            std::string TrimValue(std::string value, float width, std::string fontName, float fontSize);
-            std::string EllipsisValue(std::string value, float width, float height, std::string fontName, float fontSize);
-            std::string EllipsisValueMultiline(std::string value, float width, float height, std::string fontName, float fontSize);
+            std::string TrimValue(std::string value, double width, std::string fontName, float fontSize);
+            std::string EllipsisValue(std::string value, double width, double height, std::string fontName, float fontSize);
+            std::string EllipsisValueMultiline(std::string value, double width, double height, std::string fontName, float fontSize);
 	};
 }
