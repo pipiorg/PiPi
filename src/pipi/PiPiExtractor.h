@@ -10,24 +10,26 @@
 
 using namespace PoDoFo;
 
-namespace PiPi {
+namespace PiPi
+{
 	class PiPiOperator;
 
-	class PiPiExtractor {
+	class PiPiExtractor
+	{
 		friend class PiPiOperator;
 
-		public:
-			PiPiExtractor(PdfMemDocument* document, PiPiFieldManager* fieldManager);
+	public:
+		PiPiExtractor(PdfMemDocument *document, PiPiFieldManager *fieldManager);
 
-			std::vector<const PiPiPage*>* ExtractPage();
-			std::vector<const PiPiField*>* ExtractField();
+		std::vector<const PiPiPage *> *ExtractPage();
+		std::vector<const PiPiField *> *ExtractField();
 
-			bool IsOperable();
+		bool IsOperable();
 
-		private:
-			bool operable;
+	private:
+		bool operable;
 
-			PdfMemDocument* document;
-            PiPiFieldManager* fieldManager;
+		PdfMemDocument *document;
+		PiPiFieldManager *fieldManager;
 	};
 }

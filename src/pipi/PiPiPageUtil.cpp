@@ -1,64 +1,72 @@
 #include "PiPiPageUtil.h"
 
-namespace PiPi {
-    int PiPiPageUtil::SearchPageIndex(PdfMemDocument* document, PdfPage* page) {
-        spdlog::trace("SearchPageIndex");
+namespace PiPi
+{
+  int PiPiPageUtil::SearchPageIndex(PdfMemDocument *document, PdfPage *page)
+  {
+    spdlog::trace("SearchPageIndex");
 
-        PdfPageCollection* pages = &(document->GetPages());
-        
-        unsigned int pageCount = pages->GetCount();
-        for (unsigned int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
-            if (&(pages->GetPageAt(pageIndex)) == page) {
-                return pageIndex;
-            }
-        }
-        
-        return -1;
+    PdfPageCollection *pages = &(document->GetPages());
+
+    unsigned int pageCount = pages->GetCount();
+    for (unsigned int pageIndex = 0; pageIndex < pageCount; pageIndex++)
+    {
+      if (&(pages->GetPageAt(pageIndex)) == page)
+      {
+        return pageIndex;
+      }
     }
 
-    double PiPiPageUtil::ExtractPageWidth(PdfPage* page) {
-        spdlog::trace("ExtractPageWidth");
+    return -1;
+  }
 
-        Rect rect = page->GetRect();
+  double PiPiPageUtil::ExtractPageWidth(PdfPage *page)
+  {
+    spdlog::trace("ExtractPageWidth");
 
-        double left = rect.GetLeft();
-        double right = rect.GetRight();
+    Rect rect = page->GetRect();
 
-        double width = right - left;
+    double left = rect.GetLeft();
+    double right = rect.GetRight();
 
-        return width;
-    }
+    double width = right - left;
 
-    double PiPiPageUtil::ExtractPageHeight(PdfPage* page) {
-        spdlog::trace("ExtractPageHeight");
+    return width;
+  }
 
-        Rect rect = page->GetRect();
+  double PiPiPageUtil::ExtractPageHeight(PdfPage *page)
+  {
+    spdlog::trace("ExtractPageHeight");
 
-        double top = rect.GetTop();
-        double bottom = rect.GetBottom();
+    Rect rect = page->GetRect();
 
-        double height = top - bottom;
+    double top = rect.GetTop();
+    double bottom = rect.GetBottom();
 
-        return height;
-    }
+    double height = top - bottom;
 
-    double PiPiPageUtil::ExtractPageX(PdfPage* page) {
-        spdlog::trace("ExtractPageX");
+    return height;
+  }
 
-        Rect rect = page->GetRect();
+  double PiPiPageUtil::ExtractPageX(PdfPage *page)
+  {
+    spdlog::trace("ExtractPageX");
 
-        double x = rect.GetLeft();
+    Rect rect = page->GetRect();
 
-        return x;
-    }
+    double x = rect.GetLeft();
 
-    double PiPiPageUtil::ExtractPageY(PdfPage* page) {
-        spdlog::trace("ExtractPageY");
+    return x;
+  }
 
-        Rect rect = page->GetRect();
+  double PiPiPageUtil::ExtractPageY(PdfPage *page)
+  {
+    spdlog::trace("ExtractPageY");
 
-        double y = rect.GetTop();
+    Rect rect = page->GetRect();
 
-        return y;
-    }
+    double y = rect.GetTop();
+
+    return y;
+  }
 }

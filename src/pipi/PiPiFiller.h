@@ -29,11 +29,11 @@ namespace PiPi {
 			bool operable;
 
 			PdfMemDocument* document;
-			
+
 			PiPiFontManager* fontManager;
 			PiPiAppearanceManager* appearanceManager;
             PiPiFieldManager* fieldManager;
-        
+
             void DirectFillValue(std::string fieldName, std::string value);
 
             std::string FilterValue(std::string value, std::string fontName);

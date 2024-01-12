@@ -8,25 +8,27 @@
 
 using namespace PoDoFo;
 
-namespace PiPi {
-	class PiPiAppearanceManager {
-		public:
-			PiPiAppearanceManager(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiFieldManager* fieldManager);
-			~PiPiAppearanceManager();
+namespace PiPi
+{
+	class PiPiAppearanceManager
+	{
+	public:
+		PiPiAppearanceManager(PdfMemDocument *document, PiPiFontManager *fontManager, PiPiFieldManager *fieldManager);
+		~PiPiAppearanceManager();
 
-			bool IsOperable();
+		bool IsOperable();
 
-			void GenerateAppearance();
+		void GenerateAppearance();
 
-			void MarkNeedAppearance(std::string fieldName);
-			void UnMarkNeedAppearance(std::string fieldName);
-			void ClearNeedAppearance();
-	
-		private:
-			PdfMemDocument* document;
-			PiPiFontManager* fontManager;
-            PiPiFieldManager* fieldManager;
+		void MarkNeedAppearance(std::string fieldName);
+		void UnMarkNeedAppearance(std::string fieldName);
+		void ClearNeedAppearance();
 
-			std::set<std::string>* fieldNames;
+	private:
+		PdfMemDocument *document;
+		PiPiFontManager *fontManager;
+		PiPiFieldManager *fieldManager;
+
+		std::set<std::string> *fieldNames;
 	};
 }

@@ -5,19 +5,23 @@
 
 using namespace std;
 
-namespace PiPi {
-    class PiPiMultiOperateException : public runtime_error {
-        public:
-            enum PiPiMultiOperateExceptionCode {
-                IndexOutOfRange
-            };
-        
-            PiPiMultiOperateException(PiPiMultiOperateExceptionCode code);
-    
-            const PiPiMultiOperateExceptionCode getCode();
-        private:
-            static const map<const PiPiMultiOperateExceptionCode, const string> PiPiMultiOperateExceptionMessageCodeMap;
-        
-            PiPiMultiOperateExceptionCode code;
+namespace PiPi
+{
+  class PiPiMultiOperateException : public runtime_error
+  {
+  public:
+    enum PiPiMultiOperateExceptionCode
+    {
+      IndexOutOfRange
     };
+
+    PiPiMultiOperateException(PiPiMultiOperateExceptionCode code);
+
+    const PiPiMultiOperateExceptionCode getCode();
+
+  private:
+    static const map<const PiPiMultiOperateExceptionCode, const string> PiPiMultiOperateExceptionMessageCodeMap;
+
+    PiPiMultiOperateExceptionCode code;
+  };
 }

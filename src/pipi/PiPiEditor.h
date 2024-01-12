@@ -12,47 +12,49 @@
 
 using namespace PoDoFo;
 
-namespace PiPi {
-	class PiPiEditor {
-        friend class PiPiOperator;
+namespace PiPi
+{
+  class PiPiEditor
+  {
+    friend class PiPiOperator;
 
-		public:
-			PiPiEditor(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiAppearanceManager* appearanceManager, PiPiFieldManager* fieldManager);
+  public:
+    PiPiEditor(PdfMemDocument *document, PiPiFontManager *fontManager, PiPiAppearanceManager *appearanceManager, PiPiFieldManager *fieldManager);
 
-            PiPiEditor* Flatten();
-			PiPiEditor* Flatten(std::string fieldName);
-        
-            PiPiEditor* AddField(std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height);
-			
-            PiPiEditor* RemoveField(std::string fieldName);
-            PiPiEditor* RemoveField(std::string fieldName, long pageIndex);
-            PiPiEditor* RemoveField(std::string fieldName, long pageIndex, double x, double y);
-            PiPiEditor* RemoveField(std::string fieldName, long pageIndex, double x, double y, double width, double height);
-        
-			PiPiEditor* RenameField(std::string oldFieldName, std::string newFieldName);
+    PiPiEditor *Flatten();
+    PiPiEditor *Flatten(std::string fieldName);
 
-            PiPiEditor* SetFieldFontName(std::string fieldName, std::string fontName);
-            PiPiEditor* SetFieldFontSize(std::string fieldName, float fontSize);
-            
-            PiPiEditor* SetFieldTextHorizontalAlignment(std::string fieldName, PiPiTextHorizontalAlignment alignment);
-        
-            PiPiEditor* SetFieldColor(std::string fieldName, float red, float green, float blue);
-            PiPiEditor* SetFieldBackgroundColor(std::string fieldName, float red, float green, float blue);
-            PiPiEditor* SetFieldBorderColor(std::string fieldName, float red, float green, float blue);
-        
-            PiPiEditor* SetFieldMultiline(std::string fieldName, bool multiline);
-        
-			bool IsOperable();
+    PiPiEditor *AddField(std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height);
 
-		private:
-            bool operable;
+    PiPiEditor *RemoveField(std::string fieldName);
+    PiPiEditor *RemoveField(std::string fieldName, long pageIndex);
+    PiPiEditor *RemoveField(std::string fieldName, long pageIndex, double x, double y);
+    PiPiEditor *RemoveField(std::string fieldName, long pageIndex, double x, double y, double width, double height);
 
-			PdfMemDocument* document;
-        
-            PiPiFontManager* fontManager;
-            PiPiAppearanceManager* appearanceManager;
-            PiPiFieldManager* fieldManager;
-        
-            const PdfString* GetDefaultDA();
-	};
+    PiPiEditor *RenameField(std::string oldFieldName, std::string newFieldName);
+
+    PiPiEditor *SetFieldFontName(std::string fieldName, std::string fontName);
+    PiPiEditor *SetFieldFontSize(std::string fieldName, float fontSize);
+
+    PiPiEditor *SetFieldTextHorizontalAlignment(std::string fieldName, PiPiTextHorizontalAlignment alignment);
+
+    PiPiEditor *SetFieldColor(std::string fieldName, float red, float green, float blue);
+    PiPiEditor *SetFieldBackgroundColor(std::string fieldName, float red, float green, float blue);
+    PiPiEditor *SetFieldBorderColor(std::string fieldName, float red, float green, float blue);
+
+    PiPiEditor *SetFieldMultiline(std::string fieldName, bool multiline);
+
+    bool IsOperable();
+
+  private:
+    bool operable;
+
+    PdfMemDocument *document;
+
+    PiPiFontManager *fontManager;
+    PiPiAppearanceManager *appearanceManager;
+    PiPiFieldManager *fieldManager;
+
+    const PdfString *GetDefaultDA();
+  };
 }

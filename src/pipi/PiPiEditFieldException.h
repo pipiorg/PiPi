@@ -5,25 +5,29 @@
 
 using namespace std;
 
-namespace PiPi {
-    class PiPiOperator;
+namespace PiPi
+{
+  class PiPiOperator;
 
-    class PiPiEditFieldException : public runtime_error {
-        public:
-            enum PiPiEditFieldExceptionCode {
-                InOperable = 1,
-                NotImplementate = 2,
-                MultilineNotSupported = 3,
-                NotRegisterFont = 4,
-                InvalidColor = 5
-            };
-        
-            PiPiEditFieldException(PiPiEditFieldExceptionCode code);
-    
-            const PiPiEditFieldExceptionCode getCode();
-        private:
-            static const map<const PiPiEditFieldExceptionCode, const string> PiPiEditFieldExceptionMessageCodeMap;
-        
-            PiPiEditFieldExceptionCode code;
+  class PiPiEditFieldException : public runtime_error
+  {
+  public:
+    enum PiPiEditFieldExceptionCode
+    {
+      InOperable = 1,
+      NotImplementate = 2,
+      MultilineNotSupported = 3,
+      NotRegisterFont = 4,
+      InvalidColor = 5
     };
+
+    PiPiEditFieldException(PiPiEditFieldExceptionCode code);
+
+    const PiPiEditFieldExceptionCode getCode();
+
+  private:
+    static const map<const PiPiEditFieldExceptionCode, const string> PiPiEditFieldExceptionMessageCodeMap;
+
+    PiPiEditFieldExceptionCode code;
+  };
 }

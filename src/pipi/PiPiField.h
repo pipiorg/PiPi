@@ -3,24 +3,26 @@
 #include <string>
 #include "PiPiFieldType.h"
 
-namespace PiPi {
-	class PiPiField {
-		public:
-			PiPiField(std::string name, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height, std::string font, float fontSize);
+namespace PiPi
+{
+	class PiPiField
+	{
+	public:
+		PiPiField(std::string name, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height, std::string font, float fontSize);
 
-			std::string name;
+		std::string name;
 
-			PiPiFieldType type;
+		PiPiFieldType type;
 
-			unsigned int pageIndex;
-			
-			double x;
-			double y;
-			
-			double width;
-			double height;
+		unsigned int pageIndex;
 
-			std::string fontName;
-			float fontSize;
+		double x;
+		double y;
+
+		double width;
+		double height;
+
+		std::string fontName;
+		float fontSize;
 	};
 }

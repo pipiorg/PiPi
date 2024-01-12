@@ -9,20 +9,22 @@
 
 using namespace PoDoFo;
 
-namespace PiPi {
-	class PiPiMultiOperator {
-        public:
-            PiPiMultiOperator();
-            ~PiPiMultiOperator();
-        
-            size_t Add(char* pdfBytes, size_t pdfSize);
-        
-            PiPiOperator* GetOperator(size_t index);
-            PiPiPager* GetPager();
-        
-        private:
-            std::vector<std::tuple<PdfMemDocument*, PiPiOperator*>>* docs;
-        
-            PiPiPager* pager;
-	};
+namespace PiPi
+{
+  class PiPiMultiOperator
+  {
+  public:
+    PiPiMultiOperator();
+    ~PiPiMultiOperator();
+
+    size_t Add(char *pdfBytes, size_t pdfSize);
+
+    PiPiOperator *GetOperator(size_t index);
+    PiPiPager *GetPager();
+
+  private:
+    std::vector<std::tuple<PdfMemDocument *, PiPiOperator *>> *docs;
+
+    PiPiPager *pager;
+  };
 }

@@ -1,66 +1,76 @@
 #include "PiPiExtractor.h"
 
-namespace PiPi {
-	PiPiExtractor::PiPiExtractor(PdfMemDocument* document, PiPiFieldManager* fieldManager) {
+namespace PiPi
+{
+	PiPiExtractor::PiPiExtractor(PdfMemDocument *document, PiPiFieldManager *fieldManager)
+	{
 		this->operable = true;
-        this->document = document;
-        this->fieldManager = fieldManager;
+		this->document = document;
+		this->fieldManager = fieldManager;
 	}
 
-	bool PiPiExtractor::IsOperable() {
+	bool PiPiExtractor::IsOperable()
+	{
 		spdlog::trace("IsOperable");
 
 		return this->operable;
 	}
 
-	std::vector<const PiPiPage*>* PiPiExtractor::ExtractPage() {
+	std::vector<const PiPiPage *> *PiPiExtractor::ExtractPage()
+	{
 		spdlog::trace("ExtractPage");
 
-		if (!this->IsOperable()) {
+		if (!this->IsOperable())
+		{
 			throw PiPiExtractException(PiPiExtractException::PiPiExtractExceptionCode::InOperable);
 		}
 
-        PdfMemDocument* document = this->document;
-        
-		std::vector<const PiPiPage*>* pages = new std::vector<const PiPiPage*>();
+		PdfMemDocument *document = this->document;
 
-		PdfPageCollection& pdfPages = document->GetPages();
+		std::vector<const PiPiPage *> *pages = new std::vector<const PiPiPage *>();
+
+		PdfPageCollection &pdfPages = document->GetPages();
 		unsigned int pdfPageCount = pdfPages.GetCount();
-		for (unsigned int pdfPageIndex = 0; pdfPageIndex < pdfPageCount; pdfPageIndex++) {
-			PdfPage* pdfPage = &(pdfPages.GetPageAt(pdfPageIndex));
+		for (unsigned int pdfPageIndex = 0; pdfPageIndex < pdfPageCount; pdfPageIndex++)
+		{
+			PdfPage *pdfPage = &(pdfPages.GetPageAt(pdfPageIndex));
 
 			double width = PiPiPageUtil::ExtractPageWidth(pdfPage);
 			double height = PiPiPageUtil::ExtractPageHeight(pdfPage);
 
-			const PiPi::PiPiPage* page = new PiPi::PiPiPage(width, height);
+			const PiPi::PiPiPage *page = new PiPi::PiPiPage(width, height);
 			pages->push_back(page);
 		}
 
 		return pages;
 	}
 
-	std::vector<const PiPiField*>* PiPiExtractor::ExtractField() {
+	std::vector<const PiPiField *> *PiPiExtractor::ExtractField()
+	{
 		spdlog::trace("ExtractField");
 
-		if (!this->IsOperable()) {
+		if (!this->IsOperable())
+		{
 			throw PiPiExtractException(PiPiExtractException::PiPiExtractExceptionCode::InOperable);
 		}
 
-        PdfMemDocument* document = this->document;
-        PiPiFieldManager* fieldManager = this->fieldManager;
-        
-		std::vector<const PiPiField*>* tFields = new std::vector<const PiPiField*>();
+		PdfMemDocument *document = this->document;
+		PiPiFieldManager *fieldManager = this->fieldManager;
 
-        std::map<const std::string, std::set<PdfField*>*>* fieldMap = fieldManager->SearchAllField();
-		for (auto fieldMapIterator = fieldMap->begin(); fieldMapIterator != fieldMap->end(); fieldMapIterator.operator++()) {
+		std::vector<const PiPiField *> *tFields = new std::vector<const PiPiField *>();
+
+		std::map<const std::string, std::set<PdfField *> *> *fieldMap = fieldManager->SearchAllField();
+		for (auto fieldMapIterator = fieldMap->begin(); fieldMapIterator != fieldMap->end(); fieldMapIterator.operator++())
+		{
 
 			std::string name = fieldMapIterator->first;
-			std::set<PdfField*>* fields = fieldMapIterator->second;
-			for (auto fieldIterator = fields->begin(); fieldIterator != fields->end(); fieldIterator.operator++()) {
-                PdfField* field = *fieldIterator;
-                PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
+			std::set<PdfField *> *fields = fieldMapIterator->second;
+			for (auto fieldIterator = fields->begin(); fieldIterator != fields->end(); fieldIterator.operator++())
+			{
+				PdfField *field = *fieldIterator;
+				PdfAnnotation *annot = fieldManager->BridgeFieldToAnnotation(field);
 
-				PdfPage* page = annot->GetPage();
+				PdfPage *page = annot->GetPage();
 				unsigned int pageIndex = PiPiPageUtil::SearchPageIndex(document, page);
 
 				double x = PiPiAnnotationUtil::ExtractAnnotationX(annot);
@@ -73,9 +83,9 @@ namespace PiPi {
 
 				PiPiFieldType type = PiPiAnnotationUtil::ExtractAnnotationType(annot);
 
-				PiPiField* tField = new PiPiField(name, type, pageIndex, x, y, width, height, fontName, fontSize);
+				PiPiField *tField = new PiPiField(name, type, pageIndex, x, y, width, height, fontName, fontSize);
 
-                tFields->push_back(tField);
+				tFields->push_back(tField);
 			}
 		}
 

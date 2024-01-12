@@ -7,12 +7,12 @@
 
 #include "PiPiFieldConstants.h"
 
-namespace PiPi {
-    const std::vector<PdfName> PiPiFieldConstants::SpecialHierarchicalFieldKeys {
-        PdfName("T"),
-        PdfName("FT"),
-        PdfName("Ff"),
-        PdfName("Opt"),
-        PdfName("V")
-    };
+namespace PiPi
+{
+  const std::vector<PdfName> PiPiFieldConstants::SpecialHierarchicalFieldKeys{
+      PdfName("T"),
+      PdfName("FT"),
+      PdfName("Ff"),
+      PdfName("Opt"),
+      PdfName("V")};
 }

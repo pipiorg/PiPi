@@ -13,33 +13,35 @@
 
 using namespace std;
 
-namespace PiPi {
-    class PiPiMultiOperator;
+namespace PiPi
+{
+	class PiPiMultiOperator;
 
-	class PiPiOperator {
-        friend class PiPiMultiOperator;
-        
-        public:
-			PiPiOperator(char* pdfBytes, size_t pdfSize);
-            ~PiPiOperator();
+	class PiPiOperator
+	{
+		friend class PiPiMultiOperator;
 
-			PiPiFiller* GetFiller();
-			PiPiEditor* GetEditor();
-			PiPiExtractor* GetExtractor();
-			PiPiFontManager* GetFontManager();
+	public:
+		PiPiOperator(char *pdfBytes, size_t pdfSize);
+		~PiPiOperator();
 
-			bool IsOperable();
+		PiPiFiller *GetFiller();
+		PiPiEditor *GetEditor();
+		PiPiExtractor *GetExtractor();
+		PiPiFontManager *GetFontManager();
 
-			void Finalize(std::vector<char>** newPdf);
+		bool IsOperable();
 
-		private:
-			PoDoFo::PdfMemDocument* document;
+		void Finalize(std::vector<char> **newPdf);
 
-			PiPiFiller* filler;
-			PiPiEditor* editor;
-			PiPiExtractor* extractor;
-			PiPiFontManager* fontManager;
-			PiPiAppearanceManager* appearanceManager;
-            PiPiFieldManager* fieldManager;
+	private:
+		PoDoFo::PdfMemDocument *document;
+
+		PiPiFiller *filler;
+		PiPiEditor *editor;
+		PiPiExtractor *extractor;
+		PiPiFontManager *fontManager;
+		PiPiAppearanceManager *appearanceManager;
+		PiPiFieldManager *fieldManager;
 	};
 }

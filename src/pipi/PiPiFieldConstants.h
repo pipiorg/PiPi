@@ -5,9 +5,11 @@
 
 using namespace PoDoFo;
 
-namespace PiPi {
-    class PiPiFieldConstants {
-        public:
-            static const std::vector<PdfName> SpecialHierarchicalFieldKeys;
-    };
+namespace PiPi
+{
+  class PiPiFieldConstants
+  {
+  public:
+    static const std::vector<PdfName> SpecialHierarchicalFieldKeys;
+  };
 }

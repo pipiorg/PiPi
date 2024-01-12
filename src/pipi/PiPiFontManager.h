@@ -6,35 +6,37 @@
 
 using namespace PoDoFo;
 
-namespace PiPi {
+namespace PiPi
+{
 	class PiPiOperator;
 
-	class PiPiFontManager {
+	class PiPiFontManager
+	{
 		friend class PiPiOperator;
 
-		public:
-			PiPiFontManager(PdfMemDocument* document);
+	public:
+		PiPiFontManager(PdfMemDocument *document);
 
-			bool IsOperable();
+		bool IsOperable();
 
-            void EmbedFonts();
-        
-			const std::string RegisterFont(char* fontBytes, size_t fontSize);
-        
-			const PdfFont* AccessFont(const std::string fontName);
-			const PdfFont* AccessDefaultFont();
+		void EmbedFonts();
 
-		private:
-			bool operable;
+		const std::string RegisterFont(char *fontBytes, size_t fontSize);
 
-			PdfMemDocument* document;
+		const PdfFont *AccessFont(const std::string fontName);
+		const PdfFont *AccessDefaultFont();
 
-			std::map<const std::string, const PdfFont*>* fontMap;
+	private:
+		bool operable;
 
-			void Init(PdfMemDocument* document);
-			void LoadAcroformFonts();
-        
-            void EmbedDocumentFonts();
-            void EmbedAcroformFonts();
+		PdfMemDocument *document;
+
+		std::map<const std::string, const PdfFont *> *fontMap;
+
+		void Init(PdfMemDocument *document);
+		void LoadAcroformFonts();
+
+		void EmbedDocumentFonts();
+		void EmbedAcroformFonts();
 	};
 }
