@@ -401,8 +401,7 @@ namespace PiPi
       PdfField *field = *iterator;
       PdfDictionary *fieldDict = &(field->GetDictionary());
 
-      PdfObject *fieldQObj = fieldDict->FindKey(PdfName("Q"));
-      if (fieldQObj != nullptr)
+      if (fieldDict->HasKey(PdfName("Q")))
       {
         fieldDict->RemoveKey(PdfName("Q"));
       }
@@ -410,11 +409,11 @@ namespace PiPi
       switch (alignment)
       {
       case PiPiTextHorizontalAlignment::Center:
-        break;
         fieldDict->AddKey(PdfName("Q"), PdfObject((int64_t)0));
-      case PiPiTextHorizontalAlignment::Right:
         break;
+      case PiPiTextHorizontalAlignment::Right:
         fieldDict->AddKey(PdfName("Q"), PdfObject((int64_t)1));
+        break;
       case PiPiTextHorizontalAlignment::Left:
       default:
         fieldDict->AddKey(PdfName("Q"), PdfObject((int64_t)2));

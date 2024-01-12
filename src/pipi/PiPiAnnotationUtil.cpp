@@ -448,20 +448,20 @@ namespace PiPi
 
     PdfDictionary *dict = &(obj->GetDictionary());
 
-    PdfObject *qObj = dict->FindKey(PdfName("Q"));
-    if (qObj == nullptr)
+    if (!dict->HasKey(PdfName("Q")))
     {
       return PiPiTextHorizontalAlignment::Left;
     }
 
+    PdfObject* qObj = dict->FindKey(PdfName("Q"));
     int64_t alignmentValue = qObj->GetNumber();
 
     switch (alignmentValue)
     {
     case 1:
-      return PiPiTextHorizontalAlignment::Center;
-    case 2:
       return PiPiTextHorizontalAlignment::Right;
+    case 2:
+      return PiPiTextHorizontalAlignment::Center;
     default:
       return PiPiTextHorizontalAlignment::Left;
     }
