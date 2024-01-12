@@ -481,8 +481,37 @@ namespace PiPi
       return "";
     }
 
+    if (!vObj->IsString())
+    {
+      return "";
+    }
+
     const PdfString *v = &(vObj->GetString());
 
     return v->GetString();
+  }
+
+  std::string PiPiAnnotationUtil::ExtractAnnotationDefaultValue(PdfAnnotation* annotation)
+  {
+    spdlog::trace("ExtractAnnotationValue");
+
+    PdfObject* obj = &(annotation->GetObject());
+
+    PdfDictionary* dict = &(obj->GetDictionary());
+
+    PdfObject* dvObj = dict->FindKey(PdfName("DV"));
+    if (dvObj == nullptr)
+    {
+      return "";
+    }
+
+    if (!dvObj->IsString())
+    {
+      return "";
+    }
+
+    const PdfString* dv = &(dvObj->GetString());
+
+    return dv->GetString();
   }
 }

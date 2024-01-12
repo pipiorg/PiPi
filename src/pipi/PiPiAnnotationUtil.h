@@ -40,5 +40,6 @@ namespace PiPi
 		static PiPiTextHorizontalAlignment ExtractAnnotationTextHorizontalAlignment(PdfAnnotation *annotation);
 
 		static std::string ExtractAnnotationValue(PdfAnnotation *annotation);
+		static std::string ExtractAnnotationDefaultValue(PdfAnnotation* annotation);
 	};
 }

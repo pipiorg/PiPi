@@ -81,9 +81,54 @@ namespace PiPi
 				std::string fontName = PiPiAnnotationUtil::ExtractAnnotationFontName(annot);
 				float fontSize = PiPiAnnotationUtil::ExtractAnnotationFontSize(annot);
 
-				PiPiFieldType type = PiPiAnnotationUtil::ExtractAnnotationType(annot);
+				std::string defaultValue = PiPiAnnotationUtil::ExtractAnnotationDefaultValue(annot);
 
-				PiPiField *tField = new PiPiField(name, type, pageIndex, x, y, width, height, fontName, fontSize);
+				bool hasBackgroundColor = PiPiAnnotationUtil::ExtractAnnotationBackgroundExists(annot);
+				float backgroundColorRed;
+				float backgroundColorGreen;
+				float backgroundColorBlue;
+				PiPiAnnotationUtil::ExtractAnnotationBackgroundColor(annot, &backgroundColorRed, &backgroundColorGreen, &backgroundColorBlue);
+
+				bool hasBorderColor = PiPiAnnotationUtil::ExtractAnnotationBorderExists(annot);
+				float borderColorRed;
+				float borderColorGreen;
+				float borderColorBlue;
+				PiPiAnnotationUtil::ExtractAnnotationBorderColor(annot, &borderColorRed, &borderColorGreen, &borderColorBlue);
+
+				float colorRed;
+				float colorGreen;
+				float colorBlue;
+				PiPiAnnotationUtil::ExtractAnnotationColor(annot, &colorRed, &colorGreen, &colorBlue);
+
+				bool multiline = PiPiAnnotationUtil::ExtractAnnotationTextMultiine(annot);
+
+				PiPiFieldType type = PiPiAnnotationUtil::ExtractAnnotationType(annot);
+				PiPiTextHorizontalAlignment textHorizontalAlignment = PiPiAnnotationUtil::ExtractAnnotationTextHorizontalAlignment(annot);
+
+				PiPiField *tField = new PiPiField(
+					name,
+					type,
+					pageIndex,
+					x,
+					y,
+					width,
+					height,
+					defaultValue,
+					textHorizontalAlignment,
+					fontName,
+					fontSize,
+					colorRed,
+					colorGreen,
+					colorBlue,
+					multiline,
+					hasBackgroundColor,
+					backgroundColorRed,
+					backgroundColorGreen,
+					backgroundColorBlue,
+					hasBorderColor,
+					borderColorRed,
+					borderColorGreen,
+					borderColorBlue);
 
 				tFields->push_back(tField);
 			}
