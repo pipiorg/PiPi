@@ -25,11 +25,12 @@ namespace PiPi
 			float colorGreen,
 			float colorBlue,
 			bool multiline,
-			bool hasBackgroundColor,
+			bool backgroundExists,
 			float backgroundColorRed,
 			float backgroundColorGreen,
 			float backgroundColorBlue,
-			bool hasBorderColor,
+			bool borderExists,
+			double borderWidth,
 			float borderColorRed,
 			float borderColorGreen,
 			float borderColorBlue);
@@ -50,12 +51,13 @@ namespace PiPi
 		std::string fontName;
 		float fontSize;
 
-		bool hasBackgroundColor;
+		bool backgroundExists;
 		float backgroundColorRed;
 		float backgroundColorGreen;
 		float backgroundColorBlue;
 
-		bool hasBorderColor;
+		bool borderExists;
+		double borderWidth;
 		float borderColorRed;
 		float borderColorGreen;
 		float borderColorBlue;

@@ -12,7 +12,7 @@ namespace PiPi
   public:
     enum PiPiMultiOperateExceptionCode
     {
-      IndexOutOfRange
+      IndexOutOfRange = 1
     };
 
     PiPiMultiOperateException(PiPiMultiOperateExceptionCode code);

@@ -64,6 +64,11 @@ namespace PiPi
     PiPiEditor *SetFieldBorderColor(std::string fieldName, long pageIndex, double x, double y, float red, float green, float blue);
     PiPiEditor *SetFieldBorderColor(std::string fieldName, long pageIndex, double x, double y, double width, double height, float red, float green, float blue);
 
+    PiPiEditor* SetFieldBorderWidth(std::string fieldName, double borderWidth);
+    PiPiEditor* SetFieldBorderWidth(std::string fieldName, long pageIndex, double borderWidth);
+    PiPiEditor* SetFieldBorderWidth(std::string fieldName, long pageIndex, double x, double y, double borderWidth);
+    PiPiEditor* SetFieldBorderWidth(std::string fieldName, long pageIndex, double x, double y, double width, double height, double borderWidth);
+
     PiPiEditor *SetFieldMultiline(std::string fieldName, bool multiline);
     PiPiEditor *SetFieldMultiline(std::string fieldName, long pageIndex, bool multiline);
     PiPiEditor *SetFieldMultiline(std::string fieldName, long pageIndex, double x, double y, bool multiline);

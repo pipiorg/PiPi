@@ -12,7 +12,7 @@ namespace PiPi
   public:
     enum PiPiFieldCompatibilityExceptionCode
     {
-      FixDotFieldFail = 0
+      FixDotFieldFail = 1
     };
 
     PiPiFieldCompatibilityException(PiPiFieldCompatibilityExceptionCode code);

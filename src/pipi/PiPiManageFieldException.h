@@ -12,14 +12,14 @@ namespace PiPi
   public:
     enum PiPiManageFieldExceptionCode
     {
-      InvalidPdfFieldObject = 0,
-      InvalidPdfFieldType = 1,
-      InvalidRestrictFieldOperation = 2,
-      InvalidRealStatus = 3,
-      InvalidPageIndex = 4,
-      DuplicateFieldExists = 5,
-      UnsupportRemoveFakeField = 6,
-      UnsupportRenameFakeField = 7
+      InvalidPdfFieldObject = 1,
+      InvalidPdfFieldType = 2,
+      InvalidRestrictFieldOperation = 3,
+      InvalidRealStatus = 4,
+      InvalidPageIndex = 5,
+      DuplicateFieldExists = 6,
+      UnsupportRemoveFakeField = 7,
+      UnsupportRenameFakeField = 8
     };
 
     PiPiManageFieldException(PiPiManageFieldExceptionCode code);

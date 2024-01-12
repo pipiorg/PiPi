@@ -83,17 +83,19 @@ namespace PiPi
 
 				std::string defaultValue = PiPiAnnotationUtil::ExtractAnnotationDefaultValue(annot);
 
-				bool hasBackgroundColor = PiPiAnnotationUtil::ExtractAnnotationBackgroundExists(annot);
+				bool backgroundExists = PiPiAnnotationUtil::ExtractAnnotationBackgroundExists(annot);
 				float backgroundColorRed;
 				float backgroundColorGreen;
 				float backgroundColorBlue;
 				PiPiAnnotationUtil::ExtractAnnotationBackgroundColor(annot, &backgroundColorRed, &backgroundColorGreen, &backgroundColorBlue);
 
-				bool hasBorderColor = PiPiAnnotationUtil::ExtractAnnotationBorderExists(annot);
+				bool borderExists = PiPiAnnotationUtil::ExtractAnnotationBorderExists(annot);
 				float borderColorRed;
 				float borderColorGreen;
 				float borderColorBlue;
 				PiPiAnnotationUtil::ExtractAnnotationBorderColor(annot, &borderColorRed, &borderColorGreen, &borderColorBlue);
+
+				double borderWidth = PiPiAnnotationUtil::ExtractAnnotationBorderWidth(annot);
 
 				float colorRed;
 				float colorGreen;
@@ -121,11 +123,12 @@ namespace PiPi
 					colorGreen,
 					colorBlue,
 					multiline,
-					hasBackgroundColor,
+					backgroundExists,
 					backgroundColorRed,
 					backgroundColorGreen,
 					backgroundColorBlue,
-					hasBorderColor,
+					borderExists,
+					borderWidth,
 					borderColorRed,
 					borderColorGreen,
 					borderColorBlue);

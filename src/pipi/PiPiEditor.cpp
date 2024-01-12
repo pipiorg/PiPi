@@ -310,6 +310,79 @@ namespace PiPi
     return this;
   }
 
+  PiPiEditor* PiPiEditor::SetFieldBorderWidth(std::string fieldName, double borderWidth)
+  {
+    spdlog::trace("SetFieldBorderWidth");
+
+    if (!this->IsOperable())
+    {
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+    }
+
+    PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+    PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
+
+    fieldStyleManager->SetFieldBorderWidth(fieldName, borderWidth);
+    appearanceManager->MarkNeedAppearance(fieldName);
+
+    return this;
+  }
+
+  PiPiEditor* PiPiEditor::SetFieldBorderWidth(std::string fieldName, long pageIndex, double borderWidth)
+  {
+    spdlog::trace("SetFieldBorderWidth");
+
+    if (!this->IsOperable())
+    {
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+    }
+
+    PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+    PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
+
+    fieldStyleManager->SetFieldBorderWidth(fieldName, pageIndex, borderWidth);
+    appearanceManager->MarkNeedAppearance(fieldName);
+
+    return this;
+  }
+
+  PiPiEditor* PiPiEditor::SetFieldBorderWidth(std::string fieldName, long pageIndex, double x, double y, double borderWidth)
+  {
+    spdlog::trace("SetFieldBorderWidth");
+
+    if (!this->IsOperable())
+    {
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+    }
+
+    PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+    PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
+
+    fieldStyleManager->SetFieldBorderWidth(fieldName, pageIndex, x, y, borderWidth);
+    appearanceManager->MarkNeedAppearance(fieldName);
+
+    return this;
+
+  }
+
+  PiPiEditor* PiPiEditor::SetFieldBorderWidth(std::string fieldName, long pageIndex, double x, double y, double width, double height, double borderWidth)
+  {
+    spdlog::trace("SetFieldBorderWidth");
+
+    if (!this->IsOperable())
+    {
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+    }
+
+    PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+    PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
+
+    fieldStyleManager->SetFieldBorderWidth(fieldName, pageIndex, x, y, width, height, borderWidth);
+    appearanceManager->MarkNeedAppearance(fieldName);
+
+    return this;
+  }
+
   PiPiEditor *PiPiEditor::SetFieldBackgroundColor(std::string fieldName, float red, float green, float blue)
   {
     spdlog::trace("SetFieldBackgroundColor");

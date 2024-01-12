@@ -15,10 +15,7 @@ namespace PiPi
     enum PiPiEditFieldExceptionCode
     {
       InOperable = 1,
-      NotImplementate = 2,
-      MultilineNotSupported = 3,
-      NotRegisterFont = 4,
-      InvalidColor = 5
+      NotImplementate = 2
     };
 
     PiPiEditFieldException(PiPiEditFieldExceptionCode code);

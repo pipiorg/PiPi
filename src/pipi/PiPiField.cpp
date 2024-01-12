@@ -18,11 +18,12 @@ namespace PiPi
 		float colorGreen,
 		float colorBlue,
 		bool multiline,
-		bool hasBackgroundColor,
+		bool backgroundExists,
 		float backgroundColorRed,
 		float backgroundColorGreen,
 		float backgroundColorBlue,
-		bool hasBorderColor,
+		bool borderExists,
+		double borderWidth,
 		float borderColorRed,
 		float borderColorGreen,
 		float borderColorBlue)
@@ -42,11 +43,12 @@ namespace PiPi
 		this->colorGreen = colorGreen;
 		this->colorBlue = colorBlue;
 		this->multiline = multiline;
-		this->hasBackgroundColor = hasBackgroundColor;
+		this->backgroundExists = backgroundExists;
 		this->backgroundColorRed = backgroundColorRed;
 		this->backgroundColorGreen = backgroundColorGreen;
 		this->backgroundColorBlue = backgroundColorBlue;
-		this->hasBorderColor = hasBorderColor;
+		this->borderExists = borderExists;
+		this->borderWidth = borderWidth;
 		this->borderColorRed = borderColorRed;
 		this->borderColorGreen = borderColorGreen;
 		this->borderColorBlue = borderColorBlue;

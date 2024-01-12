@@ -357,6 +357,65 @@ namespace PiPi
     delete fields;
   }
 
+  void PiPiFieldStyleManager::SetFieldBorderWidth(std::string fieldName, double borderWidth)
+  {
+    spdlog::trace("SetFieldBorderWidth");
+
+    this->SetFieldBorderWidth(fieldName, -1, borderWidth);
+  }
+
+  void PiPiFieldStyleManager::SetFieldBorderWidth(std::string fieldName, long pageIndex, double borderWidth)
+  {
+    spdlog::trace("SetFieldBorderWidth");
+
+    this->SetFieldBorderWidth(fieldName, pageIndex, -1, -1, borderWidth);
+  }
+
+  void PiPiFieldStyleManager::SetFieldBorderWidth(std::string fieldName, long pageIndex, double x, double y, double borderWidth)
+  {
+    spdlog::trace("SetFieldBorderWidth");
+
+    this->SetFieldBorderWidth(fieldName, pageIndex, x, y, -1, -1, borderWidth);
+  }
+
+  void PiPiFieldStyleManager::SetFieldBorderWidth(std::string fieldName, long pageIndex, double x, double y, double width, double height, double borderWidth)
+  {
+    spdlog::trace("SetFieldBorderWidth");
+
+    PiPiFieldManager* fieldManager = this->fieldManager;
+
+    std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
+
+    for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
+    {
+      PdfField* field = *iterator;
+      PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
+
+      PdfPage* page = &(annot->MustGetPage());
+
+      int aPageIndex = PiPiPageUtil::SearchPageIndex(document, page);
+      double ax = PiPiAnnotationUtil::ExtractAnnotationX(annot);
+      double ay = PiPiAnnotationUtil::ExtractAnnotationY(annot);
+      double aWidth = PiPiAnnotationUtil::ExtractAnnotationWidth(annot);
+      double aHeight = PiPiAnnotationUtil::ExtractAnnotationHeight(annot);
+
+      bool matched = (aPageIndex == pageIndex || pageIndex == -1) &&
+        (x == ax || x == -1) &&
+        (y == ay || y == -1) &&
+        (width == aWidth || width == -1) &&
+        (height == aHeight || height == -1);
+
+      if (matched)
+      {
+        PdfObject* fieldObj = &(field->GetObject());
+        this->InnerSetFieldBorderWidth(fieldObj, borderWidth);
+      }
+    }
+
+    delete fields;
+  }
+
+
   void PiPiFieldStyleManager::SetFieldMultiline(std::string fieldName, bool multiline)
   {
     spdlog::trace("SetFieldMultiline");
@@ -479,7 +538,7 @@ namespace PiPi
     const PdfFont *font = fontManager->AccessFont(fontName);
     if (font == nullptr)
     {
-      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::NotRegisterFont);
+      throw PiPiFieldStyleManageException(PiPiFieldStyleManageException::PiPiFieldStyleManageExceptionCode::NotRegisterFont);
     }
 
     const PdfString *defaultDA = this->GetDefaultDA();
@@ -600,17 +659,17 @@ namespace PiPi
 
     if (red < 0 || red > 1)
     {
-      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+      throw PiPiFieldStyleManageException(PiPiFieldStyleManageException::PiPiFieldStyleManageExceptionCode::InvalidColor);
     }
 
     if (green < 0 || green > 1)
     {
-      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+      throw PiPiFieldStyleManageException(PiPiFieldStyleManageException::PiPiFieldStyleManageExceptionCode::InvalidColor);
     }
 
     if (blue < 0 || blue > 1)
     {
-      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+      throw PiPiFieldStyleManageException(PiPiFieldStyleManageException::PiPiFieldStyleManageExceptionCode::InvalidColor);
     }
 
     const PdfString *defaultDA = this->GetDefaultDA();
@@ -675,17 +734,17 @@ namespace PiPi
 
     if (red < 0 || red > 1)
     {
-      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+      throw PiPiFieldStyleManageException(PiPiFieldStyleManageException::PiPiFieldStyleManageExceptionCode::InvalidColor);
     }
 
     if (green < 0 || green > 1)
     {
-      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+      throw PiPiFieldStyleManageException(PiPiFieldStyleManageException::PiPiFieldStyleManageExceptionCode::InvalidColor);
     }
 
     if (blue < 0 || blue > 1)
     {
-      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+      throw PiPiFieldStyleManageException(PiPiFieldStyleManageException::PiPiFieldStyleManageExceptionCode::InvalidColor);
     }
 
     PdfDictionary *fieldDict = &(obj->GetDictionary());
@@ -717,17 +776,17 @@ namespace PiPi
 
     if (red < 0 || red > 1)
     {
-      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+      throw PiPiFieldStyleManageException(PiPiFieldStyleManageException::PiPiFieldStyleManageExceptionCode::InvalidColor);
     }
 
     if (green < 0 || green > 1)
     {
-      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+      throw PiPiFieldStyleManageException(PiPiFieldStyleManageException::PiPiFieldStyleManageExceptionCode::InvalidColor);
     }
 
     if (blue < 0 || blue > 1)
     {
-      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+      throw PiPiFieldStyleManageException(PiPiFieldStyleManageException::PiPiFieldStyleManageExceptionCode::InvalidColor);
     }
 
     PdfDictionary *fieldDict = &(obj->GetDictionary());
@@ -753,6 +812,29 @@ namespace PiPi
     fieldMk->AddKey(PdfName("BC"), *colors);
   }
 
+  void PiPiFieldStyleManager::InnerSetFieldBorderWidth(PdfObject* obj, double borderWidth)
+  {
+    spdlog::trace("InnerSetFieldMultiline");
+
+    PdfDictionary* dict = &(obj->GetDictionary());
+
+    PdfObject* bsObj = dict->FindKey(PdfName("BS"));
+    if (bsObj == nullptr)
+    {
+      dict->AddKey(PdfName("BS"), PdfDictionary());
+			bsObj = dict->FindKey(PdfName("BS"));
+    }
+
+    PdfDictionary* bs = &(bsObj->GetDictionary());
+
+    if (bs->HasKey(PdfName("W")))
+    {
+			bs->RemoveKey(PdfName("W"));
+    }
+
+    bs->AddKey(PdfName("W"), PdfObject(borderWidth));
+  }
+
   void PiPiFieldStyleManager::InnerSetFieldMultiline(PdfField *field, bool multiline)
   {
     spdlog::trace("InnerSetFieldMultiline");
@@ -760,7 +842,7 @@ namespace PiPi
     PdfFieldType type = field->GetType();
     if (type != PdfFieldType::TextBox)
     {
-      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::MultilineNotSupported);
+      throw PiPiFieldStyleManageException(PiPiFieldStyleManageException::PiPiFieldStyleManageExceptionCode::MultilineNotSupported);
     }
 
     PdfTextBox *textbox = (PdfTextBox *)field;

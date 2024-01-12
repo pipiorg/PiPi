@@ -5,6 +5,7 @@
 #include "PiPiFieldManager.h"
 #include "PiPiFontManager.h"
 #include "PiPiEditFieldException.h"
+#include "PiPiFieldStyleManageException.h"
 
 
 using namespace PoDoFo;
@@ -46,6 +47,11 @@ namespace PiPi
     void SetFieldBorderColor(std::string fieldName, long pageIndex, double x, double y, float red, float green, float blue);
     void SetFieldBorderColor(std::string fieldName, long pageIndex, double x, double y, double width, double height, float red, float green, float blue);
 
+    void SetFieldBorderWidth(std::string fieldName, double borderWidth);
+    void SetFieldBorderWidth(std::string fieldName, long pageIndex, double borderWidth);
+    void SetFieldBorderWidth(std::string fieldName, long pageIndex, double x, double y, double borderWidth);
+    void SetFieldBorderWidth(std::string fieldName, long pageIndex, double x, double y, double width, double height, double borderWidth);
+
     void SetFieldMultiline(std::string fieldName, bool multiline);
     void SetFieldMultiline(std::string fieldName, long pageIndex, bool multiline);
     void SetFieldMultiline(std::string fieldName, long pageIndex, double x, double y, bool multiline);
@@ -67,6 +73,7 @@ namespace PiPi
     void InnerSetFieldColor(PdfObject *obj, float red, float green, float blue);
     void InnerSetFieldBackgroundColor(PdfObject *obj, float red, float green, float blue);
     void InnerSetFieldBorderColor(PdfObject *obj, float red, float green, float blue);
+    void InnerSetFieldBorderWidth(PdfObject* obj, double borderWidth);
     void InnerSetFieldDefaultValue(PdfObject *obj, std::string defaultValue);
     void InnerSetFieldMultiline(PdfField *field, bool multiline);
 

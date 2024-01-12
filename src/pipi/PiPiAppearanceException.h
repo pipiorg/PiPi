@@ -12,8 +12,8 @@ namespace PiPi
   public:
     enum PiPiAppearanceExceptionCode
     {
-      CreateFormObjectFromAppearanceFail = 0,
-      UnsupportedFieldType = 1
+      CreateFormObjectFromAppearanceFail = 1,
+      UnsupportedFieldType = 2
     };
 
     PiPiAppearanceException(PiPiAppearanceExceptionCode code);
