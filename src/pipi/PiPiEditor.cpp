@@ -192,12 +192,66 @@ namespace PiPi
       throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
     }
 
+    const PdfString* defaultDA = this->GetDefaultDA();
+    std::string defaultDAString = defaultDA->GetString();
+
     std::set<PdfField *> *fields = fieldManager->SearchField(fieldName);
     for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
     {
       PdfField *field = *iterator;
       PdfAnnotation *annot = fieldManager->BridgeFieldToAnnotation(field);
-      annot->SetColor(PdfColor(red, green, blue));
+
+      PdfDictionary* dict = &(field->GetDictionary());
+
+      PdfDictionary* parentDict = dict->FindKeyAs<PdfDictionary*>(PdfName("Parent"));
+      PdfObject* daObj = dict->FindKey(PdfName("DA"));
+      while (daObj == nullptr && parentDict != nullptr)
+      {
+        daObj = parentDict->FindKey(PdfName("DA"));
+        parentDict = parentDict->FindKeyAs<PdfDictionary*>(PdfName("Parent"));
+      }
+
+      std::string daString = daObj == nullptr
+        ? defaultDAString
+        : daObj->GetString().GetString();
+
+      std::vector<std::string>* daStringSplits = PiPiStringCommon::split(daString, " ");
+      std::vector<std::string>* newDaStringSplits = new std::vector<std::string>();
+
+      std::string colorSign = daStringSplits->back();
+
+      size_t keepCount = daStringSplits->size();
+
+      if (colorSign == "g")
+      {
+        keepCount -= 2;
+      }
+      else if (colorSign == "rg")
+      {
+        keepCount -= 4;
+      }
+      else if (colorSign == "k")
+      {
+        keepCount -= 5;
+      }
+
+      for (size_t i = 0; i < keepCount; i++)
+      {
+        newDaStringSplits->push_back(daStringSplits->at(i));
+      }
+
+      newDaStringSplits->push_back(std::to_string(red));
+      newDaStringSplits->push_back(std::to_string(green));
+      newDaStringSplits->push_back(std::to_string(blue));
+      newDaStringSplits->push_back("rg");
+
+      std::string newDaString = PiPiStringCommon::join(newDaStringSplits, " ");
+
+      dict->RemoveKey(PdfName("DA"));
+      dict->AddKey(PdfName("DA"), PdfString(newDaString));
+
+      delete daStringSplits;
+      delete newDaStringSplits;
     }
 
     delete fields;
