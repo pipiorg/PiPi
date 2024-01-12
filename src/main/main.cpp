@@ -7,7 +7,7 @@ void readFile(string filePath, char **fileBytes, size_t *fileSize)
   vector<char> vector;
 
   ifstream file;
-  file.open(filePath, ios::binary);
+  file.open(std::filesystem::u8path(filePath), ios::binary);
 
   while (!file.eof())
   {
@@ -31,7 +31,7 @@ void readFile(string filePath, char **fileBytes, size_t *fileSize)
 void writeFile(string filePath, char *fileBytes, size_t fileSize)
 {
   ofstream file;
-  file.open(filePath, ios::binary);
+  file.open(std::filesystem::u8path(filePath), ios::binary);
 
   for (size_t i = 0; i < fileSize; i++)
   {
@@ -98,6 +98,8 @@ void testSingle(char *file1Bytes, size_t file1Size, char *newFileBytes, size_t n
 
 int main()
 {
+  SetConsoleOutputCP(65001);
+
   char *file1Bytes = nullptr;
   size_t file1Size = 0;
 
