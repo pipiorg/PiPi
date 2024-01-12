@@ -6,6 +6,7 @@ namespace PiPi
   {
     this->operable = true;
     this->document = document;
+    this->fontManager = fontManager;
     this->appearanceManager = appearanceManager;
     this->fieldManager = fieldManager;
     this->fieldStyleManager = fieldStyleManager;
