@@ -21,8 +21,6 @@ namespace PiPi
     PiPiFieldManager(PdfMemDocument *document);
     ~PiPiFieldManager();
 
-    bool IsOperable();
-
     std::map<const std::string, std::set<PdfField *> *> *SearchAllField();
     std::set<PdfField *> *SearchField(std::string fieldName);
 

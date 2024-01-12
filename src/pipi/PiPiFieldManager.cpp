@@ -50,13 +50,6 @@ namespace PiPi
     }
   }
 
-  bool PiPiFieldManager::IsOperable()
-  {
-    spdlog::trace("IsOperable");
-
-    return this->document != nullptr;
-  }
-
   std::map<const std::string, std::set<PdfField *> *> *PiPiFieldManager::SearchAllField()
   {
     spdlog::trace("SearchAllField");

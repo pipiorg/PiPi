@@ -10,6 +10,7 @@
 #include "PiPiFontManager.h"
 #include "PiPiAppearanceManager.h"
 #include "PiPiFieldManager.h"
+#include "PiPiFieldStyleManager.h"
 
 using namespace std;
 
@@ -43,5 +44,6 @@ namespace PiPi
 		PiPiFontManager *fontManager;
 		PiPiAppearanceManager *appearanceManager;
 		PiPiFieldManager *fieldManager;
+		PiPiFieldStyleManager *fieldStyleManager;
 	};
 }

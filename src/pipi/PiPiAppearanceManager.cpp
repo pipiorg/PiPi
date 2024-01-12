@@ -20,13 +20,6 @@ namespace PiPi
 		}
 	}
 
-	bool PiPiAppearanceManager::IsOperable()
-	{
-		spdlog::trace("IsOperable");
-
-		return this->document != nullptr;
-	}
-
 	void PiPiAppearanceManager::GenerateAppearance()
 	{
 		spdlog::trace("GenerateAppearance");

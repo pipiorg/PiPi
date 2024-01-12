@@ -16,8 +16,6 @@ namespace PiPi
 		PiPiAppearanceManager(PdfMemDocument *document, PiPiFontManager *fontManager, PiPiFieldManager *fieldManager);
 		~PiPiAppearanceManager();
 
-		bool IsOperable();
-
 		void GenerateAppearance();
 
 		void MarkNeedAppearance(std::string fieldName);

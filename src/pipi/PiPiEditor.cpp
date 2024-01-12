@@ -2,13 +2,13 @@
 
 namespace PiPi
 {
-  PiPiEditor::PiPiEditor(PdfMemDocument *document, PiPiFontManager *fontManager, PiPiAppearanceManager *appearanceManager, PiPiFieldManager *fieldManager)
+  PiPiEditor::PiPiEditor(PdfMemDocument *document, PiPiFontManager *fontManager, PiPiAppearanceManager *appearanceManager, PiPiFieldManager *fieldManager, PiPiFieldStyleManager *fieldStyleManager)
   {
     this->operable = true;
     this->document = document;
-    this->fontManager = fontManager;
     this->appearanceManager = appearanceManager;
     this->fieldManager = fieldManager;
+    this->fieldStyleManager = fieldStyleManager;
   }
 
   bool PiPiEditor::IsOperable()
@@ -175,87 +175,63 @@ namespace PiPi
     }
 
     PiPiAppearanceManager *appearanceManager = this->appearanceManager;
-    PiPiFieldManager *fieldManager = this->fieldManager;
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
 
-    if (red < 0 || red > 1)
+    fieldStyleManager->SetFieldColor(fieldName, red, green, blue);
+    appearanceManager->MarkNeedAppearance(fieldName);
+
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldColor(std::string fieldName, long pageIndex, float red, float green, float blue)
+  {
+    spdlog::trace("SetFieldColor");
+
+    if (!this->IsOperable())
     {
-      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
     }
 
-    if (green < 0 || green > 1)
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+
+    fieldStyleManager->SetFieldColor(fieldName, pageIndex, red, green, blue);
+    appearanceManager->MarkNeedAppearance(fieldName);
+
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldColor(std::string fieldName, long pageIndex, double x, double y, float red, float green, float blue)
+  {
+    spdlog::trace("SetFieldColor");
+
+    if (!this->IsOperable())
     {
-      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
     }
 
-    if (blue < 0 || blue > 1)
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+
+    fieldStyleManager->SetFieldColor(fieldName, pageIndex, x, y, red, green, blue);
+    appearanceManager->MarkNeedAppearance(fieldName);
+
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldColor(std::string fieldName, long pageIndex, double x, double y, double width, double height, float red, float green, float blue)
+  {
+    spdlog::trace("SetFieldColor");
+
+    if (!this->IsOperable())
     {
-      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
     }
 
-    const PdfString* defaultDA = this->GetDefaultDA();
-    std::string defaultDAString = defaultDA->GetString();
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
 
-    std::set<PdfField *> *fields = fieldManager->SearchField(fieldName);
-    for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
-    {
-      PdfField *field = *iterator;
-      PdfAnnotation *annot = fieldManager->BridgeFieldToAnnotation(field);
-
-      PdfDictionary* dict = &(field->GetDictionary());
-
-      PdfDictionary* parentDict = dict->FindKeyAs<PdfDictionary*>(PdfName("Parent"));
-      PdfObject* daObj = dict->FindKey(PdfName("DA"));
-      while (daObj == nullptr && parentDict != nullptr)
-      {
-        daObj = parentDict->FindKey(PdfName("DA"));
-        parentDict = parentDict->FindKeyAs<PdfDictionary*>(PdfName("Parent"));
-      }
-
-      std::string daString = daObj == nullptr
-        ? defaultDAString
-        : daObj->GetString().GetString();
-
-      std::vector<std::string>* daStringSplits = PiPiStringCommon::split(daString, " ");
-      std::vector<std::string>* newDaStringSplits = new std::vector<std::string>();
-
-      std::string colorSign = daStringSplits->back();
-
-      size_t keepCount = daStringSplits->size();
-
-      if (colorSign == "g")
-      {
-        keepCount -= 2;
-      }
-      else if (colorSign == "rg")
-      {
-        keepCount -= 4;
-      }
-      else if (colorSign == "k")
-      {
-        keepCount -= 5;
-      }
-
-      for (size_t i = 0; i < keepCount; i++)
-      {
-        newDaStringSplits->push_back(daStringSplits->at(i));
-      }
-
-      newDaStringSplits->push_back(std::to_string(red));
-      newDaStringSplits->push_back(std::to_string(green));
-      newDaStringSplits->push_back(std::to_string(blue));
-      newDaStringSplits->push_back("rg");
-
-      std::string newDaString = PiPiStringCommon::join(newDaStringSplits, " ");
-
-      dict->RemoveKey(PdfName("DA"));
-      dict->AddKey(PdfName("DA"), PdfString(newDaString));
-
-      delete daStringSplits;
-      delete newDaStringSplits;
-    }
-
-    delete fields;
-
+    fieldStyleManager->SetFieldColor(fieldName, pageIndex, x, y, width, height, red, green, blue);
     appearanceManager->MarkNeedAppearance(fieldName);
 
     return this;
@@ -271,52 +247,63 @@ namespace PiPi
     }
 
     PiPiAppearanceManager *appearanceManager = this->appearanceManager;
-    PiPiFieldManager *fieldManager = this->fieldManager;
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
 
-    if (red < 0 || red > 1)
+    fieldStyleManager->SetFieldBorderColor(fieldName, red, green, blue);
+    appearanceManager->MarkNeedAppearance(fieldName);
+
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldBorderColor(std::string fieldName, long pageIndex, float red, float green, float blue)
+  {
+    spdlog::trace("SetFieldBorderColor");
+
+    if (!this->IsOperable())
     {
-      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
     }
 
-    if (green < 0 || green > 1)
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+
+    fieldStyleManager->SetFieldBorderColor(fieldName, pageIndex, red, green, blue);
+    appearanceManager->MarkNeedAppearance(fieldName);
+
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldBorderColor(std::string fieldName, long pageIndex, double x, double y, float red, float green, float blue)
+  {
+    spdlog::trace("SetFieldBorderColor");
+
+    if (!this->IsOperable())
     {
-      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
     }
 
-    if (blue < 0 || blue > 1)
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+
+    fieldStyleManager->SetFieldBorderColor(fieldName, pageIndex, x, y, red, green, blue);
+    appearanceManager->MarkNeedAppearance(fieldName);
+
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldBorderColor(std::string fieldName, long pageIndex, double x, double y, double width, double height, float red, float green, float blue)
+  {
+    spdlog::trace("SetFieldBorderColor");
+
+    if (!this->IsOperable())
     {
-      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
     }
 
-    std::set<PdfField *> *fields = fieldManager->SearchField(fieldName);
-    for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
-    {
-      PdfField *field = *iterator;
-      PdfDictionary *fieldDict = &(field->GetDictionary());
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
 
-      PdfObject *fieldMkObj = fieldDict->FindKey(PdfName("MK"));
-      if (fieldMkObj == nullptr)
-      {
-        fieldDict->AddKey(PdfName("MK"), PdfDictionary());
-        fieldMkObj = fieldDict->FindKey(PdfName("MK"));
-      }
-
-      PdfDictionary *fieldMk = &(fieldMkObj->GetDictionary());
-
-      PdfObject *fieldBcObj = fieldMk->FindKey(PdfName("BC"));
-      if (fieldBcObj != nullptr)
-      {
-        fieldMk->RemoveKey(PdfName("BC"));
-      }
-
-      PdfArray *colors;
-      PiPiColorConverter::ConvertRGBToPoDoFoArray(red, green, blue, &colors);
-
-      fieldMk->AddKey(PdfName("BC"), *colors);
-    }
-
-    delete fields;
-
+    fieldStyleManager->SetFieldBorderColor(fieldName, pageIndex, x, y, width, height, red, green, blue);
     appearanceManager->MarkNeedAppearance(fieldName);
 
     return this;
@@ -331,53 +318,64 @@ namespace PiPi
       throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
     }
 
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
     PiPiAppearanceManager *appearanceManager = this->appearanceManager;
-    PiPiFieldManager *fieldManager = this->fieldManager;
 
-    if (red < 0 || red > 1)
+    fieldStyleManager->SetFieldBackgroundColor(fieldName, red, green, blue);
+    appearanceManager->MarkNeedAppearance(fieldName);
+
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldBackgroundColor(std::string fieldName, long pageIndex, float red, float green, float blue)
+  {
+    spdlog::trace("SetFieldBackgroundColor");
+
+    if (!this->IsOperable())
     {
-      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
     }
 
-    if (green < 0 || green > 1)
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+
+    fieldStyleManager->SetFieldBackgroundColor(fieldName, pageIndex, red, green, blue);
+    appearanceManager->MarkNeedAppearance(fieldName);
+
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldBackgroundColor(std::string fieldName, long pageIndex, double x, double y, float red, float green, float blue)
+  {
+    spdlog::trace("SetFieldBackgroundColor");
+
+    if (!this->IsOperable())
     {
-      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
     }
 
-    if (blue < 0 || blue > 1)
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+
+    fieldStyleManager->SetFieldBackgroundColor(fieldName, pageIndex, x, y, red, green, blue);
+    appearanceManager->MarkNeedAppearance(fieldName);
+
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldBackgroundColor(std::string fieldName, long pageIndex, double x, double y, double width, double height, float red, float green, float blue)
+  {
+    spdlog::trace("SetFieldBackgroundColor");
+
+    if (!this->IsOperable())
     {
-      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InvalidColor);
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
     }
 
-    std::set<PdfField *> *fields = fieldManager->SearchField(fieldName);
-    for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
-    {
-      PdfField *field = *iterator;
-      PdfDictionary *fieldDict = &(field->GetDictionary());
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
-      PdfObject *fieldMkObj = fieldDict->FindKey(PdfName("MK"));
-      if (fieldMkObj == nullptr)
-      {
-        fieldDict->AddKey(PdfName("MK"), PdfDictionary());
-        fieldMkObj = fieldDict->FindKey(PdfName("MK"));
-      }
-
-      PdfDictionary *fieldMk = &(fieldMkObj->GetDictionary());
-
-      PdfObject *fieldBgObj = fieldMk->FindKey(PdfName("BG"));
-      if (fieldBgObj != nullptr)
-      {
-        fieldMk->RemoveKey(PdfName("BG"));
-      }
-
-      PdfArray *colors;
-      PiPiColorConverter::ConvertRGBToPoDoFoArray(red, green, blue, &colors);
-
-      fieldMk->AddKey(PdfName("BG"), *colors);
-    }
-
-    delete fields;
-
+    fieldStyleManager->SetFieldBackgroundColor(fieldName, pageIndex, x, y, width, height, red, green, blue);
     appearanceManager->MarkNeedAppearance(fieldName);
 
     return this;
@@ -392,37 +390,64 @@ namespace PiPi
       throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
     }
 
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
     PiPiAppearanceManager *appearanceManager = this->appearanceManager;
-    PiPiFieldManager *fieldManager = this->fieldManager;
 
-    std::set<PdfField *> *fields = fieldManager->SearchField(fieldName);
-    for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
+    fieldStyleManager->SetFieldTextHorizontalAlignment(fieldName, alignment);
+    appearanceManager->MarkNeedAppearance(fieldName);
+
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldTextHorizontalAlignment(std::string fieldName, long pageIndex, PiPiTextHorizontalAlignment alignment)
+  {
+    spdlog::trace("SetFieldTextHorizontalAlignment");
+
+    if (!this->IsOperable())
     {
-      PdfField *field = *iterator;
-      PdfDictionary *fieldDict = &(field->GetDictionary());
-
-      if (fieldDict->HasKey(PdfName("Q")))
-      {
-        fieldDict->RemoveKey(PdfName("Q"));
-      }
-
-      switch (alignment)
-      {
-      case PiPiTextHorizontalAlignment::Center:
-        fieldDict->AddKey(PdfName("Q"), PdfObject((int64_t)0));
-        break;
-      case PiPiTextHorizontalAlignment::Right:
-        fieldDict->AddKey(PdfName("Q"), PdfObject((int64_t)1));
-        break;
-      case PiPiTextHorizontalAlignment::Left:
-      default:
-        fieldDict->AddKey(PdfName("Q"), PdfObject((int64_t)2));
-        break;
-      }
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
     }
 
-    delete fields;
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
+    fieldStyleManager->SetFieldTextHorizontalAlignment(fieldName, pageIndex, alignment);
+    appearanceManager->MarkNeedAppearance(fieldName);
+
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldTextHorizontalAlignment(std::string fieldName, long pageIndex, double x, double y, PiPiTextHorizontalAlignment alignment)
+  {
+    spdlog::trace("SetFieldTextHorizontalAlignment");
+
+    if (!this->IsOperable())
+    {
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+    }
+
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+
+    fieldStyleManager->SetFieldTextHorizontalAlignment(fieldName, pageIndex, x, y, alignment);
+    appearanceManager->MarkNeedAppearance(fieldName);
+
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldTextHorizontalAlignment(std::string fieldName, long pageIndex, double x, double y, double width, double height, PiPiTextHorizontalAlignment alignment)
+  {
+    spdlog::trace("SetFieldTextHorizontalAlignment");
+
+    if (!this->IsOperable())
+    {
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+    }
+
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+
+    fieldStyleManager->SetFieldTextHorizontalAlignment(fieldName, pageIndex, x, y, width, height, alignment);
     appearanceManager->MarkNeedAppearance(fieldName);
 
     return this;
@@ -438,26 +463,63 @@ namespace PiPi
     }
 
     PiPiAppearanceManager *appearanceManager = this->appearanceManager;
-    PiPiFieldManager *fieldManager = this->fieldManager;
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
 
-    std::set<PdfField *> *fields = fieldManager->SearchField(fieldName);
+    fieldStyleManager->SetFieldMultiline(fieldName, multiline);
+    appearanceManager->MarkNeedAppearance(fieldName);
 
-    for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldMultiline(std::string fieldName, long pageIndex, bool multiline)
+  {
+    spdlog::trace("SetFieldMultiline");
+
+    if (!this->IsOperable())
     {
-      PdfField *field = *iterator;
-
-      PdfFieldType type = field->GetType();
-      if (type != PdfFieldType::TextBox)
-      {
-        throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::MultilineNotSupported);
-      }
-
-      PdfTextBox *textbox = (PdfTextBox *)field;
-      textbox->SetMultiLine(multiline);
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
     }
 
-    delete fields;
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
 
+    fieldStyleManager->SetFieldMultiline(fieldName, pageIndex, multiline);
+    appearanceManager->MarkNeedAppearance(fieldName);
+
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldMultiline(std::string fieldName, long pageIndex, double x, double y, bool multiline)
+  {
+    spdlog::trace("SetFieldMultiline");
+
+    if (!this->IsOperable())
+    {
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+    }
+
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+
+    fieldStyleManager->SetFieldMultiline(fieldName, pageIndex, x, y, multiline);
+    appearanceManager->MarkNeedAppearance(fieldName);
+
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldMultiline(std::string fieldName, long pageIndex, double x, double y, double width, double height, bool multiline)
+  {
+    spdlog::trace("SetFieldMultiline");
+
+    if (!this->IsOperable())
+    {
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+    }
+
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+
+    fieldStyleManager->SetFieldMultiline(fieldName, pageIndex, x, y, width, height, multiline);
     appearanceManager->MarkNeedAppearance(fieldName);
 
     return this;
@@ -472,64 +534,64 @@ namespace PiPi
       throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
     }
 
-    PdfMemDocument *document = this->document;
-    PiPiFontManager *fontManager = this->fontManager;
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
     PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
-    const PdfFont *font = fontManager->AccessFont(fontName);
-    if (font == nullptr)
+    fieldStyleManager->SetFieldFontName(fieldName, fontName);
+    appearanceManager->MarkNeedAppearance(fieldName);
+
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldFontName(std::string fieldName, long pageIndex, std::string fontName)
+  {
+    spdlog::trace("SetFieldFontName");
+
+    if (!this->IsOperable())
     {
-      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::NotRegisterFont);
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
     }
 
-    const PdfString *defaultDA = this->GetDefaultDA();
-    std::string defaultDAString = defaultDA->GetString();
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
-    std::set<PdfField *> *fields = fieldManager->SearchField(fieldName);
-    for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
+    fieldStyleManager->SetFieldFontName(fieldName, pageIndex, fontName);
+    appearanceManager->MarkNeedAppearance(fieldName);
+
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldFontName(std::string fieldName, long pageIndex, double x, double y, std::string fontName)
+  {
+    spdlog::trace("SetFieldFontName");
+
+    if (!this->IsOperable())
     {
-      PdfField *field = *iterator;
-
-      PdfDictionary *dict = &(field->GetDictionary());
-
-      PdfDictionary *parentDict = dict->FindKeyAs<PdfDictionary *>(PdfName("Parent"));
-      PdfObject *daObj = dict->FindKey(PdfName("DA"));
-      while (daObj == nullptr && parentDict != nullptr)
-      {
-        daObj = parentDict->FindKey(PdfName("DA"));
-        parentDict = parentDict->FindKeyAs<PdfDictionary *>(PdfName("Parent"));
-      }
-
-      std::string daString = daObj == nullptr
-                                 ? defaultDAString
-                                 : daObj->GetString().GetString();
-
-      std::vector<std::string> *daStringSplits = PiPiStringCommon::split(daString, " ");
-      std::vector<std::string> *newDaStringSplits = new std::vector<std::string>();
-
-      for (int i = 0; i < daStringSplits->size(); i++)
-      {
-        if (i == 0)
-        {
-          newDaStringSplits->push_back("/" + fontName);
-          continue;
-        }
-
-        std::string daStringSplit = (*daStringSplits)[i];
-        newDaStringSplits->push_back(daStringSplit);
-      }
-
-      std::string newDaString = PiPiStringCommon::join(newDaStringSplits, " ");
-
-      dict->RemoveKey(PdfName("DA"));
-      dict->AddKey(PdfName("DA"), PdfString(newDaString));
-
-      delete newDaStringSplits;
-      delete daStringSplits;
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
     }
 
-    delete fields;
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
+    fieldStyleManager->SetFieldFontName(fieldName, pageIndex, x, y, fontName);
+    appearanceManager->MarkNeedAppearance(fieldName);
+
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldFontName(std::string fieldName, long pageIndex, double x, double y, double width, double height, std::string fontName)
+  {
+    spdlog::trace("SetFieldFontName");
+
+    if (!this->IsOperable())
+    {
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+    }
+
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+
+    fieldStyleManager->SetFieldFontName(fieldName, pageIndex, x, y, width, height, fontName);
     appearanceManager->MarkNeedAppearance(fieldName);
 
     return this;
@@ -544,76 +606,134 @@ namespace PiPi
       throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
     }
 
-    PdfMemDocument *document = this->document;
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
     PiPiAppearanceManager *appearanceManager = this->appearanceManager;
-    PiPiFieldManager *fieldManager = this->fieldManager;
 
-    const PdfString *defaultDA = this->GetDefaultDA();
-    std::string defaultDAString = defaultDA->GetString();
-
-    std::set<PdfField *> *fields = fieldManager->SearchField(fieldName);
-
-    for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
-    {
-      PdfField *field = *iterator;
-
-      PdfDictionary *dict = &(field->GetDictionary());
-
-      PdfDictionary *parentDict = dict->FindKeyAs<PdfDictionary *>(PdfName("Parent"));
-      PdfObject *daObj = dict->FindKey(PdfName("DA"));
-      while (daObj == nullptr && parentDict != nullptr)
-      {
-        daObj = parentDict->FindKey(PdfName("DA"));
-        parentDict = parentDict->FindKeyAs<PdfDictionary *>(PdfName("Parent"));
-      }
-
-      std::string daString = daObj == nullptr
-                                 ? defaultDAString
-                                 : daObj->GetString().GetString();
-
-      std::vector<std::string> *daStringSplits = PiPiStringCommon::split(daString, " ");
-      std::vector<std::string> *newDaStringSplits = new std::vector<std::string>();
-
-      for (int i = 0; i < daStringSplits->size(); i++)
-      {
-        if (i == 1)
-        {
-          newDaStringSplits->push_back(std::to_string(fontSize));
-          continue;
-        }
-
-        std::string daStringSplit = (*daStringSplits)[i];
-        newDaStringSplits->push_back(daStringSplit);
-      }
-
-      std::string newDaString = PiPiStringCommon::join(newDaStringSplits, " ");
-
-      dict->RemoveKey(PdfName("DA"));
-      dict->AddKey(PdfName("DA"), PdfString(newDaString));
-
-      delete newDaStringSplits;
-      delete daStringSplits;
-    }
-
-    delete fields;
-
+    fieldStyleManager->SetFieldFontSize(fieldName, fontSize);
     appearanceManager->MarkNeedAppearance(fieldName);
 
     return this;
   }
 
-  const PdfString *PiPiEditor::GetDefaultDA()
+  PiPiEditor *PiPiEditor::SetFieldFontSize(std::string fieldName, long pageIndex, float fontSize)
   {
-    spdlog::trace("GetDefaultDA");
+    spdlog::trace("SetFieldFontSize");
 
-    PdfDocument *document = this->document;
+    if (!this->IsOperable())
+    {
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+    }
 
-    PdfAcroForm *acroform = document->GetAcroForm();
-    PdfDictionary *acroformDict = &(acroform->GetDictionary());
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
-    PdfObject *acroformDAObj = acroformDict->FindKey(PdfName("DA"));
-    const PdfString *acroformDA = &(acroformDAObj->GetString());
+    fieldStyleManager->SetFieldFontSize(fieldName, pageIndex, fontSize);
+    appearanceManager->MarkNeedAppearance(fieldName);
 
-    return acroformDA;
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldFontSize(std::string fieldName, long pageIndex, double x, double y, float fontSize)
+  {
+    spdlog::trace("SetFieldFontSize");
+
+    if (!this->IsOperable())
+    {
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+    }
+
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+
+    fieldStyleManager->SetFieldFontSize(fieldName, pageIndex, x, y, fontSize);
+    appearanceManager->MarkNeedAppearance(fieldName);
+
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldFontSize(std::string fieldName, long pageIndex, double x, double y, double width, double height, float fontSize)
+  {
+    spdlog::trace("SetFieldFontSize");
+
+    if (!this->IsOperable())
+    {
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+    }
+
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+
+    fieldStyleManager->SetFieldFontSize(fieldName, pageIndex, x, y, width, height, fontSize);
+    appearanceManager->MarkNeedAppearance(fieldName);
+
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldDefaultValue(std::string fieldName, std::string defaultValue)
+  {
+    spdlog::trace("SetFieldDefaultValue");
+
+    if (!this->IsOperable())
+    {
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+    }
+
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+
+    fieldStyleManager->SetFieldDefaultValue(fieldName, defaultValue);
+
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldDefaultValue(std::string fieldName, long pageIndex, std::string defaultValue)
+  {
+    spdlog::trace("SetFieldDefaultValue");
+
+    if (!this->IsOperable())
+    {
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+    }
+
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+
+    fieldStyleManager->SetFieldDefaultValue(fieldName, pageIndex, defaultValue);
+
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldDefaultValue(std::string fieldName, long pageIndex, double x, double y, std::string defaultValue)
+  {
+    spdlog::trace("SetFieldDefaultValue");
+
+    if (!this->IsOperable())
+    {
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+    }
+
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+
+    fieldStyleManager->SetFieldDefaultValue(fieldName, pageIndex, x, y, defaultValue);
+
+    return this;
+  }
+
+  PiPiEditor *PiPiEditor::SetFieldDefaultValue(std::string fieldName, long pageIndex, double x, double y, double width, double height, std::string defaultValue)
+  {
+    spdlog::trace("SetFieldDefaultValue");
+
+    if (!this->IsOperable())
+    {
+      throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
+    }
+
+    PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+    PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+
+    fieldStyleManager->SetFieldDefaultValue(fieldName, pageIndex, x, y, width, height, defaultValue);
+
+    return this;
   }
 }

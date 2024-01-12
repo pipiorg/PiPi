@@ -16,6 +16,9 @@ namespace PiPi
 		PiPiFieldManager *fieldManager = new PiPiFieldManager(document);
 		this->fieldManager = fieldManager;
 
+		PiPiFieldStyleManager *fieldStyleManager = new PiPiFieldStyleManager(document, fontManager, fieldManager);
+		this->fieldStyleManager = fieldStyleManager;
+
 		PiPiAppearanceManager *appearanceManager = new PiPiAppearanceManager(document, fontManager, fieldManager);
 		this->appearanceManager = appearanceManager;
 
@@ -36,6 +39,12 @@ namespace PiPi
 		{
 			delete this->fieldManager;
 			this->fieldManager = nullptr;
+		}
+
+		if (this->fieldStyleManager != nullptr)
+		{
+			delete this->fieldStyleManager;
+			this->fieldStyleManager = nullptr;
 		}
 
 		if (this->document != nullptr)
@@ -108,8 +117,9 @@ namespace PiPi
 		PiPiFontManager *fontManager = this->fontManager;
 		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 		PiPiFieldManager *fieldManager = this->fieldManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
 
-		PiPiEditor *editor = new PiPiEditor(document, fontManager, appearanceManager, fieldManager);
+		PiPiEditor *editor = new PiPiEditor(document, fontManager, appearanceManager, fieldManager, fieldStyleManager);
 
 		this->editor = editor;
 
