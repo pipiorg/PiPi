@@ -508,11 +508,6 @@ namespace PiPi
 
     PdfArray *parentFieldKids = &(parentFieldKidsObj->GetArray());
 
-    if (parentFieldKids->size() == 1)
-    {
-      FixExpand(document, parentFieldObj);
-    }
-
     PdfObject *fieldObj = nullptr;
 
     for (unsigned int idx = 0; idx < parentFieldKids->size(); idx++)
