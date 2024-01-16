@@ -1522,10 +1522,37 @@ namespace PiPi
     {
       const std::string name = iterator->first;
 
-      if (PiPiStringCommon::startsWith(name, fieldName) && name != fieldName)
+      std::vector<std::string> *aSplits = PiPiStringCommon::split(name, ".");
+      std::vector<std::string> *bSplits = PiPiStringCommon::split(fieldName, ".");
+
+      size_t aSplitSize = aSplits->size();
+      size_t bSplitSize = bSplits->size();
+
+      size_t prefixCompareLength = std::min(aSplitSize, bSplitSize);
+
+      bool prefixSame = true;
+      for (unsigned int idx = 0; idx < prefixCompareLength; idx++)
       {
-        return true;
+        if (aSplits->at(idx) != bSplits->at(idx))
+        {
+          prefixSame = false;
+          break;
+        }
       }
+
+      if (prefixSame)
+      {
+        if (aSplitSize > bSplitSize)
+        {
+          delete aSplits;
+          delete bSplits;
+
+          return true;
+        }
+      }
+
+      delete aSplits;
+      delete bSplits;
     }
 
     return false;
