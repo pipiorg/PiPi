@@ -2,6 +2,7 @@
 
 #include <podofo/podofo.h>
 #include <spdlog/spdlog.h>
+#include "PiPiLogCommon.h"
 #include "PiPiOperator.h"
 #include "PiPiPager.h"
 #include "PiPiStringCommon.h"
@@ -11,20 +12,20 @@ using namespace PoDoFo;
 
 namespace PiPi
 {
-  class PiPiMultiOperator
-  {
-  public:
-    PiPiMultiOperator();
-    ~PiPiMultiOperator();
+	class PiPiMultiOperator
+	{
+	public:
+		PiPiMultiOperator();
+		~PiPiMultiOperator();
 
-    size_t Add(char *pdfBytes, size_t pdfSize);
+		size_t Add(char *pdfBytes, size_t pdfSize);
 
-    PiPiOperator *GetOperator(size_t index);
-    PiPiPager *GetPager();
+		PiPiOperator *GetOperator(size_t index);
+		PiPiPager *GetPager();
 
-  private:
-    std::vector<std::tuple<PdfMemDocument *, PiPiOperator *>> *docs;
+	private:
+		std::vector<std::tuple<PdfMemDocument *, PiPiOperator *>> *docs;
 
-    PiPiPager *pager;
-  };
+		PiPiPager *pager;
+	};
 }

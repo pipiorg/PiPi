@@ -4,6 +4,8 @@ namespace PiPi
 {
 	PiPiOperator::PiPiOperator(char *pdfBytes, size_t pdfSize)
 	{
+		PiPiLogCommon::Init();
+
 		PoDoFo::PdfMemDocument *document = new PoDoFo::PdfMemDocument();
 		auto input = make_shared<PoDoFo::SpanStreamDevice>(pdfBytes, pdfSize);
 		document->LoadFromDevice(input);

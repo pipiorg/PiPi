@@ -2,88 +2,90 @@
 
 namespace PiPi
 {
-  PiPiMultiOperator::PiPiMultiOperator()
-  {
-    this->pager = nullptr;
-    this->docs = new std::vector<std::tuple<PdfMemDocument *, PiPiOperator *>>();
-  }
+	PiPiMultiOperator::PiPiMultiOperator()
+	{
+		PiPiLogCommon::Init();
 
-  PiPiMultiOperator::~PiPiMultiOperator()
-  {
-    if (this->docs != nullptr)
-    {
-      for (auto iterator = this->docs->begin(); iterator != this->docs->end(); iterator.operator++())
-      {
-        PiPiOperator *op;
-        PdfMemDocument *doc;
+		this->pager = nullptr;
+		this->docs = new std::vector<std::tuple<PdfMemDocument *, PiPiOperator *>>();
+	}
 
-        std::tie(doc, op) = *iterator;
+	PiPiMultiOperator::~PiPiMultiOperator()
+	{
+		if (this->docs != nullptr)
+		{
+			for (auto iterator = this->docs->begin(); iterator != this->docs->end(); iterator.operator++())
+			{
+				PiPiOperator *op;
+				PdfMemDocument *doc;
 
-        if (op != nullptr)
-        {
-          delete op;
-        }
-      }
+				std::tie(doc, op) = *iterator;
 
-      delete this->docs;
-      this->docs = nullptr;
-    }
+				if (op != nullptr)
+				{
+					delete op;
+				}
+			}
 
-    if (this->pager != nullptr)
-    {
-      this->pager->operable = false;
-    }
-  }
+			delete this->docs;
+			this->docs = nullptr;
+		}
 
-  size_t PiPiMultiOperator::Add(char *pdfBytes, size_t pdfSize)
-  {
-    spdlog::trace("Add");
+		if (this->pager != nullptr)
+		{
+			this->pager->operable = false;
+		}
+	}
 
-    std::vector<std::tuple<PdfMemDocument *, PiPiOperator *>> *docs = this->docs;
+	size_t PiPiMultiOperator::Add(char *pdfBytes, size_t pdfSize)
+	{
+		spdlog::trace("Add");
 
-    size_t index = docs->size();
+		std::vector<std::tuple<PdfMemDocument *, PiPiOperator *>> *docs = this->docs;
 
-    PiPiOperator *op = new PiPiOperator(pdfBytes, pdfSize);
-    PdfMemDocument *doc = op->document;
+		size_t index = docs->size();
 
-    docs->push_back(std::make_tuple(doc, op));
+		PiPiOperator *op = new PiPiOperator(pdfBytes, pdfSize);
+		PdfMemDocument *doc = op->document;
 
-    return index;
-  }
+		docs->push_back(std::make_tuple(doc, op));
 
-  PiPiPager *PiPiMultiOperator::GetPager()
-  {
-    spdlog::trace("GetPager");
+		return index;
+	}
 
-    if (this->pager != nullptr)
-    {
-      return this->pager;
-    }
+	PiPiPager *PiPiMultiOperator::GetPager()
+	{
+		spdlog::trace("GetPager");
 
-    std::vector<std::tuple<PdfMemDocument *, PiPiOperator *>> *docs = this->docs;
-    PiPiPager *pager = new PiPiPager(docs);
+		if (this->pager != nullptr)
+		{
+			return this->pager;
+		}
 
-    this->pager = pager;
+		std::vector<std::tuple<PdfMemDocument *, PiPiOperator *>> *docs = this->docs;
+		PiPiPager *pager = new PiPiPager(docs);
 
-    return this->pager;
-  }
+		this->pager = pager;
 
-  PiPiOperator *PiPiMultiOperator::GetOperator(size_t index)
-  {
-    spdlog::trace("GetOperator");
+		return this->pager;
+	}
 
-    std::vector<std::tuple<PdfMemDocument *, PiPiOperator *>> *docs = this->docs;
+	PiPiOperator *PiPiMultiOperator::GetOperator(size_t index)
+	{
+		spdlog::trace("GetOperator");
 
-    if (index >= docs->size())
-    {
-      throw PiPiMultiOperateException(PiPiMultiOperateException::PiPiMultiOperateExceptionCode::IndexOutOfRange);
-    }
+		std::vector<std::tuple<PdfMemDocument *, PiPiOperator *>> *docs = this->docs;
 
-    PdfMemDocument *doc;
-    PiPiOperator *op;
+		if (index >= docs->size())
+		{
+			throw PiPiMultiOperateException(PiPiMultiOperateException::PiPiMultiOperateExceptionCode::IndexOutOfRange);
+		}
 
-    std::tie(doc, op) = (*docs)[index];
+		PdfMemDocument *doc;
+		PiPiOperator *op;
 
-    return op;
-  }
+		std::tie(doc, op) = (*docs)[index];
+
+		return op;
+	}
 }

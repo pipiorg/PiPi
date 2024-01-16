@@ -4,6 +4,7 @@
 #include <vector>
 #include <spdlog/spdlog.h>
 #include <podofo/podofo.h>
+#include "PiPiLogCommon.h"
 #include "PiPiFiller.h"
 #include "PiPiEditor.h"
 #include "PiPiExtractor.h"
