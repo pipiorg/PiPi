@@ -67,6 +67,9 @@ namespace PiPi
 
 		PdfPage* page = annot->GetPage();
 
+		page->GetContents()->GetStreamForAppending(PdfStreamAppendFlags::NoSaveRestorePrior | PdfStreamAppendFlags::Prepend).GetOutputStream().Write("q\n");
+		page->GetContents()->GetStreamForAppending(PdfStreamAppendFlags::NoSaveRestorePrior).GetOutputStream().Write("Q\n");
+
 		PdfPainter* painter = new PdfPainter(PdfPainterFlags::NoSaveRestorePrior);
 
 		painter->SetCanvas(*page);

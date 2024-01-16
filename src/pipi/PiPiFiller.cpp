@@ -195,6 +195,9 @@ namespace PiPi
       double left = annotLeft + annotWidth / 2 - scaledImageWidth / 2;
       double bottom = annotBottom + annotHeight / 2 - scaledImageHeight / 2;
 
+      page->GetContents()->GetStreamForAppending(PdfStreamAppendFlags::NoSaveRestorePrior | PdfStreamAppendFlags::Prepend).GetOutputStream().Write("q\n");
+      page->GetContents()->GetStreamForAppending(PdfStreamAppendFlags::NoSaveRestorePrior).GetOutputStream().Write("Q\n");
+
       PdfPainter *painter = new PdfPainter(PdfPainterFlags::NoSaveRestorePrior);
       painter->SetCanvas(*page);
       painter->DrawImage(*image, left, bottom, scale, scale);
