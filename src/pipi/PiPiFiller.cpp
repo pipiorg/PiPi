@@ -195,7 +195,7 @@ namespace PiPi
       double left = annotLeft + annotWidth / 2 - scaledImageWidth / 2;
       double bottom = annotBottom + annotHeight / 2 - scaledImageHeight / 2;
 
-      PdfPainter *painter = new PdfPainter();
+      PdfPainter *painter = new PdfPainter(PdfPainterFlags::NoSaveRestorePrior);
       painter->SetCanvas(*page);
       painter->DrawImage(*image, left, bottom, scale, scale);
       painter->FinishDrawing();
