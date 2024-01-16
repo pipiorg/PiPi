@@ -459,9 +459,9 @@ namespace PiPi
     switch (alignmentValue)
     {
     case 1:
-      return PiPiTextHorizontalAlignment::Right;
-    case 2:
       return PiPiTextHorizontalAlignment::Center;
+    case 2:
+      return PiPiTextHorizontalAlignment::Right;
     default:
       return PiPiTextHorizontalAlignment::Left;
     }
