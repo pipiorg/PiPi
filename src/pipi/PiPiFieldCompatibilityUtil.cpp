@@ -466,6 +466,7 @@ namespace PiPi
       fieldDict->AddKey(PdfName("Kids"), PdfArray());
 
       parentFieldKids->AddIndirect(*fieldObj);
+      fieldDict->AddKeyIndirect(PdfName("Parent"), *parentFieldObj);
     }
 
     if (IsReal(fieldObj))
