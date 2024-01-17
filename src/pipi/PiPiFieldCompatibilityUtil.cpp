@@ -235,6 +235,7 @@ namespace PiPi
     PdfArray *parentFieldKids = &(parentFieldKidsObj->GetArray());
 
     parentFieldKids->AddIndirect(*fieldObj);
+    fieldDict->AddKeyIndirect(PdfName("Parent"), *parentFieldObj);
   }
 
   void PiPiFieldCompatibilityUtil::FixDotParentField(PdfDocument *document, PdfObject *fieldObj)
@@ -285,6 +286,13 @@ namespace PiPi
     PdfArray *currentParentFieldKids = &(currentParentFieldKidsObj->GetArray());
 
     currentParentFieldKids->AddIndirect(*fieldObj);
+
+    if (fieldDict->HasKey(PdfName("Parent")))
+    {
+      fieldDict->RemoveKey(PdfName("Parent"));
+    }
+
+    fieldDict->AddKeyIndirect(PdfName("Parent"), *currentParentFieldObj);
   }
 
   void PiPiFieldCompatibilityUtil::FixRestrict(PdfDocument *document, PdfObject *fieldObj)
