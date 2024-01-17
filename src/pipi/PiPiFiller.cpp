@@ -2,7 +2,7 @@
 
 namespace PiPi
 {
-	PiPiFiller::PiPiFiller(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiAppearanceManager* appearanceManager, PiPiFieldManager* fieldManager, PiPiFlattenManager* flattenManager)
+	PiPiFiller::PiPiFiller(PdfMemDocument *document, PiPiFontManager *fontManager, PiPiAppearanceManager *appearanceManager, PiPiFieldManager *fieldManager, PiPiFlattenManager *flattenManager)
 	{
 		this->operable = true;
 		this->document = document;
@@ -17,7 +17,7 @@ namespace PiPi
 		return this->operable;
 	}
 
-	PiPiFiller* PiPiFiller::FillValue(std::string name, std::string value)
+	PiPiFiller *PiPiFiller::FillValue(std::string name, std::string value)
 	{
 		spdlog::trace("FillValue");
 
@@ -26,18 +26,18 @@ namespace PiPi
 			throw PiPiFillFieldException(PiPiFillFieldException::PiPiFillFieldExceptionCode::InOperable);
 		}
 
-		PdfMemDocument* document = this->document;
-		PiPiFieldManager* fieldManager = this->fieldManager;
+		PdfMemDocument *document = this->document;
+		PiPiFieldManager *fieldManager = this->fieldManager;
 
-		std::set<PdfField*>* fields = fieldManager->SearchField(name);
+		std::set<PdfField *> *fields = fieldManager->SearchField(name);
 
 		double minArea = -1;
-		PdfAnnotation* minAnnot = nullptr;
+		PdfAnnotation *minAnnot = nullptr;
 
 		for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
 		{
-			PdfField* field = *iterator;
-			PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
+			PdfField *field = *iterator;
+			PdfAnnotation *annot = fieldManager->BridgeFieldToAnnotation(field);
 
 			double width = PiPiAnnotationUtil::ExtractAnnotationWidth(annot);
 			double height = PiPiAnnotationUtil::ExtractAnnotationHeight(annot);
@@ -65,18 +65,22 @@ namespace PiPi
 
 		double minWidth = PiPiAnnotationUtil::ExtractAnnotationWidth(minAnnot);
 
-		value = this->FilterValue(value, minFontName);
+		PiPiFieldType minType = PiPiAnnotationUtil::ExtractAnnotationType(minAnnot);
+
+		value = minType == PiPiFieldType::TextBox
+								? this->FilterValue(value, minFontName)
+								: value;
 
 		value = !minMultiline
-			? this->TrimValue(value, minWidth, minFontName, minFontSize)
-			: value;
+								? this->TrimValue(value, minWidth, minFontName, minFontSize)
+								: value;
 
 		this->DirectFillValue(name, value);
 
 		return this;
 	}
 
-	PiPiFiller* PiPiFiller::FillValue(std::string fieldName, std::string value, bool ellipsis)
+	PiPiFiller *PiPiFiller::FillValue(std::string fieldName, std::string value, bool ellipsis)
 	{
 		spdlog::trace("FillValue");
 
@@ -85,17 +89,17 @@ namespace PiPi
 			throw PiPiFillFieldException(PiPiFillFieldException::PiPiFillFieldExceptionCode::InOperable);
 		}
 
-		PdfMemDocument* document = this->document;
-		PiPiFieldManager* fieldManager = this->fieldManager;
+		PdfMemDocument *document = this->document;
+		PiPiFieldManager *fieldManager = this->fieldManager;
 
-		PdfAnnotation* minAnnot = nullptr;
+		PdfAnnotation *minAnnot = nullptr;
 		double minArea = -1;
 
-		std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
+		std::set<PdfField *> *fields = fieldManager->SearchField(fieldName);
 		for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
 		{
-			PdfField* field = *iterator;
-			PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
+			PdfField *field = *iterator;
+			PdfAnnotation *annot = fieldManager->BridgeFieldToAnnotation(field);
 
 			double width = PiPiAnnotationUtil::ExtractAnnotationWidth(annot);
 			double height = PiPiAnnotationUtil::ExtractAnnotationHeight(annot);
@@ -134,8 +138,8 @@ namespace PiPi
 				double minHeight = PiPiAnnotationUtil::ExtractAnnotationHeight(minAnnot);
 
 				value = minMultiline
-					? this->EllipsisValueMultiline(value, minWidth, minHeight, minFontName, minFontSize)
-					: this->EllipsisValue(value, minWidth, minHeight, minFontName, minFontSize);
+										? this->EllipsisValueMultiline(value, minWidth, minHeight, minFontName, minFontSize)
+										: this->EllipsisValue(value, minWidth, minHeight, minFontName, minFontSize);
 			}
 		}
 
@@ -144,7 +148,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiFiller* PiPiFiller::FillImage(std::string fieldName, char* imageBytes, size_t imageSize)
+	PiPiFiller *PiPiFiller::FillImage(std::string fieldName, char *imageBytes, size_t imageSize)
 	{
 		spdlog::trace("FillImage");
 
@@ -153,19 +157,19 @@ namespace PiPi
 			throw PiPiFillFieldException(PiPiFillFieldException::PiPiFillFieldExceptionCode::InOperable);
 		}
 
-		PdfMemDocument* document = this->document;
-		PiPiFieldManager* fieldManager = this->fieldManager;
-		PiPiFlattenManager* flattenManager = this->flattenManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PdfMemDocument *document = this->document;
+		PiPiFieldManager *fieldManager = this->fieldManager;
+		PiPiFlattenManager *flattenManager = this->flattenManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
-		std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
+		std::set<PdfField *> *fields = fieldManager->SearchField(fieldName);
 		for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
 		{
-			PdfField* field = *iterator;
-			PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
+			PdfField *field = *iterator;
+			PdfAnnotation *annot = fieldManager->BridgeFieldToAnnotation(field);
 
 			std::unique_ptr<PdfImage> imageUniquePtr = document->CreateImage();
-			PdfImage* image = imageUniquePtr.get();
+			PdfImage *image = imageUniquePtr.get();
 			image->LoadFromBuffer(bufferview(imageBytes, imageSize));
 
 			flattenManager->FlattenImage(annot, image);
@@ -183,26 +187,26 @@ namespace PiPi
 	{
 		spdlog::trace("DirectFillValue");
 
-		PiPiFieldManager* fieldManager = this->fieldManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFieldManager *fieldManager = this->fieldManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
-		std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
+		std::set<PdfField *> *fields = fieldManager->SearchField(fieldName);
 		for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
 		{
-			PdfField* field = *iterator;
+			PdfField *field = *iterator;
 
 			PdfFieldType type = field->GetType();
 
 			if (type == PdfFieldType::TextBox)
 			{
-				PdfTextBox* textBoxField = (PdfTextBox*)field;
+				PdfTextBox *textBoxField = (PdfTextBox *)field;
 
 				PdfString valueString(value);
 				textBoxField->SetText(valueString);
 			}
 			else if (type == PdfFieldType::CheckBox)
 			{
-				PdfCheckBox* checkBoxField = (PdfCheckBox*)field;
+				PdfCheckBox *checkBoxField = (PdfCheckBox *)field;
 
 				bool checked = value == "Yes" || value == "On";
 				checkBoxField->SetChecked(checked);
@@ -222,13 +226,13 @@ namespace PiPi
 	{
 		spdlog::trace("FilterValue");
 
-		PiPiFontManager* fontManager = this->fontManager;
+		PiPiFontManager *fontManager = this->fontManager;
 
-		const PdfFont* font = fontManager->AccessFont(fontName) == nullptr
-			? fontManager->AccessDefaultFont()
-			: fontManager->AccessFont(fontName);
+		const PdfFont *font = fontManager->AccessFont(fontName) == nullptr
+															? fontManager->AccessDefaultFont()
+															: fontManager->AccessFont(fontName);
 
-		const PdfEncoding* encoding = &(font->GetEncoding());
+		const PdfEncoding *encoding = &(font->GetEncoding());
 
 		std::string replaceValue = " ";
 		charbuff replaceValueEncoded;
@@ -261,11 +265,11 @@ namespace PiPi
 	{
 		spdlog::trace("TrimValue");
 
-		PiPiFontManager* fontManager = this->fontManager;
+		PiPiFontManager *fontManager = this->fontManager;
 
-		const PdfFont* font = fontManager->AccessFont(fontName) == nullptr
-			? fontManager->AccessDefaultFont()
-			: fontManager->AccessFont(fontName);
+		const PdfFont *font = fontManager->AccessFont(fontName) == nullptr
+															? fontManager->AccessDefaultFont()
+															: fontManager->AccessFont(fontName);
 
 		PdfTextState textState;
 		textState.Font = font;
@@ -305,11 +309,11 @@ namespace PiPi
 	{
 		spdlog::trace("EllipsisValue");
 
-		PiPiFontManager* fontManager = this->fontManager;
+		PiPiFontManager *fontManager = this->fontManager;
 
-		const PdfFont* font = fontManager->AccessFont(fontName) == nullptr
-			? fontManager->AccessDefaultFont()
-			: fontManager->AccessFont(fontName);
+		const PdfFont *font = fontManager->AccessFont(fontName) == nullptr
+															? fontManager->AccessDefaultFont()
+															: fontManager->AccessFont(fontName);
 
 		PdfTextState textState;
 		textState.Font = font;
@@ -352,11 +356,11 @@ namespace PiPi
 	{
 		spdlog::trace("EllipsisValueMultiline");
 
-		PiPiFontManager* fontManager = this->fontManager;
+		PiPiFontManager *fontManager = this->fontManager;
 
-		const PdfFont* font = fontManager->AccessFont(fontName) == nullptr
-			? fontManager->AccessDefaultFont()
-			: fontManager->AccessFont(fontName);
+		const PdfFont *font = fontManager->AccessFont(fontName) == nullptr
+															? fontManager->AccessDefaultFont()
+															: fontManager->AccessFont(fontName);
 
 		PdfTextState textState;
 		textState.Font = font;
@@ -365,7 +369,7 @@ namespace PiPi
 		textState.RenderingMode = PdfTextRenderingMode::Fill;
 
 		// 切割每行有哪些字
-		std::vector<std::string>* lines = new std::vector<std::string>();
+		std::vector<std::string> *lines = new std::vector<std::string>();
 
 		std::string line = "";
 		std::string nextLine = "";
