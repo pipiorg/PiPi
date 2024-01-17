@@ -124,12 +124,13 @@ namespace PiPi
 
 		std::string minFontName = PiPiAnnotationUtil::ExtractAnnotationFontName(minAnnot);
 
-		value = this->FilterValue(value, minFontName);
-
-		if (ellipsis)
+		if (minType == PiPiFieldType::TextBox)
 		{
-			if (minType == PiPiFieldType::TextBox)
+			value = this->FilterValue(value, minFontName);
+
+			if (ellipsis)
 			{
+
 				bool minMultiline = PiPiAnnotationUtil::ExtractAnnotationTextMultiine(minAnnot);
 
 				float minFontSize = PiPiAnnotationUtil::ExtractAnnotationFontSize(minAnnot);
