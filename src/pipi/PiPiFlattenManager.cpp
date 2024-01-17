@@ -20,6 +20,8 @@ namespace PiPi {
 	}
 
 	void PiPiFlattenManager::Finish() {
+		spdlog::trace("Finish");
+
 		std::map<PdfPage*, PdfPainter*>* painterMap = this->painterMap;
 
 		for (auto iterator = painterMap->begin(); iterator != painterMap->end(); iterator.operator++()) {
@@ -85,7 +87,7 @@ namespace PiPi {
 		bool xObjectCreated = PdfXObjectForm::TryCreateFromObject(apperanceStreanRef, xObjectUniquePtr);
 		if (!xObjectCreated)
 		{
-			// TODO: 拋異常
+			throw PiPiManageFlattenException(PiPiManageFlattenException::PiPiManageFlattenExceptionCode::CreateFormObjectFromAppearanceFail);
 		}
 
 		PdfXObjectForm* xObject = xObjectUniquePtr.get();
@@ -137,6 +139,8 @@ namespace PiPi {
 	}
 
 	bool PiPiFlattenManager::IsFinished() {
+		spdlog::trace("IsFinished");
+
 		return this->finished;
 	}
 

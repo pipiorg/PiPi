@@ -4,7 +4,7 @@
 #include <spdlog/spdlog.h>
 #include "PiPiFontManager.h"
 #include "PiPiFieldManager.h"
-#include "PiPiAppearanceException.h"
+#include "PiPiManageAppearanceException.h"
 
 using namespace PoDoFo;
 

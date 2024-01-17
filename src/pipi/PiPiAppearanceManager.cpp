@@ -123,7 +123,7 @@ namespace PiPi
 			break;
 		case PiPiFieldType::Unknown:
 		default:
-			throw PiPiAppearanceException(PiPiAppearanceException::PiPiAppearanceExceptionCode::UnsupportedFieldType);
+			throw PiPiManageAppearanceException(PiPiManageAppearanceException::PiPiManageAppearanceExceptionCode::UnsupportedFieldType);
 		}
 	}
 
