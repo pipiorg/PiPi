@@ -71,7 +71,7 @@ namespace PiPi
 								? this->FilterValue(value, minFontName)
 								: value;
 
-		value = !minMultiline
+		value = minType == PiPiFieldType::TextBox && !minMultiline
 								? this->TrimValue(value, minWidth, minFontName, minFontSize)
 								: value;
 
