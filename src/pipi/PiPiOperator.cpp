@@ -2,27 +2,30 @@
 
 namespace PiPi
 {
-	PiPiOperator::PiPiOperator(char *pdfBytes, size_t pdfSize)
+	PiPiOperator::PiPiOperator(char* pdfBytes, size_t pdfSize)
 	{
 		PiPiLogCommon::Init();
 
-		PoDoFo::PdfMemDocument *document = new PoDoFo::PdfMemDocument();
+		PoDoFo::PdfMemDocument* document = new PoDoFo::PdfMemDocument();
 		auto input = make_shared<PoDoFo::SpanStreamDevice>(pdfBytes, pdfSize);
 		document->LoadFromDevice(input);
 
 		this->document = document;
 
-		PiPiFontManager *fontManager = new PiPiFontManager(document);
+		PiPiFontManager* fontManager = new PiPiFontManager(document);
 		this->fontManager = fontManager;
 
-		PiPiFieldManager *fieldManager = new PiPiFieldManager(document);
+		PiPiFieldManager* fieldManager = new PiPiFieldManager(document);
 		this->fieldManager = fieldManager;
 
-		PiPiFieldStyleManager *fieldStyleManager = new PiPiFieldStyleManager(document, fontManager, fieldManager);
+		PiPiFieldStyleManager* fieldStyleManager = new PiPiFieldStyleManager(document, fontManager, fieldManager);
 		this->fieldStyleManager = fieldStyleManager;
 
-		PiPiAppearanceManager *appearanceManager = new PiPiAppearanceManager(document, fontManager, fieldManager);
+		PiPiAppearanceManager* appearanceManager = new PiPiAppearanceManager(document, fontManager, fieldManager);
 		this->appearanceManager = appearanceManager;
+
+		PiPiFlattenManager* flattenManager = new PiPiFlattenManager(document);
+		this->flattenManager = flattenManager;
 
 		this->editor = nullptr;
 		this->filler = nullptr;
@@ -47,6 +50,11 @@ namespace PiPi
 		{
 			delete this->fieldStyleManager;
 			this->fieldStyleManager = nullptr;
+		}
+
+		if (this->flattenManager != nullptr) {
+			delete this->flattenManager;
+			this->flattenManager = nullptr;
 		}
 
 		if (this->document != nullptr)
@@ -78,14 +86,14 @@ namespace PiPi
 		}
 	}
 
-	PiPiFontManager *PiPiOperator::GetFontManager()
+	PiPiFontManager* PiPiOperator::GetFontManager()
 	{
 		spdlog::trace("GetFontManager");
 
 		return this->fontManager;
 	}
 
-	PiPiFiller *PiPiOperator::GetFiller()
+	PiPiFiller* PiPiOperator::GetFiller()
 	{
 		spdlog::trace("GetFiller");
 
@@ -94,19 +102,20 @@ namespace PiPi
 			return this->filler;
 		}
 
-		PdfMemDocument *document = this->document;
-		PiPiFontManager *fontManager = this->fontManager;
-		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
-		PiPiFieldManager *fieldManager = this->fieldManager;
+		PdfMemDocument* document = this->document;
+		PiPiFontManager* fontManager = this->fontManager;
+		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFlattenManager* flattenManager = this->flattenManager;
+		PiPiFieldManager* fieldManager = this->fieldManager;
 
-		PiPiFiller *filler = new PiPiFiller(document, fontManager, appearanceManager, fieldManager);
+		PiPiFiller* filler = new PiPiFiller(document, fontManager, appearanceManager, fieldManager, flattenManager);
 
 		this->filler = filler;
 
 		return this->filler;
 	}
 
-	PiPiEditor *PiPiOperator::GetEditor()
+	PiPiEditor* PiPiOperator::GetEditor()
 	{
 		spdlog::trace("GetEditor");
 
@@ -115,20 +124,21 @@ namespace PiPi
 			return this->editor;
 		}
 
-		PdfMemDocument *document = this->document;
-		PiPiFontManager *fontManager = this->fontManager;
-		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
-		PiPiFieldManager *fieldManager = this->fieldManager;
-		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+		PdfMemDocument* document = this->document;
+		PiPiFontManager* fontManager = this->fontManager;
+		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFlattenManager* flattenManager = this->flattenManager;
+		PiPiFieldManager* fieldManager = this->fieldManager;
+		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
 
-		PiPiEditor *editor = new PiPiEditor(document, fontManager, appearanceManager, fieldManager, fieldStyleManager);
+		PiPiEditor* editor = new PiPiEditor(document, fontManager, appearanceManager, fieldManager, fieldStyleManager, flattenManager);
 
 		this->editor = editor;
 
 		return this->editor;
 	}
 
-	PiPiExtractor *PiPiOperator::GetExtractor()
+	PiPiExtractor* PiPiOperator::GetExtractor()
 	{
 		spdlog::trace("GetExtractor");
 
@@ -137,10 +147,10 @@ namespace PiPi
 			return this->extractor;
 		}
 
-		PdfMemDocument *document = this->document;
-		PiPiFieldManager *fieldManager = this->fieldManager;
+		PdfMemDocument* document = this->document;
+		PiPiFieldManager* fieldManager = this->fieldManager;
 
-		PiPiExtractor *extractor = new PiPiExtractor(document, fieldManager);
+		PiPiExtractor* extractor = new PiPiExtractor(document, fieldManager);
 
 		this->extractor = extractor;
 
@@ -154,18 +164,20 @@ namespace PiPi
 		return this->document != nullptr;
 	}
 
-	void PiPiOperator::Finalize(std::vector<char> **newPdf)
+	void PiPiOperator::Finalize(std::vector<char>** newPdf)
 	{
 		spdlog::trace("Finalize");
 
 		*newPdf = new std::vector<char>();
 		PoDoFo::VectorStreamDevice outputStreamDevice(**newPdf);
 
-		PdfMemDocument *document = this->document;
-		PiPiFontManager *fontManager = this->fontManager;
-		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+		PdfMemDocument* document = this->document;
+		PiPiFontManager* fontManager = this->fontManager;
+		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFlattenManager* flattenManager = this->flattenManager;
 
 		appearanceManager->GenerateAppearance();
+		flattenManager->Finish();
 		fontManager->EmbedFonts();
 		document->Save(outputStreamDevice);
 	}

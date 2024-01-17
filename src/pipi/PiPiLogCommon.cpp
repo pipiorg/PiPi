@@ -6,8 +6,8 @@ namespace PiPi
 	{
 		static once_flag log_flag;
 		call_once(log_flag, []()
-							{
-				spdlog::set_level(spdlog::level::warn);
+			{
+				spdlog::set_level(spdlog::level::trace);
 				PoDoFo::PdfCommon::SetMaxLoggingSeverity(PoDoFo::PdfLogSeverity::Debug);
 				PoDoFo::PdfCommon::SetLogMessageCallback([](PoDoFo::PdfLogSeverity logSeverity, const string_view& msg) {
 					switch (logSeverity) {
