@@ -610,7 +610,7 @@ namespace PiPi
     {
       if (i == 1)
       {
-        newDaStringSplits->push_back(std::to_string(fontSize));
+        newDaStringSplits->push_back(std::to_string((int)fontSize));
         continue;
       }
 
@@ -641,14 +641,14 @@ namespace PiPi
     switch (alignment)
     {
     case PiPiTextHorizontalAlignment::Center:
-      fieldDict->AddKey(PdfName("Q"), PdfObject((int64_t)0));
+      fieldDict->AddKey(PdfName("Q"), PdfObject((int64_t)1));
       break;
     case PiPiTextHorizontalAlignment::Right:
-      fieldDict->AddKey(PdfName("Q"), PdfObject((int64_t)1));
+      fieldDict->AddKey(PdfName("Q"), PdfObject((int64_t)2));
       break;
     case PiPiTextHorizontalAlignment::Left:
     default:
-      fieldDict->AddKey(PdfName("Q"), PdfObject((int64_t)2));
+      fieldDict->AddKey(PdfName("Q"), PdfObject((int64_t)0));
       break;
     }
   }
@@ -814,7 +814,9 @@ namespace PiPi
 
   void PiPiFieldStyleManager::InnerSetFieldBorderWidth(PdfObject* obj, double borderWidth)
   {
-    spdlog::trace("InnerSetFieldMultiline");
+    spdlog::trace("InnerSetFieldBorderWidth");
+
+    if (borderWidth <= 0) return;
 
     PdfDictionary* dict = &(obj->GetDictionary());
 

@@ -185,7 +185,7 @@ namespace PiPi
     PdfObject *bsObj = dict->FindKey(PdfName("BS"));
     if (bsObj == nullptr)
     {
-      return 0;
+      return 0.0;
     }
 
     PdfDictionary *bs = &(bsObj->GetDictionary());
@@ -193,12 +193,19 @@ namespace PiPi
     PdfObject *w = bs->FindKey(PdfName("W"));
     if (w == nullptr)
     {
-      return 0;
+      return 0.0;
     }
 
-    int width = (int)w->GetNumber();
+    if (w->IsNumber()) {
+      return (double)(w->GetNumber());
+    }
 
-    return width;
+    if (w->IsRealStrict()) {
+      return w->GetReal();
+    }
+
+
+    return 0.0;
   }
 
   void PiPiAnnotationUtil::ExtractAnnotationBorderColor(PdfAnnotation *annotation, float *red, float *green, float *blue)
