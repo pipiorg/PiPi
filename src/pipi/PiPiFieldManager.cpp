@@ -112,7 +112,7 @@ namespace PiPi
     PdfObject *acroformFieldsObj = acroformDict->FindKey(PdfName("Fields"));
     PdfArray *acroformFields = &(acroformFieldsObj->GetArray());
 
-    long acroformFieldsCount = acroformFields->size();
+    long acroformFieldsCount = (long)acroformFields->size();
     for (long i = acroformFieldsCount - 1; i >= 0; i--)
     {
       acroformFields->RemoveAt((unsigned int)i);
@@ -575,7 +575,7 @@ namespace PiPi
 
         PdfAnnotationCollection *pageAnnots = &(page->GetAnnotations());
         size_t pageAnnotCount = pageAnnots->GetCount();
-        for (long pageAnnotIndex = pageAnnotCount - 1; pageAnnotIndex >= 0; pageAnnotIndex--)
+        for (long pageAnnotIndex = (long)pageAnnotCount - 1; pageAnnotIndex >= 0; pageAnnotIndex--)
         {
           PdfAnnotation *pageAnnot = &(pageAnnots->GetAnnotAt((unsigned int)pageAnnotIndex));
           if (&(pageAnnot->GetObject()) == annotObj)
@@ -1182,6 +1182,8 @@ namespace PiPi
     PdfField *field = fieldPtr.release();
 
     this->AddFieldMap(object, field, fieldName, true);
+
+    return object;
   }
 
   void PiPiFieldManager::RestrictField(PdfObject *fieldObj)

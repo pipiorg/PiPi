@@ -15,26 +15,26 @@ namespace PiPi
   {
     spdlog::trace("ConvertRGBToGray");
 
-    *gray = red * 0.299 + green * 0.587 + blue * 0.114;
+    *gray = red * 0.299f + green * 0.587f + blue * 0.114f;
   }
 
   void PiPiColorConverter::ConvertCMYKToRGB(float cyan, float magenta, float yellow, float black, float *red, float *green, float *blue)
   {
     spdlog::trace("ConvertCMYKToRGB");
 
-    *red = 1.0 - std::min(1.0, (cyan * (1.0 - black)) + black);
-    *green = 1.0 - std::min(1.0, (magenta * (1.0 - black)) + black);
-    *blue = 1.0 - std::min(1.0, (yellow * (1.0 - black)) + black);
+    *red = 1.0f - std::min(1.0f, (cyan * (1.0f - black)) + black);
+    *green = 1.0f - std::min(1.0f, (magenta * (1.0f - black)) + black);
+    *blue = 1.0f - std::min(1.0f, (yellow * (1.0f - black)) + black);
   }
 
   void PiPiColorConverter::ConvertRGBToCMYK(float red, float green, float blue, float *cyan, float *megenta, float *yellow, float *black)
   {
     spdlog::trace("ConvertRGBToCMYK");
 
-    *black = 1.0 - std::max(std::max(red, green), blue);
-    *cyan = (1.0 - red - *black) / (1.0 - *black);
-    *megenta = (1.0 - green - *black) / (1 - *black);
-    *yellow = (1.0 - blue - *black) / (1 - *black);
+    *black = 1.0f - std::max(std::max(red, green), blue);
+    *cyan = (1.0f - red - *black) / (1.0f - *black);
+    *megenta = (1.0f - green - *black) / (1.0f - *black);
+    *yellow = (1.0f - blue - *black) / (1.0f - *black);
   }
 
   void PiPiColorConverter::ConvertPoDoFoArrayToRGB(PdfArray *colors, float *red, float *green, float *blue)

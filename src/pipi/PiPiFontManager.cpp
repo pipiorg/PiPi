@@ -145,7 +145,7 @@ namespace PiPi
 				continue;
 			}
 
-			PdfFont *font = fontPtr.get();
+			PdfFont *font = fontPtr.release();
 
 			this->fontMap->insert(std::pair(fontNameString, font));
 		}

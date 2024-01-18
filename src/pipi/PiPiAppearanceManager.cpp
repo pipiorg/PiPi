@@ -189,16 +189,16 @@ namespace PiPi
 		painter->SetClipRect(xObjectRect);
 
 		// 畫邊框
-		double borderWidth = 0;
+		double borderWidth = 0.0;
 
 		bool borderExists = PiPiAnnotationUtil::ExtractAnnotationBorderExists(annot);
 		if (borderExists)
 		{
 			painter->Save();
 
-			float borderColorRed = 0;
-			float borderColorGreen = 0;
-			float borderColorBlue = 0;
+			float borderColorRed = 0.0f;
+			float borderColorGreen = 0.0f;
+			float borderColorBlue = 0.0f;
 			PiPiAnnotationUtil::ExtractAnnotationBorderColor(annot, &borderColorRed, &borderColorGreen, &borderColorBlue);
 
 			borderWidth = PiPiAnnotationUtil::ExtractAnnotationBorderWidth(annot);
@@ -207,7 +207,7 @@ namespace PiPi
 			graphicsState->SetStrokeColor(PdfColor(borderColorRed, borderColorGreen, borderColorBlue));
 			graphicsState->SetLineCapStyle(PdfLineCapStyle::Round);
 
-			painter->DrawRectangle(borderWidth / 2, borderWidth / 2, width - borderWidth, height - borderWidth, PdfPathDrawMode::Stroke);
+			painter->DrawRectangle(borderWidth / 2.0, borderWidth / 2.0, width - borderWidth, height - borderWidth, PdfPathDrawMode::Stroke);
 
 			painter->Restore();
 		}
@@ -218,16 +218,16 @@ namespace PiPi
 		{
 			painter->Save();
 
-			float backgroundColorRed = 0;
-			float backgroundColorGreen = 0;
-			float backgroundColorBlue = 0;
+			float backgroundColorRed = 0.0f;
+			float backgroundColorGreen = 0.0f;
+			float backgroundColorBlue = 0.0f;
 			PiPiAnnotationUtil::ExtractAnnotationBackgroundColor(annot, &backgroundColorRed, &backgroundColorGreen, &backgroundColorBlue);
 
 			PdfColor* bgColor = new PdfColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue);
 			PdfColor& bgColorRef = *bgColor;
 			graphicsState->SetFillColor(bgColorRef);
 
-			painter->DrawRectangle(borderWidth, borderWidth, width - borderWidth * 2, height - borderWidth * 2, PdfPathDrawMode::Fill);
+			painter->DrawRectangle(borderWidth, borderWidth, width - borderWidth * 2.0, height - borderWidth * 2.0, PdfPathDrawMode::Fill);
 
 			painter->Restore();
 		}
@@ -235,26 +235,26 @@ namespace PiPi
 		// 畫勾勾
 		painter->Save();
 
-		float colorRed = 0;
-		float colorGreen = 0;
-		float colorBlue = 0;
+		float colorRed = 0.0f;
+		float colorGreen = 0.0f;
+		float colorBlue = 0.0f;
 		PiPiAnnotationUtil::ExtractAnnotationColor(annot, &colorRed, &colorGreen, &colorBlue);
 
 		graphicsState->SetLineWidth(1.5);
 		graphicsState->SetStrokeColor(PdfColor(colorRed, colorGreen, colorBlue));
 
-		double cx = width / 2;
-		double cy = height / 2;
+		double cx = width / 2.0;
+		double cy = height / 2.0;
 
-		double size = std::min(width - borderWidth * 2, height - borderWidth * 2) / 2;
+		double size = std::min(width - borderWidth * 2.0, height - borderWidth * 2.0) / 2.0;
 
-		double p2x = -1 + 0.75;
-		double p2y = -1 + 0.51;
+		double p2x = -1.0 + 0.75;
+		double p2y = -1.0 + 0.51;
 
-		double p3y = 1 - 0.525;
-		double p3x = 1 - 0.31;
+		double p3y = 1.0 - 0.525;
+		double p3x = 1.0 - 0.31;
 
-		double p1x = -1 + 0.325;
+		double p1x = -1.0 + 0.325;
 		double p1y = -((p1x - p2x) * (p3x - p2x)) / (p3y - p2y) + p2y;
 
 		PdfPainterPath path;
@@ -297,7 +297,7 @@ namespace PiPi
 		painter->SetClipRect(xObjectRect);
 
 		// 畫邊框
-		double borderWidth = 0;
+		double borderWidth = 0.0;
 
 		bool borderExists = PiPiAnnotationUtil::ExtractAnnotationBorderExists(annot);
 		if (borderExists)
@@ -306,16 +306,16 @@ namespace PiPi
 
 			borderWidth = PiPiAnnotationUtil::ExtractAnnotationBorderWidth(annot);
 
-			float borderColorRed = 0;
-			float borderColorGreen = 0;
-			float borderColorBlue = 0;
+			float borderColorRed = 0.0f;
+			float borderColorGreen = 0.0f;
+			float borderColorBlue = 0.0f;
 			PiPiAnnotationUtil::ExtractAnnotationBorderColor(annot, &borderColorRed, &borderColorGreen, &borderColorBlue);
 
 			graphicsState->SetLineWidth(borderWidth);
 			graphicsState->SetStrokeColor(PdfColor(borderColorRed, borderColorGreen, borderColorBlue));
 			graphicsState->SetLineCapStyle(PdfLineCapStyle::Round);
 
-			painter->DrawRectangle(borderWidth / 2, borderWidth / 2, width - borderWidth, height - borderWidth, PdfPathDrawMode::Stroke);
+			painter->DrawRectangle(borderWidth / 2.0, borderWidth / 2.0, width - borderWidth, height - borderWidth, PdfPathDrawMode::Stroke);
 
 			painter->Restore();
 		}
@@ -326,9 +326,9 @@ namespace PiPi
 		{
 			painter->Save();
 
-			float backgroundColorRed = 0;
-			float backgroundColorGreen = 0;
-			float backgroundColorBlue = 0;
+			float backgroundColorRed = 0.0f;
+			float backgroundColorGreen = 0.0f;
+			float backgroundColorBlue = 0.0f;
 			PiPiAnnotationUtil::ExtractAnnotationBackgroundColor(annot, &backgroundColorRed, &backgroundColorGreen, &backgroundColorBlue);
 
 			float invertBackgroundColorRed = 1.0f - backgroundColorRed;
@@ -347,9 +347,9 @@ namespace PiPi
 		// 畫勾勾
 		painter->Save();
 
-		float colorRed = 0;
-		float colorGreen = 0;
-		float colorBlue = 0;
+		float colorRed = 0.0f;
+		float colorGreen = 0.0f;
+		float colorBlue = 0.0f;
 		PiPiAnnotationUtil::ExtractAnnotationColor(annot, &colorRed, &colorGreen, &colorBlue);
 
 		float invertColorRed = 1.0f - colorRed;
@@ -359,18 +359,18 @@ namespace PiPi
 		graphicsState->SetLineWidth(1.5);
 		graphicsState->SetStrokeColor(PdfColor(invertColorRed, invertColorGreen, invertColorBlue));
 
-		double cx = width / 2;
-		double cy = height / 2;
+		double cx = width / 2.0;
+		double cy = height / 2.0;
 
-		double size = std::min(width - borderWidth * 2, height - borderWidth * 2) / 2;
+		double size = std::min(width - borderWidth * 2.0, height - borderWidth * 2.0) / 2.0;
 
-		double p2x = -1 + 0.75;
-		double p2y = -1 + 0.51;
+		double p2x = -1.0 + 0.75;
+		double p2y = -1.0 + 0.51;
 
-		double p3y = 1 - 0.525;
-		double p3x = 1 - 0.31;
+		double p3y = 1.0 - 0.525;
+		double p3x = 1.0 - 0.31;
 
-		double p1x = -1 + 0.325;
+		double p1x = -1.0 + 0.325;
 		double p1y = -((p1x - p2x) * (p3x - p2x)) / (p3y - p2y) + p2y;
 
 		PdfPainterPath path;
@@ -413,7 +413,7 @@ namespace PiPi
 		painter->SetClipRect(xObjectRect);
 
 		// 畫邊框
-		double borderWidth = 0;
+		double borderWidth = 0.0;
 
 		bool borderExists = PiPiAnnotationUtil::ExtractAnnotationBorderExists(annot);
 		if (borderExists)
@@ -422,9 +422,9 @@ namespace PiPi
 
 			borderWidth = PiPiAnnotationUtil::ExtractAnnotationBorderWidth(annot);
 
-			float borderColorRed = 0;
-			float borderColorGreen = 0;
-			float borderColorBlue = 0;
+			float borderColorRed = 0.0f;
+			float borderColorGreen = 0.0f;
+			float borderColorBlue = 0.0f;
 			PiPiAnnotationUtil::ExtractAnnotationBorderColor(annot, &borderColorRed, &borderColorGreen, &borderColorBlue);
 
 			graphicsState->SetLineWidth(borderWidth);
@@ -442,14 +442,14 @@ namespace PiPi
 		{
 			painter->Save();
 
-			float backgroundColorRed = 0;
-			float backgroundColorGreen = 0;
-			float backgroundColorBlue = 0;
+			float backgroundColorRed = 0.0f;
+			float backgroundColorGreen = 0.0f;
+			float backgroundColorBlue = 0.0f;
 			PiPiAnnotationUtil::ExtractAnnotationBackgroundColor(annot, &backgroundColorRed, &backgroundColorGreen, &backgroundColorBlue);
 
-			float invertBackgroundColorRed = 1.0 - backgroundColorRed;
-			float invertBackgroundColorGreen = 1.0 - backgroundColorBlue;
-			float invertBackgroundColorBlue = 1.0 - backgroundColorBlue;
+			float invertBackgroundColorRed = 1.0f - backgroundColorRed;
+			float invertBackgroundColorGreen = 1.0f - backgroundColorBlue;
+			float invertBackgroundColorBlue = 1.0f - backgroundColorBlue;
 
 			PdfColor* bgColor = new PdfColor(invertBackgroundColorRed, invertBackgroundColorGreen, invertBackgroundColorBlue);
 			PdfColor& bgColorRef = *bgColor;
@@ -493,7 +493,7 @@ namespace PiPi
 		PdfTextStateWrapper* textState = &(painter->TextState);
 
 		// 畫邊框
-		double borderWidth = 0;
+		double borderWidth = 0.0;
 
 		bool borderExists = PiPiAnnotationUtil::ExtractAnnotationBorderExists(annot);
 		if (borderExists)
@@ -502,9 +502,9 @@ namespace PiPi
 
 			borderWidth = PiPiAnnotationUtil::ExtractAnnotationBorderWidth(annot);
 
-			float borderColorRed = 0;
-			float borderColorGreen = 0;
-			float borderColorBlue = 0;
+			float borderColorRed = 0.0f;
+			float borderColorGreen = 0.0f;
+			float borderColorBlue = 0.0f;
 			PiPiAnnotationUtil::ExtractAnnotationBorderColor(annot, &borderColorRed, &borderColorGreen, &borderColorBlue);
 
 			graphicsState->SetLineWidth(borderWidth);
@@ -522,9 +522,9 @@ namespace PiPi
 		{
 			painter->Save();
 
-			float backgroundColorRed = 0;
-			float backgroundColorGreen = 0;
-			float backgroundColorBlue = 0;
+			float backgroundColorRed = 0.0f;
+			float backgroundColorGreen = 0.0f;
+			float backgroundColorBlue = 0.0f;
 			PiPiAnnotationUtil::ExtractAnnotationBackgroundColor(annot, &backgroundColorRed, &backgroundColorGreen, &backgroundColorBlue);
 
 			graphicsState->SetFillColor(PdfColor(backgroundColorRed, backgroundColorGreen, backgroundColorBlue));
@@ -543,9 +543,9 @@ namespace PiPi
 		const PdfFont* font = fontManager->AccessFont(fontName);
 		if (font != nullptr)
 		{
-			float textColorRed = 0;
-			float textColorGreen = 0;
-			float textColorBlue = 0;
+			float textColorRed = 0.0f;
+			float textColorGreen = 0.0f;
+			float textColorBlue = 0.0f;
 			PiPiAnnotationUtil::ExtractAnnotationColor(annot, &textColorRed, &textColorGreen, &textColorBlue);
 
 			graphicsState->SetFillColor(PdfColor(textColorRed, textColorGreen, textColorBlue));
