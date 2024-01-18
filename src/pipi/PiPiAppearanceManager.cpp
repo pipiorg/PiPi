@@ -331,9 +331,9 @@ namespace PiPi
 			float backgroundColorBlue = 0;
 			PiPiAnnotationUtil::ExtractAnnotationBackgroundColor(annot, &backgroundColorRed, &backgroundColorGreen, &backgroundColorBlue);
 
-			float invertBackgroundColorRed = 1.0 - backgroundColorRed;
-			float invertBackgroundColorGreen = 1.0 - backgroundColorBlue;
-			float invertBackgroundColorBlue = 1.0 - backgroundColorBlue;
+			float invertBackgroundColorRed = 1.0f - backgroundColorRed;
+			float invertBackgroundColorGreen = 1.0f - backgroundColorBlue;
+			float invertBackgroundColorBlue = 1.0f - backgroundColorBlue;
 
 			PdfColor* bgColor = new PdfColor(invertBackgroundColorRed, invertBackgroundColorGreen, invertBackgroundColorBlue);
 			PdfColor& bgColorRef = *bgColor;
@@ -352,9 +352,9 @@ namespace PiPi
 		float colorBlue = 0;
 		PiPiAnnotationUtil::ExtractAnnotationColor(annot, &colorRed, &colorGreen, &colorBlue);
 
-		float invertColorRed = 1.0 - colorRed;
-		float invertColorGreen = 1.0 - colorGreen;
-		float invertColorBlue = 1.0 - colorBlue;
+		float invertColorRed = 1.0f - colorRed;
+		float invertColorGreen = 1.0f - colorGreen;
+		float invertColorBlue = 1.0f - colorBlue;
 
 		graphicsState->SetLineWidth(1.5);
 		graphicsState->SetStrokeColor(PdfColor(invertColorRed, invertColorGreen, invertColorBlue));
@@ -537,50 +537,51 @@ namespace PiPi
 		// 畫文字
 		painter->Save();
 
-		float textColorRed = 0;
-		float textColorGreen = 0;
-		float textColorBlue = 0;
-		PiPiAnnotationUtil::ExtractAnnotationColor(annot, &textColorRed, &textColorGreen, &textColorBlue);
-
-		graphicsState->SetFillColor(PdfColor(textColorRed, textColorGreen, textColorBlue));
-		graphicsState->SetStrokeColor(PdfColor(textColorRed, textColorGreen, textColorBlue));
-
-		float fontSize = PiPiAnnotationUtil::ExtractAnnotationFontSize(annot);
 		std::string fontName = PiPiAnnotationUtil::ExtractAnnotationFontName(annot);
+		float fontSize = PiPiAnnotationUtil::ExtractAnnotationFontSize(annot);
 
-		const PdfFont* font = fontManager->AccessFont(fontName) == nullptr
-			? fontManager->AccessDefaultFont()
-			: fontManager->AccessFont(fontName);
-		const PdfFont& fontRef = *font;
-
-		textState->SetFont(fontRef, fontSize);
-
-		std::string sText = PiPiAnnotationUtil::ExtractAnnotationValue(annot);
-
-		// 為了垂直置中，不管多行單行都照多行套
-		// 前面套印處以過濾掉會變多行的文字
-		PdfDrawTextMultiLineParams multineParams;
-
-		bool multiline = PiPiAnnotationUtil::ExtractAnnotationTextMultiine(annot);
-		multineParams.VerticalAlignment = multiline
-			? PdfVerticalAlignment::Top
-			: PdfVerticalAlignment::Center;
-
-		PiPiTextHorizontalAlignment horizontalAlignment = PiPiAnnotationUtil::ExtractAnnotationTextHorizontalAlignment(annot);
-		switch (horizontalAlignment)
+		const PdfFont* font = fontManager->AccessFont(fontName);
+		if (font != nullptr)
 		{
-		case PiPiTextHorizontalAlignment::Left:
-			multineParams.HorizontalAlignment = PdfHorizontalAlignment::Left;
-			break;
-		case PiPiTextHorizontalAlignment::Center:
-			multineParams.HorizontalAlignment = PdfHorizontalAlignment::Center;
-			break;
-		case PiPiTextHorizontalAlignment::Right:
-			multineParams.HorizontalAlignment = PdfHorizontalAlignment::Right;
-			break;
-		}
+			float textColorRed = 0;
+			float textColorGreen = 0;
+			float textColorBlue = 0;
+			PiPiAnnotationUtil::ExtractAnnotationColor(annot, &textColorRed, &textColorGreen, &textColorBlue);
 
-		painter->DrawTextMultiLine(sText, borderWidth, borderWidth, width - borderWidth * 2, height - borderWidth * 2, multineParams);
+			graphicsState->SetFillColor(PdfColor(textColorRed, textColorGreen, textColorBlue));
+			graphicsState->SetStrokeColor(PdfColor(textColorRed, textColorGreen, textColorBlue));
+
+			const PdfFont& fontRef = *font;
+
+			textState->SetFont(fontRef, fontSize);
+
+			std::string sText = PiPiAnnotationUtil::ExtractAnnotationValue(annot);
+
+			// 為了垂直置中，不管多行單行都照多行套
+			// 前面套印處以過濾掉會變多行的文字
+			PdfDrawTextMultiLineParams multineParams;
+
+			bool multiline = PiPiAnnotationUtil::ExtractAnnotationTextMultiine(annot);
+			multineParams.VerticalAlignment = multiline
+				? PdfVerticalAlignment::Top
+				: PdfVerticalAlignment::Center;
+
+			PiPiTextHorizontalAlignment horizontalAlignment = PiPiAnnotationUtil::ExtractAnnotationTextHorizontalAlignment(annot);
+			switch (horizontalAlignment)
+			{
+			case PiPiTextHorizontalAlignment::Left:
+				multineParams.HorizontalAlignment = PdfHorizontalAlignment::Left;
+				break;
+			case PiPiTextHorizontalAlignment::Center:
+				multineParams.HorizontalAlignment = PdfHorizontalAlignment::Center;
+				break;
+			case PiPiTextHorizontalAlignment::Right:
+				multineParams.HorizontalAlignment = PdfHorizontalAlignment::Right;
+				break;
+			}
+
+			painter->DrawTextMultiLine(sText, borderWidth, borderWidth, width - borderWidth * 2, height - borderWidth * 2, multineParams);
+		}
 
 		painter->Restore();
 
