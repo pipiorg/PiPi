@@ -86,7 +86,7 @@ namespace PiPi
 
       std::tie(s, e) = *iterator;
 
-      this->CopyPage(doc, splitedDoc, (unsigned int)s, (unsigned int)e);
+      this->CopyPage(splitedDoc, doc, (unsigned int)s, (unsigned int)e);
 
       vector<char> *outputVector = new vector<char>();
       PoDoFo::VectorStreamDevice outputStreamDevice(*outputVector);
@@ -141,12 +141,12 @@ namespace PiPi
           throw PiPiPageException(PiPiPageException::PiPiPageExceptionCode::InvalidSplitInstruction);
         }
 
-        if (oneNum < 0)
+        if (oneNum < 1)
         {
           throw PiPiPageException(PiPiPageException::PiPiPageExceptionCode::InvalidSplitInstruction);
         }
 
-        instructionPairs->push_back(std::make_tuple(oneNum, oneNum + 1));
+        instructionPairs->push_back(std::make_tuple(oneNum - 1, oneNum));
       }
       else if (pageInstructions->size() == 2)
       {
@@ -154,7 +154,7 @@ namespace PiPi
         std::string two = (*pageInstructions)[1];
 
         int oneNum = -1;
-        int twoNum = -2;
+        int twoNum = -1;
 
         try
         {
@@ -170,22 +170,22 @@ namespace PiPi
           throw PiPiPageException(PiPiPageException::PiPiPageExceptionCode::InvalidSplitInstruction);
         }
 
-        if (oneNum < 0 || twoNum < 0)
+        if (oneNum < 1 || twoNum < 1)
         {
           throw PiPiPageException(PiPiPageException::PiPiPageExceptionCode::InvalidSplitInstruction);
         }
 
         if (oneNum == twoNum)
         {
-          instructionPairs->push_back(std::make_tuple(oneNum, oneNum + 1));
+          instructionPairs->push_back(std::make_tuple(oneNum - 1, oneNum));
         }
         else if (oneNum > twoNum)
         {
-          instructionPairs->push_back(std::make_tuple(twoNum, oneNum));
+          instructionPairs->push_back(std::make_tuple(twoNum - 1, oneNum - 1));
         }
         else
         {
-          instructionPairs->push_back(std::make_tuple(oneNum, twoNum));
+          instructionPairs->push_back(std::make_tuple(oneNum - 1, twoNum - 1));
         }
       }
       else
