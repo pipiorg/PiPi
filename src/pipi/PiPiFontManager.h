@@ -16,6 +16,7 @@ namespace PiPi
 
 	public:
 		PiPiFontManager(PdfMemDocument *document);
+		~PiPiFontManager();
 
 		bool IsOperable();
 
@@ -31,6 +32,7 @@ namespace PiPi
 
 		PdfMemDocument *document;
 
+		std::set<std::string>* nonStandardFontNames;
 		std::map<const std::string, const PdfFont *> *fontMap;
 
 		void Init(PdfMemDocument *document);

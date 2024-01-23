@@ -8,6 +8,32 @@ namespace PiPi
 		this->LoadAcroformFonts();
 	}
 
+	PiPiFontManager::~PiPiFontManager()
+	{
+		if (this->fontMap != nullptr)
+		{
+			for (auto iterator = this->fontMap->begin(); iterator != this->fontMap->end(); iterator.operator++())
+			{
+				std::string fontName = iterator->first;
+
+				if (this->nonStandardFontNames->find(fontName) != this->nonStandardFontNames->end())
+				{
+					delete iterator->second;
+					iterator->second = nullptr;
+				}
+			}
+
+			delete this->fontMap;
+			this->fontMap = nullptr;
+		}
+
+		if (this->nonStandardFontNames != nullptr)
+		{
+			delete this->nonStandardFontNames;
+			this->nonStandardFontNames = nullptr;
+		}
+	}
+
 	bool PiPiFontManager::IsOperable()
 	{
 		spdlog::trace("IsOperable");
@@ -79,6 +105,7 @@ namespace PiPi
 		this->operable = true;
 		this->document = document;
 		this->fontMap = new std::map<const std::string, const PdfFont *>();
+		this->nonStandardFontNames = new std::set<std::string>();
 	}
 
 	void PiPiFontManager::LoadAcroformFonts()
@@ -147,6 +174,7 @@ namespace PiPi
 
 			PdfFont *font = fontPtr.release();
 
+			this->nonStandardFontNames->insert(fontNameString);
 			this->fontMap->insert(std::pair(fontNameString, font));
 		}
 	}
