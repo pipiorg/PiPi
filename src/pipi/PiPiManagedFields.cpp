@@ -22,6 +22,11 @@ namespace PiPi
   {
     if (this->fields != nullptr)
     {
+      for (auto iterator = this->fields->begin(); iterator != this->fields->end(); iterator.operator++())
+      {
+        delete *iterator;
+      }
+
       delete this->fields;
       this->fields = nullptr;
     }

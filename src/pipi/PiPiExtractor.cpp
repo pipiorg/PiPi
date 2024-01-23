@@ -60,6 +60,7 @@ namespace PiPi
 		std::vector<const PiPiField *> *tFields = new std::vector<const PiPiField *>();
 
 		std::map<const std::string, std::set<PdfField *> *> *fieldMap = fieldManager->SearchAllField();
+
 		for (auto fieldMapIterator = fieldMap->begin(); fieldMapIterator != fieldMap->end(); fieldMapIterator.operator++())
 		{
 
@@ -136,6 +137,14 @@ namespace PiPi
 				tFields->push_back(tField);
 			}
 		}
+
+		for (auto fieldMapIterator = fieldMap->begin(); fieldMapIterator != fieldMap->end(); fieldMapIterator.operator++())
+		{
+			fieldMapIterator->second->clear();
+			delete fieldMapIterator->second;
+		}
+
+		delete fieldMap;
 
 		return tFields;
 	}

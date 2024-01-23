@@ -36,6 +36,7 @@ namespace PiPi
 		appearanceManager->GenerateAppearance();
 
 		std::map<const std::string, std::set<PdfField*>*>* fieldMap = fieldManager->SearchAllField();
+
 		for (auto mapIterator = fieldMap->begin(); mapIterator != fieldMap->end(); mapIterator.operator++())
 		{
 			std::set<PdfField*>* fields = mapIterator->second;
@@ -47,6 +48,12 @@ namespace PiPi
 
 				flattenManager->FlattenAnnot(annot);
 			}
+		}
+
+		for (auto mapIterator = fieldMap->begin(); mapIterator != fieldMap->end(); mapIterator.operator++())
+		{
+			mapIterator->second->clear();
+			delete mapIterator->second;
 		}
 
 		delete fieldMap;

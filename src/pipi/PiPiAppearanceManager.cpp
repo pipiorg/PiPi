@@ -30,6 +30,7 @@ namespace PiPi
 		std::set<std::string>* fieldNames = this->fieldNames;
 
 		std::map<const std::string, std::set<PdfField*>*>* fieldMap = fieldManager->SearchAllField();
+
 		for (auto mapIterator = fieldMap->begin(); mapIterator != fieldMap->end(); mapIterator.operator++())
 		{
 			std::set<PdfField*>* fields = mapIterator->second;
@@ -50,6 +51,14 @@ namespace PiPi
 		}
 
 		this->ClearNeedAppearance();
+
+		for (auto mapIterator = fieldMap->begin(); mapIterator != fieldMap->end(); mapIterator.operator++())
+		{
+			mapIterator->second->clear();
+			delete mapIterator->second;
+		}
+
+		delete fieldMap;
 	}
 
 	void PiPiAppearanceManager::GenerateAppearance(std::string name)
@@ -80,6 +89,13 @@ namespace PiPi
 				}
 			}
 		}
+
+		for (auto mapIterator = fieldMap->begin(); mapIterator != fieldMap->end(); mapIterator.operator++()) {
+			mapIterator->second->clear();
+			delete mapIterator->second;
+		}
+
+		delete fieldMap;
 	}
 
 	void PiPiAppearanceManager::MarkNeedAppearance(std::string fieldName)
