@@ -5,6 +5,7 @@
 #include "PiPiStringCommon.h"
 #include "PiPiFieldConstants.h"
 #include "PiPiFieldCompatibilityException.h"
+#include "PiPiSameFieldUtil.h"
 
 using namespace PoDoFo;
 
@@ -19,21 +20,20 @@ namespace PiPi
     static void PatchFieldRestrict(PdfMemDocument *document);
 
   private:
-    static std::vector<PdfObject *> *CollectDotField(PdfDocument *document);
-    static void CollectDotFieldRecursive(PdfDocument *document, PdfObject *fieldObj, std::vector<PdfObject *> *dotFieldObjs);
+    static std::vector<PdfObject *> *CollectDotField(PdfMemDocument*document);
+    static void CollectDotFieldRecursive(PdfMemDocument*document, PdfObject *fieldObj, std::vector<PdfObject *> *dotFieldObjs);
 
-    static std::vector<PdfObject *> *CollectRestrictField(PdfDocument *document);
-    static void CollectRestrictFieldRecursive(PdfDocument *document, PdfObject *fieldObj, std::vector<PdfObject *> *restrictFieldObjs);
+    static std::vector<PdfObject *> *CollectRestrictField(PdfMemDocument*document);
+    static void CollectRestrictFieldRecursive(PdfMemDocument*document, PdfObject *fieldObj, std::vector<PdfObject *> *restrictFieldObjs);
 
-    static void FixRestrict(PdfDocument *document, PdfObject *fieldObj);
-    static void FixExpand(PdfDocument *document, PdfObject *fieldObj);
+    static void FixRestrict(PdfMemDocument *document, PdfObject *fieldObj);
 
-    static void FixDot(PdfDocument *document, PdfObject *fieldObj);
-    static void FixDotParentField(PdfDocument *document, PdfObject *fieldObj);
-    static void FixDotAcroform(PdfDocument *document, PdfObject *fieldObj);
+    static void FixDot(PdfMemDocument *document, PdfObject *fieldObj);
+    static void FixDotParentField(PdfMemDocument*document, PdfObject *fieldObj);
+    static void FixDotAcroform(PdfMemDocument *document, PdfObject *fieldObj);
 
-    static PdfObject *PrepareFieldParentField(PdfDocument *document, PdfObject *parentFieldObj, std::string name);
-    static PdfObject *PrepareFieldAcroform(PdfDocument *document, std::string name);
+    static PdfObject *PrepareFieldParentField(PdfMemDocument *document, PdfObject *parentFieldObj, std::string name);
+    static PdfObject *PrepareFieldAcroform(PdfMemDocument *document, std::string name);
 
     static bool IsRoot(PdfObject *fieldObj);
     static bool IsReal(PdfObject *fieldObj);

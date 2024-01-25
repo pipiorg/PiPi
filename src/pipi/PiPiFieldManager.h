@@ -9,6 +9,7 @@
 #include "PiPiPageUtil.h"
 #include "PiPiAnnotationUtil.h"
 #include "PiPiFieldCompatibilityUtil.h"
+#include "PiPiSameFieldUtil.h"
 #include "PiPiFieldConstants.h"
 
 using namespace PoDoFo;

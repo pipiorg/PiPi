@@ -40,7 +40,7 @@ namespace PiPi
     delete restrictFieldObjs;
   }
 
-  std::vector<PdfObject *> *PiPiFieldCompatibilityUtil::CollectDotField(PdfDocument *document)
+  std::vector<PdfObject *> *PiPiFieldCompatibilityUtil::CollectDotField(PdfMemDocument *document)
   {
     spdlog::trace("CollectDotField");
 
@@ -66,7 +66,7 @@ namespace PiPi
     return dotFieldObjs;
   }
 
-  void PiPiFieldCompatibilityUtil::CollectDotFieldRecursive(PdfDocument *document, PdfObject *fieldObj, std::vector<PdfObject *> *dotFieldObjs)
+  void PiPiFieldCompatibilityUtil::CollectDotFieldRecursive(PdfMemDocument *document, PdfObject *fieldObj, std::vector<PdfObject *> *dotFieldObjs)
   {
     spdlog::trace("CollectDotFieldRecursive");
 
@@ -99,7 +99,7 @@ namespace PiPi
     }
   }
 
-  std::vector<PdfObject *> *PiPiFieldCompatibilityUtil::CollectRestrictField(PdfDocument *document)
+  std::vector<PdfObject *> *PiPiFieldCompatibilityUtil::CollectRestrictField(PdfMemDocument *document)
   {
     spdlog::trace("CollectRestrictField");
 
@@ -125,7 +125,7 @@ namespace PiPi
     return restrictFieldObjs;
   }
 
-  void PiPiFieldCompatibilityUtil::CollectRestrictFieldRecursive(PdfDocument *document, PdfObject *fieldObj, std::vector<PdfObject *> *restrictFieldObjs)
+  void PiPiFieldCompatibilityUtil::CollectRestrictFieldRecursive(PdfMemDocument *document, PdfObject *fieldObj, std::vector<PdfObject *> *restrictFieldObjs)
   {
     spdlog::trace("CollectRestrictFieldRecursive");
 
@@ -167,7 +167,7 @@ namespace PiPi
     }
   }
 
-  void PiPiFieldCompatibilityUtil::FixDot(PdfDocument *document, PdfObject *fieldObj)
+  void PiPiFieldCompatibilityUtil::FixDot(PdfMemDocument *document, PdfObject *fieldObj)
   {
     spdlog::trace("FixDot");
 
@@ -184,7 +184,7 @@ namespace PiPi
     }
   }
 
-  void PiPiFieldCompatibilityUtil::FixDotAcroform(PdfDocument *document, PdfObject *fieldObj)
+  void PiPiFieldCompatibilityUtil::FixDotAcroform(PdfMemDocument *document, PdfObject *fieldObj)
   {
     spdlog::trace("FixDotAcroform");
 
@@ -238,7 +238,7 @@ namespace PiPi
     fieldDict->AddKeyIndirect(PdfName("Parent"), *parentFieldObj);
   }
 
-  void PiPiFieldCompatibilityUtil::FixDotParentField(PdfDocument *document, PdfObject *fieldObj)
+  void PiPiFieldCompatibilityUtil::FixDotParentField(PdfMemDocument *document, PdfObject *fieldObj)
   {
     spdlog::trace("FixDotParentField");
 
@@ -295,81 +295,14 @@ namespace PiPi
     fieldDict->AddKeyIndirect(PdfName("Parent"), *currentParentFieldObj);
   }
 
-  void PiPiFieldCompatibilityUtil::FixRestrict(PdfDocument *document, PdfObject *fieldObj)
+  void PiPiFieldCompatibilityUtil::FixRestrict(PdfMemDocument *document, PdfObject *fieldObj)
   {
     spdlog::trace("FixRestrict");
 
-    PdfDictionary *fieldDict = &(fieldObj->GetDictionary());
-
-    PdfObject *parentFieldObj = fieldDict->FindKey(PdfName("Parent"));
-    PdfDictionary *parentFieldDict = &(parentFieldObj->GetDictionary());
-
-    fieldDict->RemoveKey(PdfName("Parent"));
-
-    for (auto iterator = parentFieldDict->begin(); iterator != parentFieldDict->end(); iterator.operator++())
-    {
-      const PdfName key = iterator->first;
-      PdfObject *value = &(iterator->second);
-
-      if (key == PdfName("Kids"))
-      {
-        continue;
-      }
-
-      if (fieldDict->HasKey(key))
-      {
-        continue;
-      }
-
-      fieldDict->AddKey(key, *value);
-    }
-
-    PdfObject *parentFieldKidsObj = parentFieldDict->FindKey(PdfName("Kids"));
-    PdfArray *parentFieldKids = &(parentFieldKidsObj->GetArray());
-
-    PdfObject *grandFieldObj = parentFieldDict->FindKey(PdfName("Parent"));
-    if (grandFieldObj != nullptr)
-    {
-      PdfDictionary *grandFieldDict = &(grandFieldObj->GetDictionary());
-
-      PdfObject *grandFieldKidsObj = grandFieldDict->FindKey(PdfName("Kids"));
-      PdfArray *grandFieldKids = &(grandFieldKidsObj->GetArray());
-
-      for (unsigned int idx = 0; idx < grandFieldKids->size(); idx++)
-      {
-        PdfObject *grandFieldKidObj = &(grandFieldKids->MustFindAt(idx));
-        if (grandFieldKidObj == parentFieldObj)
-        {
-          grandFieldKids->RemoveAt(idx);
-          break;
-        }
-      }
-
-      grandFieldKids->AddIndirect(*fieldObj);
-    }
-    else
-    {
-      PdfAcroForm *acroform = document->GetAcroForm();
-      PdfDictionary *acroformDict = &(acroform->GetDictionary());
-
-      PdfObject *acroformFieldsObj = acroformDict->FindKey(PdfName("Fields"));
-      PdfArray *acroformFields = &(acroformFieldsObj->GetArray());
-
-      for (unsigned int idx = 0; idx < acroformFields->size(); idx++)
-      {
-        PdfObject *acroformFieldObj = &(acroformFields->MustFindAt(idx));
-        if (acroformFieldObj == parentFieldObj)
-        {
-          acroformFields->RemoveAt(idx);
-          break;
-        }
-      }
-
-      acroformFields->AddIndirect(*fieldObj);
-    }
+    PiPiSameFieldUtil::RestrictField(document, fieldObj);
   }
 
-  PdfObject *PiPiFieldCompatibilityUtil::PrepareFieldAcroform(PdfDocument *document, std::string name)
+  PdfObject *PiPiFieldCompatibilityUtil::PrepareFieldAcroform(PdfMemDocument*document, std::string name)
   {
     spdlog::trace("PrepareFieldAcroform");
 
@@ -417,7 +350,7 @@ namespace PiPi
     return fieldObj;
   }
 
-  PdfObject *PiPiFieldCompatibilityUtil::PrepareFieldParentField(PdfDocument *document, PdfObject *parentFieldObj, std::string name)
+  PdfObject *PiPiFieldCompatibilityUtil::PrepareFieldParentField(PdfMemDocument *document, PdfObject *parentFieldObj, std::string name)
   {
     spdlog::trace("PrepareFieldParentField");
 
