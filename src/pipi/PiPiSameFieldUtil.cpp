@@ -2,7 +2,7 @@
 
 namespace PiPi
 {
-  void ExpandField(PdfMemDocument* document, PdfObject* fieldObj)
+  void PiPiSameFieldUtil::ExpandField(PdfMemDocument* document, PdfObject* fieldObj)
   {
     spdlog::trace("ExpandField");
 
