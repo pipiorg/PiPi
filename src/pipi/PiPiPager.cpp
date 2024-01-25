@@ -315,6 +315,9 @@ namespace PiPi
           if (toRootFieldKidsObj == nullptr)
           {
             PiPiSameFieldUtil::ExpandField(to, toRootFieldObj);
+
+            toRootFieldObj = toRootFieldDict->FindKey(PdfName("Parent"));
+						toRootFieldDict = &(toRootFieldObj->GetDictionary());
             toRootFieldKidsObj = toRootFieldDict->FindKey(PdfName("Kids"));
           }
 
@@ -480,6 +483,9 @@ namespace PiPi
           if (toParentFieldKidsObj == nullptr)
           {
             PiPiSameFieldUtil::ExpandField(to, toParentFieldObj);
+
+						toParentFieldObj = toParentFieldDict->FindKey(PdfName("Parent"));
+						toParentFieldDict = &(toParentFieldObj->GetDictionary());
             toParentFieldKidsObj = toParentFieldDict->FindKey(PdfName("Kids"));
           }
 
