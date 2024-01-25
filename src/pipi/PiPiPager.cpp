@@ -235,28 +235,18 @@ namespace PiPi
   {
     spdlog::trace("CopyPageAcroformField");
 
-    PdfAcroForm *toAcroform = &(to->GetOrCreateAcroForm());
-    PdfDictionary *toAcroformDict = &(toAcroform->GetDictionary());
+		std::vector<PdfField*>* toFields = new std::vector<PdfField*>();
 
-    PdfObject *toAcroformFieldsObj = toAcroformDict->FindKey(PdfName("Fields"));
-    if (toAcroformFieldsObj == nullptr)
-    {
-      toAcroformDict->AddKey(PdfName("Fields"), PdfArray());
-      toAcroformFieldsObj = toAcroformDict->FindKey(PdfName("Fields"));
-    }
-
-    PdfArray *toAcroformFields = &(toAcroformFieldsObj->GetArray());
-
-    PdfPageCollection *toPages = &(to->GetPages());
+    PdfPageCollection* toPages = &(to->GetPages());
     for (unsigned int i = base; i < base + (end - start); i++)
     {
-      PdfPage *toPage = &(toPages->GetPageAt(i));
-      PdfAnnotationCollection *toAnnots = &(toPage->GetAnnotations());
+      PdfPage* toPage = &(toPages->GetPageAt(i));
+      PdfAnnotationCollection* toAnnots = &(toPage->GetAnnotations());
       for (unsigned int j = 0; j < toAnnots->GetCount(); j++)
       {
-        PdfAnnotation *toAnnot = &(toAnnots->GetAnnotAt(j));
-        PdfObject *toObj = &(toAnnot->GetObject());
-        PdfDictionary *toDict = &(toObj->GetDictionary());
+        PdfAnnotation* toAnnot = &(toAnnots->GetAnnotAt(j));
+        PdfObject* toObj = &(toAnnot->GetObject());
+        PdfDictionary* toDict = &(toObj->GetDictionary());
 
         std::unique_ptr<PdfField> toFieldPtr;
         bool created = PdfField::TryCreateFromObject(*toObj, toFieldPtr);
@@ -265,106 +255,255 @@ namespace PiPi
           continue;
         }
 
-        std::vector<PdfObject *> *toLevelFeilds = new std::vector<PdfObject *>();
+				toFields->push_back(toFieldPtr.release());
+      }
+    }
 
-        PdfObject *toRootObj = toObj;
-        PdfObject *toParentObj = toDict->FindKey(PdfName("Parent"));
-        toLevelFeilds->push_back(toRootObj);
+		PdfIndirectObjectList* toIndirectObjectList = &(to->GetObjects());
 
-        while (toParentObj != nullptr)
+    PdfAcroForm* toAcroform = &(to->GetOrCreateAcroForm());
+    PdfDictionary* toAcroformDict = &(toAcroform->GetDictionary());
+
+    PdfObject* toAcroformFieldsObj = toAcroformDict->FindKey(PdfName("Fields"));
+    if (toAcroformFieldsObj == nullptr)
+    {
+      toAcroformDict->AddKey(PdfName("Fields"), PdfArray());
+      toAcroformFieldsObj = toAcroformDict->FindKey(PdfName("Fields"));
+    }
+
+    PdfArray* toAcroformFields = &(toAcroformFieldsObj->GetArray());
+
+    for (auto iterator = toFields->begin(); iterator != toFields->end(); iterator.operator++())
+    {
+      PdfField* toField = *iterator;
+			PdfObject* toFieldObj = &(toField->GetObject());
+			PdfDictionary* toFieldDict = &(toFieldObj->GetDictionary());
+
+
+      PdfObject* toParentFieldObj = toFieldDict->FindKey(PdfName("Parent"));
+      while (toParentFieldObj != nullptr)
+      {
+				PdfDictionary* toParentFieldDict = &(toParentFieldObj->GetDictionary());
+
+				PdfObject* toParentFieldKidsObj = toParentFieldDict->FindKey(PdfName("Kids"));
+				PdfArray* toParentFieldKids = &(toParentFieldKidsObj->GetArray());
+
+        for (size_t idx = 0; idx < toParentFieldKids->size(); idx++)
         {
-          toRootObj = toParentObj;
-          toParentObj = (&(toRootObj->GetDictionary()))->FindKey(PdfName("Parent"));
-          toLevelFeilds->push_back(toRootObj);
-        }
+					PdfObject* toParentFieldKidObj = &(toParentFieldKids->MustFindAt(idx));
 
-        std::reverse(toLevelFeilds->begin(), toLevelFeilds->end());
-
-        PdfObject *toLevelRootFieldObj = (*toLevelFeilds)[0];
-        PdfObject *toExistsLevelRootFieldObj = nullptr;
-        for (size_t idx = 0; idx < toAcroformFields->size(); idx++)
-        {
-          PdfObject *toAcroformFieldObj = toAcroformFields->FindAt((unsigned int)idx);
-
-          PdfDictionary *toAcroformFieldDict = &(toAcroformFieldObj->GetDictionary());
-          PdfDictionary *toLevelRootFieldDict = &(toLevelRootFieldObj->GetDictionary());
-
-          PdfObject *toAcroformFieldTObj = toAcroformFieldDict->FindKey(PdfName("T"));
-          PdfObject *toLevelRootFieldTObj = toLevelRootFieldDict->FindKey(PdfName("T"));
-
-          const PdfString *toAcroformFieldT = &(toAcroformFieldTObj->GetString());
-          const PdfString *toLevelRootFieldT = &(toLevelRootFieldTObj->GetString());
-
-          const std::string toAcroformFieldTString = toAcroformFieldT->GetString();
-          const std::string toLevelRootFieldTString = toLevelRootFieldT->GetString();
-
-          if (toAcroformFieldTString == toLevelRootFieldTString)
+          if (toParentFieldKidObj != toFieldObj)
           {
-            toExistsLevelRootFieldObj = toAcroformFieldObj;
-            break;
+            toIndirectObjectList->RemoveObject(toParentFieldKidObj->GetReference());
           }
         }
 
-        if (toExistsLevelRootFieldObj == nullptr)
+				PdfObject* toNextParentFieldObj = toParentFieldDict->FindKey(PdfName("Parent"));
+        if (toNextParentFieldObj == nullptr)
         {
-          toAcroformFields->AddIndirect(*toLevelRootFieldObj);
-          delete toLevelFeilds;
-          continue;
+          toIndirectObjectList->RemoveObject(toParentFieldObj->GetReference());
         }
 
-        PdfObject *toExistsLevelParentFieldObj = toExistsLevelRootFieldObj;
-        for (size_t idx = 1; idx < toLevelFeilds->size(); idx++)
+        toParentFieldObj = toNextParentFieldObj;
+      }
+
+			std::string toFieldName = toField->GetFullName();
+
+      std::vector<std::string>* toSplits = PiPiStringCommon::split(toFieldName, ".");
+
+      std::string toRootFieldName = toSplits->at(0);
+      PdfObject* toRootFieldObj = nullptr;
+      for (size_t idx = 0; idx < toAcroformFields->size(); idx++)
+      {
+        PdfObject* toAcroformRootFieldObj = &(toAcroformFields->MustFindAt(idx));
+        PdfDictionary* toAcroformRootFieldDict = &(toAcroformRootFieldObj->GetDictionary());
+
+        PdfObject* toAcroformRootFieldTObj = toAcroformRootFieldDict->FindKey(PdfName("T"));
+        const PdfString* toAcroformRootFieldT = &(toAcroformRootFieldTObj->GetString());
+        const std::string toAcroformRootFieldTString = toAcroformRootFieldT->GetString();
+
+        if (toAcroformRootFieldTString == toRootFieldName)
         {
-          PdfObject *toLevelFieldObj = toLevelFeilds->at(idx);
-          PdfDictionary *toLevelFieldDict = &(toLevelFieldObj->GetDictionary());
+          toRootFieldObj = toAcroformRootFieldObj;
+          break;
+        }
+      }
 
-          PdfObject *toLevelFieldTObj = toLevelFieldDict->FindKey(PdfName("T"));
-          const PdfString *toLevelFieldT = &(toLevelFieldTObj->GetString());
-          const std::string toLevelFieldTString = toLevelFieldT->GetString();
+      if (toSplits->size() == 1)
+      {
+        if (toRootFieldObj == nullptr)
+        {
+          toAcroformFields->AddIndirect(*toFieldObj);
+        }
+        else
+        {
+          PdfDictionary* toRootFieldDict = &(toRootFieldObj->GetDictionary());
 
-          PdfObject *toExistsLevelFieldObj = nullptr;
-
-          PdfDictionary *toExistsLevelParentDict = &(toExistsLevelParentFieldObj->GetDictionary());
-
-          PdfObject *toExistsLevelParentFieldKidsObj = toExistsLevelParentDict->FindKey(PdfName("Kids"));
-          PdfArray *toExistsLevelParentFieldKids = &(toExistsLevelParentFieldKidsObj->GetArray());
-
-          bool levelExists = false;
-          for (size_t iidx = 0; iidx < toExistsLevelParentFieldKids->size(); iidx++)
+					PdfObject* toRootFieldKidsObj = toRootFieldDict->FindKey(PdfName("Kids"));
+          if (toRootFieldKidsObj == nullptr)
           {
-            PdfObject *toExistsLevelParentFieldKidObj = toExistsLevelParentFieldKids->FindAt((unsigned int)iidx);
-            PdfDictionary *toExistsLevelParentFieldKidDict = &(toExistsLevelParentFieldKidObj->GetDictionary());
+            PiPiSameFieldUtil::ExpandField(to, toRootFieldObj);
+            toRootFieldKidsObj = toRootFieldDict->FindKey(PdfName("Kids"));
+          }
 
-            PdfObject *toExistsLevelParentFieldKidTObj = toExistsLevelParentFieldKidDict->FindKey(PdfName("T"));
-            const PdfString *toExistsLevelParentFieldKidT = &(toExistsLevelParentFieldKidTObj->GetString());
-            const std::string toExistsLevelParentFieldKidTString = toExistsLevelParentFieldKidT->GetString();
+					PdfArray* toRootFieldKids = &(toRootFieldKidsObj->GetArray());
 
-            if (toLevelFieldTString == toExistsLevelParentFieldKidTString)
+          for (size_t iidx = 0; iidx < PiPiFieldConstants::SpecialHierarchicalFieldKeys.size(); iidx++)
+          {
+						PdfName key = PiPiFieldConstants::SpecialHierarchicalFieldKeys[iidx];
+
+            if (toFieldDict->FindKey(key) != nullptr)
             {
-              toExistsLevelParentFieldObj = toExistsLevelParentFieldKidObj;
-              levelExists = true;
+              toFieldDict->RemoveKey(key);
             }
           }
 
-          if (levelExists)
+					toRootFieldKids->AddIndirect(*toFieldObj);
+
+          if (toFieldDict->HasKey(PdfName("Parent")))
           {
+            toFieldDict->RemoveKey(PdfName("Parent"));
+          }
+
+          toFieldDict->AddKeyIndirect(PdfName("Parent"), *toRootFieldObj);
+        }
+      }
+      else
+      {
+        if (toRootFieldObj == nullptr)
+        {
+          toRootFieldObj = &(toIndirectObjectList->CreateDictionaryObject());
+
+          PdfDictionary* toRootFieldDict = &(toRootFieldObj->GetDictionary());
+          toRootFieldDict->AddKey(PdfName("T"), PdfString(toRootFieldName));
+          toRootFieldDict->AddKey(PdfName("Kids"), PdfArray());
+        }
+
+        PdfObject* toParentFieldObj = toRootFieldObj;
+        for (size_t iidx = 1; iidx < toSplits->size() - 1; iidx++)
+        {
+          std::string partialFieldName = toSplits->at(iidx);
+
+					PdfDictionary* toParentFieldDict = &(toParentFieldObj->GetDictionary());
+
+					PdfObject* toParentFieldKidsObj = toParentFieldDict->FindKey(PdfName("Kids"));
+          if (toParentFieldKidsObj == nullptr)
+          {
+            toParentFieldDict->AddKey(PdfName("Kids"), PdfArray());
+						toParentFieldKidsObj = toParentFieldDict->FindKey(PdfName("Kids"));
+          }
+
+          bool exists = false;
+					PdfArray* toParentFieldKids = &(toParentFieldKidsObj->GetArray());
+          for (size_t iiidx = 0; iiidx < toParentFieldKids->size(); iiidx++)
+          {
+						PdfObject* toParentFieldKidObj = &(toParentFieldKids->MustFindAt(iiidx));
+						PdfDictionary* toParentFieldKidDict = &(toParentFieldKidObj->GetDictionary());
+
+						PdfObject* toParentFieldKidTObj = toParentFieldKidDict->FindKey(PdfName("T"));
+						const PdfString* toParentFieldKidT = &(toParentFieldKidTObj->GetString());
+						const std::string toParentFieldKidTString = toParentFieldKidT->GetString();
+
+            if (toParentFieldKidTString == partialFieldName)
+            {
+							toParentFieldObj = toParentFieldKidObj;
+              exists = true;
+              break;
+            }
+          }
+
+          if (exists)
+          {
+            PdfDictionary* toParentFieldDict = &(toParentFieldObj->GetDictionary());
+            if (toParentFieldDict->HasKey(PdfName("FT")))
+            {
+							throw PiPiPageException(PiPiPageException::PiPiPageExceptionCode::MergeFieldConflict);
+            }
+
             continue;
           }
 
-          if (toLevelFieldDict->HasKey(PdfName("Parent")))
-          {
-            toLevelFieldDict->RemoveKey(PdfName("Parent"));
-          }
+					toParentFieldObj = &(toIndirectObjectList->CreateDictionaryObject());
+          toParentFieldDict = &(toParentFieldObj->GetDictionary());
 
-          toLevelFieldDict->AddKeyIndirect(PdfName("Parent"), *toExistsLevelParentFieldObj);
-
-          toExistsLevelParentFieldKids->AddIndirect(*toLevelFieldObj);
-          break;
+					toParentFieldDict->AddKey(PdfName("T"), PdfString(partialFieldName));
+					toParentFieldDict->AddKey(PdfName("Kids"), PdfArray());
         }
 
-        delete toLevelFeilds;
+				std::string lastFieldName = toSplits->back();
+
+				PdfDictionary* toParentFieldDict = &(toParentFieldObj->GetDictionary());
+
+				PdfObject* toParentFieldKidsObj = toParentFieldDict->FindKey(PdfName("Kids"));
+        if (toParentFieldKidsObj == nullptr)
+        {
+					toParentFieldDict->AddKey(PdfName("Kids"), PdfArray());
+					toParentFieldKidsObj = toParentFieldDict->FindKey(PdfName("Kids"));
+        }
+
+        bool exists = false;
+				PdfArray* toParentFieldKids = &(toParentFieldKidsObj->GetArray());
+        for (size_t iidx = 0; iidx < toParentFieldKids->size(); iidx++)
+        {
+					PdfObject* toParentFieldKidObj = &(toParentFieldKids->MustFindAt(iidx));
+					PdfDictionary* toParentFieldKidDict = &(toParentFieldKidObj->GetDictionary());
+
+					PdfObject* toParentFieldKidTObj = toParentFieldKidDict->FindKey(PdfName("T"));
+					const PdfString* toParentFieldKidT = &(toParentFieldKidTObj->GetString());
+					const std::string toParentFieldKidTString = toParentFieldKidT->GetString();
+
+          if (toParentFieldKidTString == lastFieldName)
+          {
+            toParentFieldObj = toParentFieldKidObj;
+            toParentFieldDict = toParentFieldKidDict;
+            toParentFieldKidsObj = toParentFieldDict->FindKey(PdfName("Kids"));
+						toParentFieldKids = nullptr;
+            exists = true;
+          }
+        }
+
+        if (!exists)
+        {
+          toParentFieldKids->AddIndirect(*toFieldObj);
+
+          if (toFieldDict->HasKey(PdfName("Parent")))
+          {
+            toFieldDict->RemoveKey(PdfName("Parent"));
+          }
+
+					toFieldDict->AddKeyIndirect(PdfName("Parent"), *toParentFieldObj);
+        }
+        else
+        {
+          if (!toParentFieldDict->HasKey(PdfName("FT")))
+          {
+            throw PiPiPageException(PiPiPageException::PiPiPageExceptionCode::MergeFieldConflict);
+          }
+
+          if (toParentFieldKidsObj == nullptr)
+          {
+            PiPiSameFieldUtil::ExpandField(to, toParentFieldObj);
+            toParentFieldKidsObj = toParentFieldDict->FindKey(PdfName("Kids"));
+          }
+
+					toParentFieldKids = &(toParentFieldKidsObj->GetArray());
+
+					toParentFieldKids->AddIndirect(*toFieldObj);
+
+          if (toFieldDict->HasKey(PdfName("Parent")))
+          {
+            toFieldDict->RemoveKey(PdfName("Parent"));
+          }
+
+          toFieldDict->AddKeyIndirect(PdfName("Parent"), *toParentFieldObj);
+        }
       }
+
+      delete toSplits;
+      delete toField;
     }
+
+    delete toFields;
   }
 
   void PiPiPager::CopyPageAcroformFont(PdfMemDocument *to, PdfMemDocument *from, unsigned int base, unsigned int start, unsigned int end)

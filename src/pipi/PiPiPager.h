@@ -5,6 +5,7 @@
 #include <podofo/podofo.h>
 #include <spdlog/spdlog.h>
 #include "PiPiOperator.h"
+#include "PiPiSameFieldUtil.h"
 #include "PiPiPageException.h"
 
 using namespace PoDoFo;

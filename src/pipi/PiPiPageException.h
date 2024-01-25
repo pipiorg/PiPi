@@ -14,7 +14,8 @@ namespace PiPi
     {
       InOperable = 1,
       InvalidSplitInstruction = 2,
-      IndexOutOfRange = 3
+      IndexOutOfRange = 3,
+      MergeFieldConflict = 4
     };
 
     PiPiPageException(PiPiPageExceptionCode code);
