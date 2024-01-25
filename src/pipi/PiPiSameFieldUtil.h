@@ -2,6 +2,7 @@
 
 #include <podofo/podofo.h>
 #include <spdlog/spdlog.h>
+#include "PiPiFieldConstants.h"
 
 using namespace PoDoFo;
 
