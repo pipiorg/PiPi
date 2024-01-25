@@ -50,6 +50,8 @@ namespace PiPi
     PoDoFo::VectorStreamDevice outputStreamDevice(**newPdf);
 
     mergedDoc->Save(outputStreamDevice);
+
+    delete mergedDoc;
   }
 
   void PiPiPager::Split(size_t index, std::string instruction, std::vector<std::vector<char> *> **newPdfs)
@@ -93,6 +95,8 @@ namespace PiPi
       splitedDoc->Save(outputStreamDevice);
 
       dAllNewPdfBytes->push_back(outputVector);
+
+      delete splitedDoc;
     }
 
     delete instructionPairs;
