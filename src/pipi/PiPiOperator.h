@@ -8,6 +8,7 @@
 #include "PiPiFiller.h"
 #include "PiPiEditor.h"
 #include "PiPiExtractor.h"
+#include "PiPiFontRegister.h"
 #include "PiPiFontManager.h"
 #include "PiPiAppearanceManager.h"
 #include "PiPiFlattenManager.h"
@@ -31,7 +32,7 @@ namespace PiPi
 		PiPiFiller *GetFiller();
 		PiPiEditor *GetEditor();
 		PiPiExtractor *GetExtractor();
-		PiPiFontManager *GetFontManager();
+		PiPiFontRegister *GetFontRegister();
 
 		bool IsOperable();
 
@@ -43,6 +44,7 @@ namespace PiPi
 		PiPiFiller *filler;
 		PiPiEditor *editor;
 		PiPiExtractor *extractor;
+		PiPiFontRegister* fontRegister;
 		PiPiFontManager *fontManager;
 		PiPiAppearanceManager *appearanceManager;
 		PiPiFlattenManager *flattenManager;

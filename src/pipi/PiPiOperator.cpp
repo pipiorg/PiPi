@@ -30,6 +30,7 @@ namespace PiPi
 		this->editor = nullptr;
 		this->filler = nullptr;
 		this->extractor = nullptr;
+		this->fontRegister = nullptr;
 	}
 
 	PiPiOperator::~PiPiOperator()
@@ -68,7 +69,8 @@ namespace PiPi
 
 		if (this->fontManager != nullptr)
 		{
-			this->fontManager->operable = false;
+			delete this->fontManager;
+			this->fontManager = nullptr;
 		}
 
 		if (this->editor != nullptr)
@@ -85,13 +87,29 @@ namespace PiPi
 		{
 			this->extractor->operable = false;
 		}
+
+		if (this->fontRegister != nullptr)
+		{
+			this->fontRegister->operable = false;
+		}
 	}
 
-	PiPiFontManager *PiPiOperator::GetFontManager()
+	PiPiFontRegister *PiPiOperator::GetFontRegister()
 	{
-		spdlog::trace("GetFontManager");
+		spdlog::trace("PiPiFontRegister");
 
-		return this->fontManager;
+		if (this->fontRegister != nullptr)
+		{
+			return this->fontRegister;
+		}
+
+		PiPiFontManager* fontManager = this->fontManager;
+
+		PiPiFontRegister* fontRegister = new PiPiFontRegister(fontManager);
+
+		this->fontRegister = fontRegister;
+
+		return this->fontRegister;
 	}
 
 	PiPiFiller *PiPiOperator::GetFiller()

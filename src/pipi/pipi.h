@@ -4,7 +4,7 @@
 #include "PiPiEditor.h"
 #include "PiPiFiller.h"
 #include "PiPiExtractor.h"
-#include "PiPiFontManager.h"
+#include "PiPiFontRegister.h"
 #include "PiPiAppearanceManager.h"
 
 #include "PiPiFieldType.h"
@@ -20,6 +20,5 @@
 #include "PiPiManageFlattenException.h"
 #include "PiPiPageException.h"
 #include "PiPiExtractException.h"
-#include "PiPiFontManageException.h"
+#include "PiPiFontRegisterException.h"
 #include "PiPiFieldCompatibilityException.h"
-#include "PiPiFontManageException.h"

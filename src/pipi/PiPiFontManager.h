@@ -2,7 +2,6 @@
 
 #include <podofo/podofo.h>
 #include <spdlog/spdlog.h>
-#include "PiPiFontManageException.h"
 
 using namespace PoDoFo;
 
@@ -12,13 +11,9 @@ namespace PiPi
 
 	class PiPiFontManager
 	{
-		friend class PiPiOperator;
-
 	public:
 		PiPiFontManager(PdfMemDocument *document);
 		~PiPiFontManager();
-
-		bool IsOperable();
 
 		void EmbedFonts();
 
@@ -28,8 +23,6 @@ namespace PiPi
 		const PdfFont *AccessDefaultFont();
 
 	private:
-		bool operable;
-
 		PdfMemDocument *document;
 
 		std::set<std::string>* nonStandardFontNames;

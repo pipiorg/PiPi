@@ -34,13 +34,6 @@ namespace PiPi
 		}
 	}
 
-	bool PiPiFontManager::IsOperable()
-	{
-		spdlog::trace("IsOperable");
-
-		return this->operable;
-	}
-
 	void PiPiFontManager::EmbedFonts()
 	{
 		spdlog::trace("EmbedFonts");
@@ -52,11 +45,6 @@ namespace PiPi
 	const std::string PiPiFontManager::RegisterFont(char *fontBytes, size_t fontSize)
 	{
 		spdlog::trace("RegisterFont");
-
-		if (!this->IsOperable())
-		{
-			throw PiPiFontManageException(PiPiFontManageException::PiPiFontManageExceptionCode::InOperable);
-		}
 
 		PdfMemDocument *document = this->document;
 
@@ -102,7 +90,6 @@ namespace PiPi
 	{
 		spdlog::trace("Init");
 
-		this->operable = true;
 		this->document = document;
 		this->fontMap = new std::map<const std::string, const PdfFont *>();
 		this->nonStandardFontNames = new std::set<std::string>();
