@@ -1192,7 +1192,7 @@ namespace PiPi
 
     PdfMemDocument *document = this->document;
 
-		PiPiSameFieldUtil::RestrictField(document, fieldObj);
+    PiPiSameFieldUtil::RestrictField(document, fieldObj);
   }
 
   void PiPiFieldManager::ExpandField(PdfObject *fieldObj)
@@ -1201,7 +1201,7 @@ namespace PiPi
 
     PdfMemDocument *document = this->document;
 
-		PiPiSameFieldUtil::ExpandField(document, fieldObj);
+    PiPiSameFieldUtil::ExpandField(document, fieldObj);
   }
 
   void PiPiFieldManager::RemoveFieldMap(PdfObject *fieldObj, std::string fieldName)

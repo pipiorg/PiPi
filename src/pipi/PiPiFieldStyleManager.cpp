@@ -34,16 +34,16 @@ namespace PiPi
   {
     spdlog::trace("SetFieldFontName");
 
-    PiPiFieldManager* fieldManager = this->fieldManager;
+    PiPiFieldManager *fieldManager = this->fieldManager;
 
-    std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
+    std::set<PdfField *> *fields = fieldManager->SearchField(fieldName);
 
     for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
     {
-      PdfField* field = *iterator;
-      PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
+      PdfField *field = *iterator;
+      PdfAnnotation *annot = fieldManager->BridgeFieldToAnnotation(field);
 
-      PdfPage* page = &(annot->MustGetPage());
+      PdfPage *page = &(annot->MustGetPage());
 
       int aPageIndex = PiPiPageUtil::SearchPageIndex(document, page);
       double ax = PiPiAnnotationUtil::ExtractAnnotationX(annot);
@@ -52,14 +52,14 @@ namespace PiPi
       double aHeight = PiPiAnnotationUtil::ExtractAnnotationHeight(annot);
 
       bool matched = (aPageIndex == pageIndex || pageIndex == -1) &&
-        (x == ax || x == -1) &&
-        (y == ay || y == -1) &&
-        (width == aWidth || width == -1) &&
-        (height == aHeight || height == -1);
+                     (x == ax || x == -1) &&
+                     (y == ay || y == -1) &&
+                     (width == aWidth || width == -1) &&
+                     (height == aHeight || height == -1);
 
       if (matched)
       {
-        PdfObject* fieldObj = &(field->GetObject());
+        PdfObject *fieldObj = &(field->GetObject());
         this->InnerSetFieldFontName(fieldObj, fontName);
       }
     }
@@ -92,16 +92,16 @@ namespace PiPi
   {
     spdlog::trace("SetFieldFontSize");
 
-    PiPiFieldManager* fieldManager = this->fieldManager;
+    PiPiFieldManager *fieldManager = this->fieldManager;
 
-    std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
+    std::set<PdfField *> *fields = fieldManager->SearchField(fieldName);
 
     for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
     {
-      PdfField* field = *iterator;
-      PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
+      PdfField *field = *iterator;
+      PdfAnnotation *annot = fieldManager->BridgeFieldToAnnotation(field);
 
-      PdfPage* page = &(annot->MustGetPage());
+      PdfPage *page = &(annot->MustGetPage());
 
       int aPageIndex = PiPiPageUtil::SearchPageIndex(document, page);
       double ax = PiPiAnnotationUtil::ExtractAnnotationX(annot);
@@ -110,14 +110,14 @@ namespace PiPi
       double aHeight = PiPiAnnotationUtil::ExtractAnnotationHeight(annot);
 
       bool matched = (aPageIndex == pageIndex || pageIndex == -1) &&
-        (x == ax || x == -1) &&
-        (y == ay || y == -1) &&
-        (width == aWidth || width == -1) &&
-        (height == aHeight || height == -1);
+                     (x == ax || x == -1) &&
+                     (y == ay || y == -1) &&
+                     (width == aWidth || width == -1) &&
+                     (height == aHeight || height == -1);
 
       if (matched)
       {
-        PdfObject* fieldObj = &(field->GetObject());
+        PdfObject *fieldObj = &(field->GetObject());
         this->InnerSetFieldFontSize(fieldObj, fontSize);
       }
     }
@@ -150,16 +150,16 @@ namespace PiPi
   {
     spdlog::trace("SetFieldTextHorizontalAlignment");
 
-    PiPiFieldManager* fieldManager = this->fieldManager;
+    PiPiFieldManager *fieldManager = this->fieldManager;
 
-    std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
+    std::set<PdfField *> *fields = fieldManager->SearchField(fieldName);
 
     for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
     {
-      PdfField* field = *iterator;
-      PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
+      PdfField *field = *iterator;
+      PdfAnnotation *annot = fieldManager->BridgeFieldToAnnotation(field);
 
-      PdfPage* page = &(annot->MustGetPage());
+      PdfPage *page = &(annot->MustGetPage());
 
       int aPageIndex = PiPiPageUtil::SearchPageIndex(document, page);
       double ax = PiPiAnnotationUtil::ExtractAnnotationX(annot);
@@ -168,14 +168,14 @@ namespace PiPi
       double aHeight = PiPiAnnotationUtil::ExtractAnnotationHeight(annot);
 
       bool matched = (aPageIndex == pageIndex || pageIndex == -1) &&
-        (x == ax || x == -1) &&
-        (y == ay || y == -1) &&
-        (width == aWidth || width == -1) &&
-        (height == aHeight || height == -1);
+                     (x == ax || x == -1) &&
+                     (y == ay || y == -1) &&
+                     (width == aWidth || width == -1) &&
+                     (height == aHeight || height == -1);
 
       if (matched)
       {
-        PdfObject* fieldObj = &(field->GetObject());
+        PdfObject *fieldObj = &(field->GetObject());
         this->InnerSetFieldTextHorizontalAlignment(fieldObj, alignment);
       }
     }
@@ -208,16 +208,16 @@ namespace PiPi
   {
     spdlog::trace("SetFieldColor");
 
-    PiPiFieldManager* fieldManager = this->fieldManager;
+    PiPiFieldManager *fieldManager = this->fieldManager;
 
-    std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
+    std::set<PdfField *> *fields = fieldManager->SearchField(fieldName);
 
     for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
     {
-      PdfField* field = *iterator;
-      PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
+      PdfField *field = *iterator;
+      PdfAnnotation *annot = fieldManager->BridgeFieldToAnnotation(field);
 
-      PdfPage* page = &(annot->MustGetPage());
+      PdfPage *page = &(annot->MustGetPage());
 
       int aPageIndex = PiPiPageUtil::SearchPageIndex(document, page);
       double ax = PiPiAnnotationUtil::ExtractAnnotationX(annot);
@@ -226,14 +226,14 @@ namespace PiPi
       double aHeight = PiPiAnnotationUtil::ExtractAnnotationHeight(annot);
 
       bool matched = (aPageIndex == pageIndex || pageIndex == -1) &&
-        (x == ax || x == -1) &&
-        (y == ay || y == -1) &&
-        (width == aWidth || width == -1) &&
-        (height == aHeight || height == -1);
+                     (x == ax || x == -1) &&
+                     (y == ay || y == -1) &&
+                     (width == aWidth || width == -1) &&
+                     (height == aHeight || height == -1);
 
       if (matched)
       {
-        PdfObject* fieldObj = &(field->GetObject());
+        PdfObject *fieldObj = &(field->GetObject());
         this->InnerSetFieldColor(fieldObj, red, green, blue);
       }
     }
@@ -245,37 +245,37 @@ namespace PiPi
   {
     spdlog::trace("SetFieldBackgroundColor");
 
-		this->SetFieldBackgroundColor(fieldName, -1, red, green, blue);
+    this->SetFieldBackgroundColor(fieldName, -1, red, green, blue);
   }
 
   void PiPiFieldStyleManager::SetFieldBackgroundColor(std::string fieldName, long pageIndex, float red, float green, float blue)
   {
     spdlog::trace("SetFieldBackgroundColor");
 
-		this->SetFieldBackgroundColor(fieldName, pageIndex, -1, -1, red, green, blue);
+    this->SetFieldBackgroundColor(fieldName, pageIndex, -1, -1, red, green, blue);
   }
 
   void PiPiFieldStyleManager::SetFieldBackgroundColor(std::string fieldName, long pageIndex, double x, double y, float red, float green, float blue)
   {
     spdlog::trace("SetFieldBackgroundColor");
 
-		this->SetFieldBackgroundColor(fieldName, pageIndex, x, y, -1, -1, red, green, blue);
+    this->SetFieldBackgroundColor(fieldName, pageIndex, x, y, -1, -1, red, green, blue);
   }
 
   void PiPiFieldStyleManager::SetFieldBackgroundColor(std::string fieldName, long pageIndex, double x, double y, double width, double height, float red, float green, float blue)
   {
     spdlog::trace("SetFieldBackgroundColor");
 
-    PiPiFieldManager* fieldManager = this->fieldManager;
+    PiPiFieldManager *fieldManager = this->fieldManager;
 
-    std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
+    std::set<PdfField *> *fields = fieldManager->SearchField(fieldName);
 
     for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
     {
-      PdfField* field = *iterator;
-      PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
+      PdfField *field = *iterator;
+      PdfAnnotation *annot = fieldManager->BridgeFieldToAnnotation(field);
 
-      PdfPage* page = &(annot->MustGetPage());
+      PdfPage *page = &(annot->MustGetPage());
 
       int aPageIndex = PiPiPageUtil::SearchPageIndex(document, page);
       double ax = PiPiAnnotationUtil::ExtractAnnotationX(annot);
@@ -284,14 +284,14 @@ namespace PiPi
       double aHeight = PiPiAnnotationUtil::ExtractAnnotationHeight(annot);
 
       bool matched = (aPageIndex == pageIndex || pageIndex == -1) &&
-        (x == ax || x == -1) &&
-        (y == ay || y == -1) &&
-        (width == aWidth || width == -1) &&
-        (height == aHeight || height == -1);
+                     (x == ax || x == -1) &&
+                     (y == ay || y == -1) &&
+                     (width == aWidth || width == -1) &&
+                     (height == aHeight || height == -1);
 
       if (matched)
       {
-        PdfObject* fieldObj = &(field->GetObject());
+        PdfObject *fieldObj = &(field->GetObject());
         this->InnerSetFieldBackgroundColor(fieldObj, red, green, blue);
       }
     }
@@ -303,37 +303,37 @@ namespace PiPi
   {
     spdlog::trace("SetFieldBorderColor");
 
-		this->SetFieldBorderColor(fieldName, -1, red, green, blue);
+    this->SetFieldBorderColor(fieldName, -1, red, green, blue);
   }
 
   void PiPiFieldStyleManager::SetFieldBorderColor(std::string fieldName, long pageIndex, float red, float green, float blue)
   {
     spdlog::trace("SetFieldBorderColor");
 
-		this->SetFieldBorderColor(fieldName, pageIndex, -1, -1, red, green, blue);
+    this->SetFieldBorderColor(fieldName, pageIndex, -1, -1, red, green, blue);
   }
 
   void PiPiFieldStyleManager::SetFieldBorderColor(std::string fieldName, long pageIndex, double x, double y, float red, float green, float blue)
   {
     spdlog::trace("SetFieldBorderColor");
 
-		this->SetFieldBorderColor(fieldName, pageIndex, x, y, -1, -1, red, green, blue);
+    this->SetFieldBorderColor(fieldName, pageIndex, x, y, -1, -1, red, green, blue);
   }
 
   void PiPiFieldStyleManager::SetFieldBorderColor(std::string fieldName, long pageIndex, double x, double y, double width, double height, float red, float green, float blue)
   {
     spdlog::trace("SetFieldBorderColor");
 
-    PiPiFieldManager* fieldManager = this->fieldManager;
+    PiPiFieldManager *fieldManager = this->fieldManager;
 
-    std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
+    std::set<PdfField *> *fields = fieldManager->SearchField(fieldName);
 
     for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
     {
-      PdfField* field = *iterator;
-      PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
+      PdfField *field = *iterator;
+      PdfAnnotation *annot = fieldManager->BridgeFieldToAnnotation(field);
 
-      PdfPage* page = &(annot->MustGetPage());
+      PdfPage *page = &(annot->MustGetPage());
 
       int aPageIndex = PiPiPageUtil::SearchPageIndex(document, page);
       double ax = PiPiAnnotationUtil::ExtractAnnotationX(annot);
@@ -342,14 +342,14 @@ namespace PiPi
       double aHeight = PiPiAnnotationUtil::ExtractAnnotationHeight(annot);
 
       bool matched = (aPageIndex == pageIndex || pageIndex == -1) &&
-        (x == ax || x == -1) &&
-        (y == ay || y == -1) &&
-        (width == aWidth || width == -1) &&
-        (height == aHeight || height == -1);
+                     (x == ax || x == -1) &&
+                     (y == ay || y == -1) &&
+                     (width == aWidth || width == -1) &&
+                     (height == aHeight || height == -1);
 
       if (matched)
       {
-        PdfObject* fieldObj = &(field->GetObject());
+        PdfObject *fieldObj = &(field->GetObject());
         this->InnerSetFieldBorderColor(fieldObj, red, green, blue);
       }
     }
@@ -382,16 +382,16 @@ namespace PiPi
   {
     spdlog::trace("SetFieldBorderWidth");
 
-    PiPiFieldManager* fieldManager = this->fieldManager;
+    PiPiFieldManager *fieldManager = this->fieldManager;
 
-    std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
+    std::set<PdfField *> *fields = fieldManager->SearchField(fieldName);
 
     for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
     {
-      PdfField* field = *iterator;
-      PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
+      PdfField *field = *iterator;
+      PdfAnnotation *annot = fieldManager->BridgeFieldToAnnotation(field);
 
-      PdfPage* page = &(annot->MustGetPage());
+      PdfPage *page = &(annot->MustGetPage());
 
       int aPageIndex = PiPiPageUtil::SearchPageIndex(document, page);
       double ax = PiPiAnnotationUtil::ExtractAnnotationX(annot);
@@ -400,14 +400,14 @@ namespace PiPi
       double aHeight = PiPiAnnotationUtil::ExtractAnnotationHeight(annot);
 
       bool matched = (aPageIndex == pageIndex || pageIndex == -1) &&
-        (x == ax || x == -1) &&
-        (y == ay || y == -1) &&
-        (width == aWidth || width == -1) &&
-        (height == aHeight || height == -1);
+                     (x == ax || x == -1) &&
+                     (y == ay || y == -1) &&
+                     (width == aWidth || width == -1) &&
+                     (height == aHeight || height == -1);
 
       if (matched)
       {
-        PdfObject* fieldObj = &(field->GetObject());
+        PdfObject *fieldObj = &(field->GetObject());
         this->InnerSetFieldBorderWidth(fieldObj, borderWidth);
       }
     }
@@ -415,42 +415,41 @@ namespace PiPi
     delete fields;
   }
 
-
   void PiPiFieldStyleManager::SetFieldMultiline(std::string fieldName, bool multiline)
   {
     spdlog::trace("SetFieldMultiline");
 
-		this->SetFieldMultiline(fieldName, -1, multiline);
+    this->SetFieldMultiline(fieldName, -1, multiline);
   }
 
   void PiPiFieldStyleManager::SetFieldMultiline(std::string fieldName, long pageIndex, bool multiline)
   {
     spdlog::trace("SetFieldMultiline");
 
-		this->SetFieldMultiline(fieldName, pageIndex, -1, -1, multiline);
+    this->SetFieldMultiline(fieldName, pageIndex, -1, -1, multiline);
   }
 
   void PiPiFieldStyleManager::SetFieldMultiline(std::string fieldName, long pageIndex, double x, double y, bool multiline)
   {
     spdlog::trace("SetFieldMultiline");
 
-		this->SetFieldMultiline(fieldName, pageIndex, x, y, -1, -1, multiline);
+    this->SetFieldMultiline(fieldName, pageIndex, x, y, -1, -1, multiline);
   }
 
   void PiPiFieldStyleManager::SetFieldMultiline(std::string fieldName, long pageIndex, double x, double y, double width, double height, bool multiline)
   {
     spdlog::trace("SetFieldMultiline");
 
-    PiPiFieldManager* fieldManager = this->fieldManager;
+    PiPiFieldManager *fieldManager = this->fieldManager;
 
-    std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
+    std::set<PdfField *> *fields = fieldManager->SearchField(fieldName);
 
     for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
     {
-      PdfField* field = *iterator;
-      PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
+      PdfField *field = *iterator;
+      PdfAnnotation *annot = fieldManager->BridgeFieldToAnnotation(field);
 
-      PdfPage* page = &(annot->MustGetPage());
+      PdfPage *page = &(annot->MustGetPage());
 
       int aPageIndex = PiPiPageUtil::SearchPageIndex(document, page);
       double ax = PiPiAnnotationUtil::ExtractAnnotationX(annot);
@@ -459,10 +458,10 @@ namespace PiPi
       double aHeight = PiPiAnnotationUtil::ExtractAnnotationHeight(annot);
 
       bool matched = (aPageIndex == pageIndex || pageIndex == -1) &&
-        (x == ax || x == -1) &&
-        (y == ay || y == -1) &&
-        (width == aWidth || width == -1) &&
-        (height == aHeight || height == -1);
+                     (x == ax || x == -1) &&
+                     (y == ay || y == -1) &&
+                     (width == aWidth || width == -1) &&
+                     (height == aHeight || height == -1);
 
       if (matched)
       {
@@ -477,37 +476,37 @@ namespace PiPi
   {
     spdlog::trace("SetFieldDefaultValue");
 
-		this->SetFieldDefaultValue(fieldName, -1, defaultValue);
+    this->SetFieldDefaultValue(fieldName, -1, defaultValue);
   }
 
   void PiPiFieldStyleManager::SetFieldDefaultValue(std::string fieldName, long pageIndex, std::string defaultValue)
   {
     spdlog::trace("SetFieldDefaultValue");
 
-		this->SetFieldDefaultValue(fieldName, pageIndex, -1, -1, defaultValue);
+    this->SetFieldDefaultValue(fieldName, pageIndex, -1, -1, defaultValue);
   }
 
   void PiPiFieldStyleManager::SetFieldDefaultValue(std::string fieldName, long pageIndex, double x, double y, std::string defaultValue)
   {
     spdlog::trace("SetFieldDefaultValue");
 
-		this->SetFieldDefaultValue(fieldName, pageIndex, x, y, -1, -1, defaultValue);
+    this->SetFieldDefaultValue(fieldName, pageIndex, x, y, -1, -1, defaultValue);
   }
 
   void PiPiFieldStyleManager::SetFieldDefaultValue(std::string fieldName, long pageIndex, double x, double y, double width, double height, std::string defaultValue)
   {
     spdlog::trace("SetFieldDefaultValue");
 
-    PiPiFieldManager* fieldManager = this->fieldManager;
+    PiPiFieldManager *fieldManager = this->fieldManager;
 
-    std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
+    std::set<PdfField *> *fields = fieldManager->SearchField(fieldName);
 
     for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
     {
-      PdfField* field = *iterator;
-      PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
+      PdfField *field = *iterator;
+      PdfAnnotation *annot = fieldManager->BridgeFieldToAnnotation(field);
 
-      PdfPage* page = &(annot->MustGetPage());
+      PdfPage *page = &(annot->MustGetPage());
 
       int aPageIndex = PiPiPageUtil::SearchPageIndex(document, page);
       double ax = PiPiAnnotationUtil::ExtractAnnotationX(annot);
@@ -516,14 +515,14 @@ namespace PiPi
       double aHeight = PiPiAnnotationUtil::ExtractAnnotationHeight(annot);
 
       bool matched = (aPageIndex == pageIndex || pageIndex == -1) &&
-        (x == ax || x == -1) &&
-        (y == ay || y == -1) &&
-        (width == aWidth || width == -1) &&
-        (height == aHeight || height == -1);
+                     (x == ax || x == -1) &&
+                     (y == ay || y == -1) &&
+                     (width == aWidth || width == -1) &&
+                     (height == aHeight || height == -1);
 
       if (matched)
       {
-        PdfObject* fieldObj = &(field->GetObject());
+        PdfObject *fieldObj = &(field->GetObject());
         this->InnerSetFieldDefaultValue(fieldObj, defaultValue);
       }
     }
@@ -600,8 +599,8 @@ namespace PiPi
     }
 
     std::string daString = daObj == nullptr
-                              ? defaultDAString
-                              : daObj->GetString().GetString();
+                               ? defaultDAString
+                               : daObj->GetString().GetString();
 
     std::vector<std::string> *daStringSplits = PiPiStringCommon::split(daString, " ");
     std::vector<std::string> *newDaStringSplits = new std::vector<std::string>();
@@ -686,8 +685,8 @@ namespace PiPi
     }
 
     std::string daString = daObj == nullptr
-                              ? defaultDAString
-                              : daObj->GetString().GetString();
+                               ? defaultDAString
+                               : daObj->GetString().GetString();
 
     std::vector<std::string> *daStringSplits = PiPiStringCommon::split(daString, " ");
     std::vector<std::string> *newDaStringSplits = new std::vector<std::string>();
@@ -812,26 +811,27 @@ namespace PiPi
     fieldMk->AddKey(PdfName("BC"), *colors);
   }
 
-  void PiPiFieldStyleManager::InnerSetFieldBorderWidth(PdfObject* obj, double borderWidth)
+  void PiPiFieldStyleManager::InnerSetFieldBorderWidth(PdfObject *obj, double borderWidth)
   {
     spdlog::trace("InnerSetFieldBorderWidth");
 
-    if (borderWidth <= 0) return;
+    if (borderWidth <= 0)
+      return;
 
-    PdfDictionary* dict = &(obj->GetDictionary());
+    PdfDictionary *dict = &(obj->GetDictionary());
 
-    PdfObject* bsObj = dict->FindKey(PdfName("BS"));
+    PdfObject *bsObj = dict->FindKey(PdfName("BS"));
     if (bsObj == nullptr)
     {
       dict->AddKey(PdfName("BS"), PdfDictionary());
-			bsObj = dict->FindKey(PdfName("BS"));
+      bsObj = dict->FindKey(PdfName("BS"));
     }
 
-    PdfDictionary* bs = &(bsObj->GetDictionary());
+    PdfDictionary *bs = &(bsObj->GetDictionary());
 
     if (bs->HasKey(PdfName("W")))
     {
-			bs->RemoveKey(PdfName("W"));
+      bs->RemoveKey(PdfName("W"));
     }
 
     bs->AddKey(PdfName("W"), PdfObject(borderWidth));
@@ -855,7 +855,7 @@ namespace PiPi
   {
     spdlog::trace("InnerSetFieldDefaultValue");
 
-    PdfDictionary* fieldDict = &(obj->GetDictionary());
+    PdfDictionary *fieldDict = &(obj->GetDictionary());
 
     if (fieldDict->HasKey(PdfName("DV")))
     {

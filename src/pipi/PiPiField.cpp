@@ -3,30 +3,30 @@
 namespace PiPi
 {
 	PiPiField::PiPiField(
-		std::string name,
-		PiPiFieldType type,
-		unsigned int pageIndex,
-		double x,
-		double y,
-		double width,
-		double height,
-		std::string defaultValue,
-		PiPiTextHorizontalAlignment textHorizontalAlignment,
-		std::string fontName,
-		float fontSize,
-		float colorRed,
-		float colorGreen,
-		float colorBlue,
-		bool multiline,
-		bool backgroundExists,
-		float backgroundColorRed,
-		float backgroundColorGreen,
-		float backgroundColorBlue,
-		bool borderExists,
-		double borderWidth,
-		float borderColorRed,
-		float borderColorGreen,
-		float borderColorBlue)
+			std::string name,
+			PiPiFieldType type,
+			unsigned int pageIndex,
+			double x,
+			double y,
+			double width,
+			double height,
+			std::string defaultValue,
+			PiPiTextHorizontalAlignment textHorizontalAlignment,
+			std::string fontName,
+			float fontSize,
+			float colorRed,
+			float colorGreen,
+			float colorBlue,
+			bool multiline,
+			bool backgroundExists,
+			float backgroundColorRed,
+			float backgroundColorGreen,
+			float backgroundColorBlue,
+			bool borderExists,
+			double borderWidth,
+			float borderColorRed,
+			float borderColorGreen,
+			float borderColorBlue)
 	{
 		this->name = name;
 		this->type = type;
@@ -52,6 +52,5 @@ namespace PiPi
 		this->borderColorRed = borderColorRed;
 		this->borderColorGreen = borderColorGreen;
 		this->borderColorBlue = borderColorBlue;
-		
 	}
 }

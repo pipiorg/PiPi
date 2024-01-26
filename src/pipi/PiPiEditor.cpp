@@ -2,7 +2,7 @@
 
 namespace PiPi
 {
-	PiPiEditor::PiPiEditor(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiAppearanceManager* appearanceManager, PiPiFieldManager* fieldManager, PiPiFieldStyleManager* fieldStyleManager, PiPiFlattenManager* flattenManager)
+	PiPiEditor::PiPiEditor(PdfMemDocument *document, PiPiFontManager *fontManager, PiPiAppearanceManager *appearanceManager, PiPiFieldManager *fieldManager, PiPiFieldStyleManager *fieldStyleManager, PiPiFlattenManager *flattenManager)
 	{
 		this->operable = true;
 		this->document = document;
@@ -18,7 +18,7 @@ namespace PiPi
 		return this->operable;
 	}
 
-	PiPiEditor* PiPiEditor::Flatten()
+	PiPiEditor *PiPiEditor::Flatten()
 	{
 		spdlog::trace("Flatten");
 
@@ -27,24 +27,24 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PdfMemDocument* document = this->document;
-		PiPiFontManager* fontManager = this->fontManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-		PiPiFlattenManager* flattenManager = this->flattenManager;
-		PiPiFieldManager* fieldManager = this->fieldManager;
+		PdfMemDocument *document = this->document;
+		PiPiFontManager *fontManager = this->fontManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+		PiPiFlattenManager *flattenManager = this->flattenManager;
+		PiPiFieldManager *fieldManager = this->fieldManager;
 
 		appearanceManager->GenerateAppearance();
 
-		std::map<const std::string, std::set<PdfField*>*>* fieldMap = fieldManager->SearchAllField();
+		std::map<const std::string, std::set<PdfField *> *> *fieldMap = fieldManager->SearchAllField();
 
 		for (auto mapIterator = fieldMap->begin(); mapIterator != fieldMap->end(); mapIterator.operator++())
 		{
-			std::set<PdfField*>* fields = mapIterator->second;
+			std::set<PdfField *> *fields = mapIterator->second;
 
 			for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
 			{
-				PdfField* field = *iterator;
-				PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
+				PdfField *field = *iterator;
+				PdfAnnotation *annot = fieldManager->BridgeFieldToAnnotation(field);
 
 				flattenManager->FlattenAnnot(annot);
 			}
@@ -63,7 +63,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::Flatten(std::string fieldName)
+	PiPiEditor *PiPiEditor::Flatten(std::string fieldName)
 	{
 		spdlog::trace("Flatten");
 
@@ -72,18 +72,18 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PdfMemDocument* document = this->document;
-		PiPiFontManager* fontManager = this->fontManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-		PiPiFlattenManager* flattenManager = this->flattenManager;
-		PiPiFieldManager* fieldManager = this->fieldManager;
+		PdfMemDocument *document = this->document;
+		PiPiFontManager *fontManager = this->fontManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+		PiPiFlattenManager *flattenManager = this->flattenManager;
+		PiPiFieldManager *fieldManager = this->fieldManager;
 
-		std::set<PdfField*>* fields = fieldManager->SearchField(fieldName);
+		std::set<PdfField *> *fields = fieldManager->SearchField(fieldName);
 
 		for (auto iterator = fields->begin(); iterator != fields->end(); iterator.operator++())
 		{
-			PdfField* field = *iterator;
-			PdfAnnotation* annot = fieldManager->BridgeFieldToAnnotation(field);
+			PdfField *field = *iterator;
+			PdfAnnotation *annot = fieldManager->BridgeFieldToAnnotation(field);
 
 			std::string fieldName = field->GetFullName();
 
@@ -98,7 +98,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::AddField(std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height)
+	PiPiEditor *PiPiEditor::AddField(std::string fieldName, PiPiFieldType type, unsigned int pageIndex, double x, double y, double width, double height)
 	{
 		spdlog::trace("AddField");
 
@@ -107,9 +107,9 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PdfMemDocument* document = this->document;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-		PiPiFieldManager* fieldManager = this->fieldManager;
+		PdfMemDocument *document = this->document;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+		PiPiFieldManager *fieldManager = this->fieldManager;
 
 		fieldManager->CreateField(fieldName, type, pageIndex, x, y, width, height);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -117,28 +117,28 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::RemoveField(std::string fieldName)
+	PiPiEditor *PiPiEditor::RemoveField(std::string fieldName)
 	{
 		spdlog::trace("RemoveField");
 
 		return this->RemoveField(fieldName, -1);
 	}
 
-	PiPiEditor* PiPiEditor::RemoveField(std::string fieldName, long pageIndex)
+	PiPiEditor *PiPiEditor::RemoveField(std::string fieldName, long pageIndex)
 	{
 		spdlog::trace("RemoveField");
 
 		return this->RemoveField(fieldName, pageIndex, -1, -1);
 	}
 
-	PiPiEditor* PiPiEditor::RemoveField(std::string fieldName, long pageIndex, double x, double y)
+	PiPiEditor *PiPiEditor::RemoveField(std::string fieldName, long pageIndex, double x, double y)
 	{
 		spdlog::trace("RemoveField");
 
 		return this->RemoveField(fieldName, pageIndex, x, y, -1, -1);
 	}
 
-	PiPiEditor* PiPiEditor::RemoveField(std::string fieldName, long pageIndex, double x, double y, double width, double height)
+	PiPiEditor *PiPiEditor::RemoveField(std::string fieldName, long pageIndex, double x, double y, double width, double height)
 	{
 		spdlog::trace("RemoveField");
 
@@ -147,9 +147,9 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PdfMemDocument* document = this->document;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-		PiPiFieldManager* fieldManager = this->fieldManager;
+		PdfMemDocument *document = this->document;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+		PiPiFieldManager *fieldManager = this->fieldManager;
 
 		fieldManager->RemoveField(fieldName, pageIndex, x, y, width, height);
 		appearanceManager->UnMarkNeedAppearance(fieldName);
@@ -157,7 +157,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::RenameField(std::string oldFieldName, std::string newFieldName)
+	PiPiEditor *PiPiEditor::RenameField(std::string oldFieldName, std::string newFieldName)
 	{
 		spdlog::trace("RenameField");
 
@@ -166,9 +166,9 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PdfMemDocument* document = this->document;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-		PiPiFieldManager* fieldManager = this->fieldManager;
+		PdfMemDocument *document = this->document;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+		PiPiFieldManager *fieldManager = this->fieldManager;
 
 		fieldManager->RenameField(oldFieldName, newFieldName);
 
@@ -178,7 +178,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldColor(std::string fieldName, float red, float green, float blue)
+	PiPiEditor *PiPiEditor::SetFieldColor(std::string fieldName, float red, float green, float blue)
 	{
 		spdlog::trace("SetFieldColor");
 
@@ -187,8 +187,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
 
 		fieldStyleManager->SetFieldColor(fieldName, red, green, blue);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -196,7 +196,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldColor(std::string fieldName, long pageIndex, float red, float green, float blue)
+	PiPiEditor *PiPiEditor::SetFieldColor(std::string fieldName, long pageIndex, float red, float green, float blue)
 	{
 		spdlog::trace("SetFieldColor");
 
@@ -205,8 +205,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
 
 		fieldStyleManager->SetFieldColor(fieldName, pageIndex, red, green, blue);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -214,7 +214,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldColor(std::string fieldName, long pageIndex, double x, double y, float red, float green, float blue)
+	PiPiEditor *PiPiEditor::SetFieldColor(std::string fieldName, long pageIndex, double x, double y, float red, float green, float blue)
 	{
 		spdlog::trace("SetFieldColor");
 
@@ -223,8 +223,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
 
 		fieldStyleManager->SetFieldColor(fieldName, pageIndex, x, y, red, green, blue);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -232,7 +232,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldColor(std::string fieldName, long pageIndex, double x, double y, double width, double height, float red, float green, float blue)
+	PiPiEditor *PiPiEditor::SetFieldColor(std::string fieldName, long pageIndex, double x, double y, double width, double height, float red, float green, float blue)
 	{
 		spdlog::trace("SetFieldColor");
 
@@ -241,8 +241,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
 
 		fieldStyleManager->SetFieldColor(fieldName, pageIndex, x, y, width, height, red, green, blue);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -250,7 +250,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldBorderColor(std::string fieldName, float red, float green, float blue)
+	PiPiEditor *PiPiEditor::SetFieldBorderColor(std::string fieldName, float red, float green, float blue)
 	{
 		spdlog::trace("SetFieldBorderColor");
 
@@ -259,8 +259,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
 
 		fieldStyleManager->SetFieldBorderColor(fieldName, red, green, blue);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -268,7 +268,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldBorderColor(std::string fieldName, long pageIndex, float red, float green, float blue)
+	PiPiEditor *PiPiEditor::SetFieldBorderColor(std::string fieldName, long pageIndex, float red, float green, float blue)
 	{
 		spdlog::trace("SetFieldBorderColor");
 
@@ -277,8 +277,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
 
 		fieldStyleManager->SetFieldBorderColor(fieldName, pageIndex, red, green, blue);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -286,7 +286,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldBorderColor(std::string fieldName, long pageIndex, double x, double y, float red, float green, float blue)
+	PiPiEditor *PiPiEditor::SetFieldBorderColor(std::string fieldName, long pageIndex, double x, double y, float red, float green, float blue)
 	{
 		spdlog::trace("SetFieldBorderColor");
 
@@ -295,8 +295,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
 
 		fieldStyleManager->SetFieldBorderColor(fieldName, pageIndex, x, y, red, green, blue);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -304,7 +304,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldBorderColor(std::string fieldName, long pageIndex, double x, double y, double width, double height, float red, float green, float blue)
+	PiPiEditor *PiPiEditor::SetFieldBorderColor(std::string fieldName, long pageIndex, double x, double y, double width, double height, float red, float green, float blue)
 	{
 		spdlog::trace("SetFieldBorderColor");
 
@@ -313,8 +313,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
 
 		fieldStyleManager->SetFieldBorderColor(fieldName, pageIndex, x, y, width, height, red, green, blue);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -322,7 +322,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldBorderWidth(std::string fieldName, double borderWidth)
+	PiPiEditor *PiPiEditor::SetFieldBorderWidth(std::string fieldName, double borderWidth)
 	{
 		spdlog::trace("SetFieldBorderWidth");
 
@@ -331,8 +331,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
 
 		fieldStyleManager->SetFieldBorderWidth(fieldName, borderWidth);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -340,7 +340,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldBorderWidth(std::string fieldName, long pageIndex, double borderWidth)
+	PiPiEditor *PiPiEditor::SetFieldBorderWidth(std::string fieldName, long pageIndex, double borderWidth)
 	{
 		spdlog::trace("SetFieldBorderWidth");
 
@@ -349,8 +349,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
 
 		fieldStyleManager->SetFieldBorderWidth(fieldName, pageIndex, borderWidth);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -358,7 +358,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldBorderWidth(std::string fieldName, long pageIndex, double x, double y, double borderWidth)
+	PiPiEditor *PiPiEditor::SetFieldBorderWidth(std::string fieldName, long pageIndex, double x, double y, double borderWidth)
 	{
 		spdlog::trace("SetFieldBorderWidth");
 
@@ -367,8 +367,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
 
 		fieldStyleManager->SetFieldBorderWidth(fieldName, pageIndex, x, y, borderWidth);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -376,7 +376,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldBorderWidth(std::string fieldName, long pageIndex, double x, double y, double width, double height, double borderWidth)
+	PiPiEditor *PiPiEditor::SetFieldBorderWidth(std::string fieldName, long pageIndex, double x, double y, double width, double height, double borderWidth)
 	{
 		spdlog::trace("SetFieldBorderWidth");
 
@@ -385,8 +385,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
 
 		fieldStyleManager->SetFieldBorderWidth(fieldName, pageIndex, x, y, width, height, borderWidth);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -394,7 +394,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldBackgroundColor(std::string fieldName, float red, float green, float blue)
+	PiPiEditor *PiPiEditor::SetFieldBackgroundColor(std::string fieldName, float red, float green, float blue)
 	{
 		spdlog::trace("SetFieldBackgroundColor");
 
@@ -403,8 +403,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
 		fieldStyleManager->SetFieldBackgroundColor(fieldName, red, green, blue);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -412,7 +412,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldBackgroundColor(std::string fieldName, long pageIndex, float red, float green, float blue)
+	PiPiEditor *PiPiEditor::SetFieldBackgroundColor(std::string fieldName, long pageIndex, float red, float green, float blue)
 	{
 		spdlog::trace("SetFieldBackgroundColor");
 
@@ -421,8 +421,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
 		fieldStyleManager->SetFieldBackgroundColor(fieldName, pageIndex, red, green, blue);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -430,7 +430,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldBackgroundColor(std::string fieldName, long pageIndex, double x, double y, float red, float green, float blue)
+	PiPiEditor *PiPiEditor::SetFieldBackgroundColor(std::string fieldName, long pageIndex, double x, double y, float red, float green, float blue)
 	{
 		spdlog::trace("SetFieldBackgroundColor");
 
@@ -439,8 +439,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
 		fieldStyleManager->SetFieldBackgroundColor(fieldName, pageIndex, x, y, red, green, blue);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -448,7 +448,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldBackgroundColor(std::string fieldName, long pageIndex, double x, double y, double width, double height, float red, float green, float blue)
+	PiPiEditor *PiPiEditor::SetFieldBackgroundColor(std::string fieldName, long pageIndex, double x, double y, double width, double height, float red, float green, float blue)
 	{
 		spdlog::trace("SetFieldBackgroundColor");
 
@@ -457,8 +457,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
 		fieldStyleManager->SetFieldBackgroundColor(fieldName, pageIndex, x, y, width, height, red, green, blue);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -466,7 +466,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldTextHorizontalAlignment(std::string fieldName, PiPiTextHorizontalAlignment alignment)
+	PiPiEditor *PiPiEditor::SetFieldTextHorizontalAlignment(std::string fieldName, PiPiTextHorizontalAlignment alignment)
 	{
 		spdlog::trace("SetFieldTextHorizontalAlignment");
 
@@ -475,8 +475,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
 		fieldStyleManager->SetFieldTextHorizontalAlignment(fieldName, alignment);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -484,7 +484,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldTextHorizontalAlignment(std::string fieldName, long pageIndex, PiPiTextHorizontalAlignment alignment)
+	PiPiEditor *PiPiEditor::SetFieldTextHorizontalAlignment(std::string fieldName, long pageIndex, PiPiTextHorizontalAlignment alignment)
 	{
 		spdlog::trace("SetFieldTextHorizontalAlignment");
 
@@ -493,8 +493,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
 		fieldStyleManager->SetFieldTextHorizontalAlignment(fieldName, pageIndex, alignment);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -502,7 +502,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldTextHorizontalAlignment(std::string fieldName, long pageIndex, double x, double y, PiPiTextHorizontalAlignment alignment)
+	PiPiEditor *PiPiEditor::SetFieldTextHorizontalAlignment(std::string fieldName, long pageIndex, double x, double y, PiPiTextHorizontalAlignment alignment)
 	{
 		spdlog::trace("SetFieldTextHorizontalAlignment");
 
@@ -511,8 +511,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
 		fieldStyleManager->SetFieldTextHorizontalAlignment(fieldName, pageIndex, x, y, alignment);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -520,7 +520,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldTextHorizontalAlignment(std::string fieldName, long pageIndex, double x, double y, double width, double height, PiPiTextHorizontalAlignment alignment)
+	PiPiEditor *PiPiEditor::SetFieldTextHorizontalAlignment(std::string fieldName, long pageIndex, double x, double y, double width, double height, PiPiTextHorizontalAlignment alignment)
 	{
 		spdlog::trace("SetFieldTextHorizontalAlignment");
 
@@ -529,8 +529,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
 		fieldStyleManager->SetFieldTextHorizontalAlignment(fieldName, pageIndex, x, y, width, height, alignment);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -538,7 +538,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldMultiline(std::string fieldName, bool multiline)
+	PiPiEditor *PiPiEditor::SetFieldMultiline(std::string fieldName, bool multiline)
 	{
 		spdlog::trace("SetFieldMultiline");
 
@@ -547,8 +547,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
 
 		fieldStyleManager->SetFieldMultiline(fieldName, multiline);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -556,7 +556,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldMultiline(std::string fieldName, long pageIndex, bool multiline)
+	PiPiEditor *PiPiEditor::SetFieldMultiline(std::string fieldName, long pageIndex, bool multiline)
 	{
 		spdlog::trace("SetFieldMultiline");
 
@@ -565,8 +565,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
 
 		fieldStyleManager->SetFieldMultiline(fieldName, pageIndex, multiline);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -574,7 +574,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldMultiline(std::string fieldName, long pageIndex, double x, double y, bool multiline)
+	PiPiEditor *PiPiEditor::SetFieldMultiline(std::string fieldName, long pageIndex, double x, double y, bool multiline)
 	{
 		spdlog::trace("SetFieldMultiline");
 
@@ -583,8 +583,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
 
 		fieldStyleManager->SetFieldMultiline(fieldName, pageIndex, x, y, multiline);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -592,7 +592,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldMultiline(std::string fieldName, long pageIndex, double x, double y, double width, double height, bool multiline)
+	PiPiEditor *PiPiEditor::SetFieldMultiline(std::string fieldName, long pageIndex, double x, double y, double width, double height, bool multiline)
 	{
 		spdlog::trace("SetFieldMultiline");
 
@@ -601,8 +601,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
 
 		fieldStyleManager->SetFieldMultiline(fieldName, pageIndex, x, y, width, height, multiline);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -610,7 +610,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldFontName(std::string fieldName, std::string fontName)
+	PiPiEditor *PiPiEditor::SetFieldFontName(std::string fieldName, std::string fontName)
 	{
 		spdlog::trace("SetFieldFontName");
 
@@ -619,8 +619,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
 		fieldStyleManager->SetFieldFontName(fieldName, fontName);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -628,7 +628,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldFontName(std::string fieldName, long pageIndex, std::string fontName)
+	PiPiEditor *PiPiEditor::SetFieldFontName(std::string fieldName, long pageIndex, std::string fontName)
 	{
 		spdlog::trace("SetFieldFontName");
 
@@ -637,8 +637,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
 		fieldStyleManager->SetFieldFontName(fieldName, pageIndex, fontName);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -646,7 +646,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldFontName(std::string fieldName, long pageIndex, double x, double y, std::string fontName)
+	PiPiEditor *PiPiEditor::SetFieldFontName(std::string fieldName, long pageIndex, double x, double y, std::string fontName)
 	{
 		spdlog::trace("SetFieldFontName");
 
@@ -655,8 +655,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
 		fieldStyleManager->SetFieldFontName(fieldName, pageIndex, x, y, fontName);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -664,7 +664,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldFontName(std::string fieldName, long pageIndex, double x, double y, double width, double height, std::string fontName)
+	PiPiEditor *PiPiEditor::SetFieldFontName(std::string fieldName, long pageIndex, double x, double y, double width, double height, std::string fontName)
 	{
 		spdlog::trace("SetFieldFontName");
 
@@ -673,8 +673,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
 		fieldStyleManager->SetFieldFontName(fieldName, pageIndex, x, y, width, height, fontName);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -682,7 +682,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldFontSize(std::string fieldName, float fontSize)
+	PiPiEditor *PiPiEditor::SetFieldFontSize(std::string fieldName, float fontSize)
 	{
 		spdlog::trace("SetFieldFontSize");
 
@@ -691,8 +691,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
 		fieldStyleManager->SetFieldFontSize(fieldName, fontSize);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -700,7 +700,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldFontSize(std::string fieldName, long pageIndex, float fontSize)
+	PiPiEditor *PiPiEditor::SetFieldFontSize(std::string fieldName, long pageIndex, float fontSize)
 	{
 		spdlog::trace("SetFieldFontSize");
 
@@ -709,8 +709,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
 		fieldStyleManager->SetFieldFontSize(fieldName, pageIndex, fontSize);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -718,7 +718,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldFontSize(std::string fieldName, long pageIndex, double x, double y, float fontSize)
+	PiPiEditor *PiPiEditor::SetFieldFontSize(std::string fieldName, long pageIndex, double x, double y, float fontSize)
 	{
 		spdlog::trace("SetFieldFontSize");
 
@@ -727,8 +727,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
 		fieldStyleManager->SetFieldFontSize(fieldName, pageIndex, x, y, fontSize);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -736,7 +736,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldFontSize(std::string fieldName, long pageIndex, double x, double y, double width, double height, float fontSize)
+	PiPiEditor *PiPiEditor::SetFieldFontSize(std::string fieldName, long pageIndex, double x, double y, double width, double height, float fontSize)
 	{
 		spdlog::trace("SetFieldFontSize");
 
@@ -745,8 +745,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
 		fieldStyleManager->SetFieldFontSize(fieldName, pageIndex, x, y, width, height, fontSize);
 		appearanceManager->MarkNeedAppearance(fieldName);
@@ -754,7 +754,7 @@ namespace PiPi
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldDefaultValue(std::string fieldName, std::string defaultValue)
+	PiPiEditor *PiPiEditor::SetFieldDefaultValue(std::string fieldName, std::string defaultValue)
 	{
 		spdlog::trace("SetFieldDefaultValue");
 
@@ -763,15 +763,15 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
 		fieldStyleManager->SetFieldDefaultValue(fieldName, defaultValue);
 
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldDefaultValue(std::string fieldName, long pageIndex, std::string defaultValue)
+	PiPiEditor *PiPiEditor::SetFieldDefaultValue(std::string fieldName, long pageIndex, std::string defaultValue)
 	{
 		spdlog::trace("SetFieldDefaultValue");
 
@@ -780,15 +780,15 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
 		fieldStyleManager->SetFieldDefaultValue(fieldName, pageIndex, defaultValue);
 
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldDefaultValue(std::string fieldName, long pageIndex, double x, double y, std::string defaultValue)
+	PiPiEditor *PiPiEditor::SetFieldDefaultValue(std::string fieldName, long pageIndex, double x, double y, std::string defaultValue)
 	{
 		spdlog::trace("SetFieldDefaultValue");
 
@@ -797,15 +797,15 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
 		fieldStyleManager->SetFieldDefaultValue(fieldName, pageIndex, x, y, defaultValue);
 
 		return this;
 	}
 
-	PiPiEditor* PiPiEditor::SetFieldDefaultValue(std::string fieldName, long pageIndex, double x, double y, double width, double height, std::string defaultValue)
+	PiPiEditor *PiPiEditor::SetFieldDefaultValue(std::string fieldName, long pageIndex, double x, double y, double width, double height, std::string defaultValue)
 	{
 		spdlog::trace("SetFieldDefaultValue");
 
@@ -814,8 +814,8 @@ namespace PiPi
 			throw PiPiEditFieldException(PiPiEditFieldException::PiPiEditFieldExceptionCode::InOperable);
 		}
 
-		PiPiFieldStyleManager* fieldStyleManager = this->fieldStyleManager;
-		PiPiAppearanceManager* appearanceManager = this->appearanceManager;
+		PiPiFieldStyleManager *fieldStyleManager = this->fieldStyleManager;
+		PiPiAppearanceManager *appearanceManager = this->appearanceManager;
 
 		fieldStyleManager->SetFieldDefaultValue(fieldName, pageIndex, x, y, width, height, defaultValue);
 

@@ -196,14 +196,15 @@ namespace PiPi
       return 0.0;
     }
 
-    if (w->IsNumber()) {
+    if (w->IsNumber())
+    {
       return (double)(w->GetNumber());
     }
 
-    if (w->IsRealStrict()) {
+    if (w->IsRealStrict())
+    {
       return w->GetReal();
     }
-
 
     return 0.0;
   }
@@ -460,7 +461,7 @@ namespace PiPi
       return PiPiTextHorizontalAlignment::Left;
     }
 
-    PdfObject* qObj = dict->FindKey(PdfName("Q"));
+    PdfObject *qObj = dict->FindKey(PdfName("Q"));
     int64_t alignmentValue = qObj->GetNumber();
 
     switch (alignmentValue)
@@ -498,15 +499,15 @@ namespace PiPi
     return v->GetString();
   }
 
-  std::string PiPiAnnotationUtil::ExtractAnnotationDefaultValue(PdfAnnotation* annotation)
+  std::string PiPiAnnotationUtil::ExtractAnnotationDefaultValue(PdfAnnotation *annotation)
   {
     spdlog::trace("ExtractAnnotationValue");
 
-    PdfObject* obj = &(annotation->GetObject());
+    PdfObject *obj = &(annotation->GetObject());
 
-    PdfDictionary* dict = &(obj->GetDictionary());
+    PdfDictionary *dict = &(obj->GetDictionary());
 
-    PdfObject* dvObj = dict->FindKey(PdfName("DV"));
+    PdfObject *dvObj = dict->FindKey(PdfName("DV"));
     if (dvObj == nullptr)
     {
       return "";
@@ -517,7 +518,7 @@ namespace PiPi
       return "";
     }
 
-    const PdfString* dv = &(dvObj->GetString());
+    const PdfString *dv = &(dvObj->GetString());
 
     return dv->GetString();
   }

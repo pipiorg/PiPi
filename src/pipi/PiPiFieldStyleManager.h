@@ -7,7 +7,6 @@
 #include "PiPiEditFieldException.h"
 #include "PiPiFieldStyleManageException.h"
 
-
 using namespace PoDoFo;
 
 namespace PiPi
@@ -73,7 +72,7 @@ namespace PiPi
     void InnerSetFieldColor(PdfObject *obj, float red, float green, float blue);
     void InnerSetFieldBackgroundColor(PdfObject *obj, float red, float green, float blue);
     void InnerSetFieldBorderColor(PdfObject *obj, float red, float green, float blue);
-    void InnerSetFieldBorderWidth(PdfObject* obj, double borderWidth);
+    void InnerSetFieldBorderWidth(PdfObject *obj, double borderWidth);
     void InnerSetFieldDefaultValue(PdfObject *obj, std::string defaultValue);
     void InnerSetFieldMultiline(PdfField *field, bool multiline);
 

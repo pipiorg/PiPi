@@ -302,7 +302,7 @@ namespace PiPi
     PiPiSameFieldUtil::RestrictField(document, fieldObj);
   }
 
-  PdfObject *PiPiFieldCompatibilityUtil::PrepareFieldAcroform(PdfMemDocument*document, std::string name)
+  PdfObject *PiPiFieldCompatibilityUtil::PrepareFieldAcroform(PdfMemDocument *document, std::string name)
   {
     spdlog::trace("PrepareFieldAcroform");
 

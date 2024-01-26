@@ -20,16 +20,16 @@ namespace PiPi
     static void PatchFieldRestrict(PdfMemDocument *document);
 
   private:
-    static std::vector<PdfObject *> *CollectDotField(PdfMemDocument*document);
-    static void CollectDotFieldRecursive(PdfMemDocument*document, PdfObject *fieldObj, std::vector<PdfObject *> *dotFieldObjs);
+    static std::vector<PdfObject *> *CollectDotField(PdfMemDocument *document);
+    static void CollectDotFieldRecursive(PdfMemDocument *document, PdfObject *fieldObj, std::vector<PdfObject *> *dotFieldObjs);
 
-    static std::vector<PdfObject *> *CollectRestrictField(PdfMemDocument*document);
-    static void CollectRestrictFieldRecursive(PdfMemDocument*document, PdfObject *fieldObj, std::vector<PdfObject *> *restrictFieldObjs);
+    static std::vector<PdfObject *> *CollectRestrictField(PdfMemDocument *document);
+    static void CollectRestrictFieldRecursive(PdfMemDocument *document, PdfObject *fieldObj, std::vector<PdfObject *> *restrictFieldObjs);
 
     static void FixRestrict(PdfMemDocument *document, PdfObject *fieldObj);
 
     static void FixDot(PdfMemDocument *document, PdfObject *fieldObj);
-    static void FixDotParentField(PdfMemDocument*document, PdfObject *fieldObj);
+    static void FixDotParentField(PdfMemDocument *document, PdfObject *fieldObj);
     static void FixDotAcroform(PdfMemDocument *document, PdfObject *fieldObj);
 
     static PdfObject *PrepareFieldParentField(PdfMemDocument *document, PdfObject *parentFieldObj, std::string name);

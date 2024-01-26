@@ -25,28 +25,28 @@ namespace PiPi
 		friend class PiPiMultiOperator;
 
 	public:
-		PiPiOperator(char* pdfBytes, size_t pdfSize);
+		PiPiOperator(char *pdfBytes, size_t pdfSize);
 		~PiPiOperator();
 
-		PiPiFiller* GetFiller();
-		PiPiEditor* GetEditor();
-		PiPiExtractor* GetExtractor();
-		PiPiFontManager* GetFontManager();
+		PiPiFiller *GetFiller();
+		PiPiEditor *GetEditor();
+		PiPiExtractor *GetExtractor();
+		PiPiFontManager *GetFontManager();
 
 		bool IsOperable();
 
-		void Finalize(std::vector<char>** newPdf);
+		void Finalize(std::vector<char> **newPdf);
 
 	private:
-		PoDoFo::PdfMemDocument* document;
+		PoDoFo::PdfMemDocument *document;
 
-		PiPiFiller* filler;
-		PiPiEditor* editor;
-		PiPiExtractor* extractor;
-		PiPiFontManager* fontManager;
-		PiPiAppearanceManager* appearanceManager;
-		PiPiFlattenManager* flattenManager;
-		PiPiFieldManager* fieldManager;
-		PiPiFieldStyleManager* fieldStyleManager;
+		PiPiFiller *filler;
+		PiPiEditor *editor;
+		PiPiExtractor *extractor;
+		PiPiFontManager *fontManager;
+		PiPiAppearanceManager *appearanceManager;
+		PiPiFlattenManager *flattenManager;
+		PiPiFieldManager *fieldManager;
+		PiPiFieldStyleManager *fieldStyleManager;
 	};
 }

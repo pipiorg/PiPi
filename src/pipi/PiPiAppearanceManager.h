@@ -13,7 +13,7 @@ namespace PiPi
 	class PiPiAppearanceManager
 	{
 	public:
-		PiPiAppearanceManager(PdfMemDocument* document, PiPiFontManager* fontManager, PiPiFieldManager* fieldManager);
+		PiPiAppearanceManager(PdfMemDocument *document, PiPiFontManager *fontManager, PiPiFieldManager *fieldManager);
 		~PiPiAppearanceManager();
 
 		void GenerateAppearance();
@@ -24,20 +24,20 @@ namespace PiPi
 		void ClearNeedAppearance();
 
 	private:
-		PdfMemDocument* document;
-		PiPiFontManager* fontManager;
-		PiPiFieldManager* fieldManager;
+		PdfMemDocument *document;
+		PiPiFontManager *fontManager;
+		PiPiFieldManager *fieldManager;
 
-		std::set<std::string>* fieldNames;
+		std::set<std::string> *fieldNames;
 
-		void GenerateAppearance(PiPiFontManager* fontManager, PiPiFieldManager* fieldManager, PdfAnnotation* annot);
-		void ClearCheckBoxAppearance(PdfAnnotation* annot);
+		void GenerateAppearance(PiPiFontManager *fontManager, PiPiFieldManager *fieldManager, PdfAnnotation *annot);
+		void ClearCheckBoxAppearance(PdfAnnotation *annot);
 
-		void GenerateCheckBoxAppearance(PdfAnnotation* annot);
-		void GenerateCheckBoxNormalCheckAppearance(PdfAnnotation* annot);
-		void GenerateCheckBoxDownCheckAppearance(PdfAnnotation* annot);
-		void GenerateCheckBoxDownUnCheckAppearance(PdfAnnotation* annot);
+		void GenerateCheckBoxAppearance(PdfAnnotation *annot);
+		void GenerateCheckBoxNormalCheckAppearance(PdfAnnotation *annot);
+		void GenerateCheckBoxDownCheckAppearance(PdfAnnotation *annot);
+		void GenerateCheckBoxDownUnCheckAppearance(PdfAnnotation *annot);
 
-		void GenerateTextBoxAppearance(PiPiFontManager* fontManager, PdfAnnotation* annot);
+		void GenerateTextBoxAppearance(PiPiFontManager *fontManager, PdfAnnotation *annot);
 	};
 }
