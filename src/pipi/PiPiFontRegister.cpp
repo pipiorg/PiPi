@@ -11,7 +11,7 @@ namespace PiPi {
 	{
 		spdlog::trace("EmbedFonts");
 
-		if (!this->isOperable())
+		if (!this->IsOperable())
 		{
 			throw PiPiFontRegisterException(PiPiFontRegisterException::PiPiFontRegisterExceptionCode::InOperable);
 		}
@@ -24,7 +24,7 @@ namespace PiPi {
 	{
 		spdlog::trace("RegisterFont");
 
-		if (!this->isOperable())
+		if (!this->IsOperable())
 		{
 			throw PiPiFontRegisterException(PiPiFontRegisterException::PiPiFontRegisterExceptionCode::InOperable);
 		}
@@ -33,9 +33,9 @@ namespace PiPi {
 		return fontManager->RegisterFont(fontBytes, fontSize);
 	}
 
-	bool PiPiFontRegister::isOperable()
+	bool PiPiFontRegister::IsOperable()
 	{
-		spdlog::trace("isOperable");
+		spdlog::trace("IsOperable");
 
 		return this->operable;
 	}

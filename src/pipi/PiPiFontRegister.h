@@ -17,7 +17,7 @@ namespace PiPi
 		PiPiFontRegister(PiPiFontManager* fontManager);
 
 
-		bool isOperable();
+		bool IsOperable();
 
 		void EmbedFonts();
 		const std::string RegisterFont(char* fontBytes, size_t fontSize);
