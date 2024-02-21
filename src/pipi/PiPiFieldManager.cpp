@@ -1158,23 +1158,37 @@ namespace PiPi
     {
       std::vector<std::string> *splits = PiPiStringCommon::split(fieldName, ".");
 
-      std::string lastFieldName = splits->back();
+      if (splits->size() != 1)
+      {
+        std::string lastFieldName = splits->back();
+        splits->pop_back();
+        std::string parentFieldName = PiPiStringCommon::join(splits, ".");
 
-      splits->pop_back();
-      std::string parentFieldName = PiPiStringCommon::join(splits, ".");
+        PdfObject *parentObject = this->InnerCreateFakeField(parentFieldName);
+        PdfDictionary *parentDict = &(parentObject->GetDictionary());
+
+        PdfObject *parentKidsObject = parentDict->FindKey(PdfName("Kids"));
+        PdfArray *parentKids = &(parentKidsObject->GetArray());
+
+        dict->AddKeyIndirect(PdfName("Parent"), *parentObject);
+        dict->AddKey(PdfName("T"), PdfString(lastFieldName));
+
+        parentKids->AddIndirect(*object);
+      }
+      else
+      {
+        PdfAcroForm *acroform = this->document->GetAcroForm();
+        PdfObject *acroformObj = &(acroform->GetObject());
+        PdfDictionary *acroformDict = &(acroformObj->GetDictionary());
+
+        PdfObject *acroformFieldsObj = acroformDict->FindKey(PdfName("Fields"));
+        PdfArray *acroformFields = &(acroformFieldsObj->GetArray());
+
+        dict->AddKey(PdfName("T"), PdfString(fieldName));
+        acroformFields->AddIndirect(*object);
+      }
 
       delete splits;
-
-      PdfObject *parentObject = this->InnerCreateFakeField(parentFieldName);
-      PdfDictionary *parentDict = &(parentObject->GetDictionary());
-
-      PdfObject *parentKidsObject = parentDict->FindKey(PdfName("Kids"));
-      PdfArray *parentKids = &(parentKidsObject->GetArray());
-
-      dict->AddKeyIndirect(PdfName("Parent"), *parentObject);
-      dict->AddKey(PdfName("T"), PdfString(lastFieldName));
-
-      parentKids->AddIndirect(*object);
     }
 
     std::unique_ptr<PdfField> fieldPtr;
