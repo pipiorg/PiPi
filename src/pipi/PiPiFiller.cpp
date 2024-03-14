@@ -68,6 +68,10 @@ namespace PiPi
 		PiPiFieldType minType = PiPiAnnotationUtil::ExtractAnnotationType(minAnnot);
 
 		value = minType == PiPiFieldType::TextBox
+								? this->NormalizeValue(value)
+								: value;
+
+		value = minType == PiPiFieldType::TextBox
 								? this->FilterValue(value, minFontName)
 								: value;
 
@@ -126,6 +130,8 @@ namespace PiPi
 
 		if (minType == PiPiFieldType::TextBox)
 		{
+			value = this->NormalizeValue(value);
+
 			value = this->FilterValue(value, minFontName);
 
 			if (ellipsis)
@@ -304,6 +310,23 @@ namespace PiPi
 		}
 
 		return line;
+	}
+
+	std::string PiPiFiller::NormalizeValue(std::string value)
+	{
+		spdlog::trace("NormalizeValue");
+
+		UErrorCode status = U_ZERO_ERROR;
+
+		const icu::Normalizer2 *normalizer = icu::Normalizer2::getNFKCInstance(status);
+
+		icu::UnicodeString unicodeValue = icu::UnicodeString::fromUTF8(value);
+		icu::UnicodeString normalizedUnicodeValue = normalizer->normalize(unicodeValue, status);
+
+		std::string normalizedValue;
+		normalizedUnicodeValue.toUTF8String(normalizedValue);
+
+		return normalizedValue;
 	}
 
 	std::string PiPiFiller::EllipsisValue(std::string value, double width, double height, std::string fontName, float fontSize)
